@@ -57,7 +57,7 @@ export class EpicTimeline extends React.Component<
                     stackItems={true}
                     dragSnap={day}
                     minZoom={month}
-                    onItemMove={this._onItemMove}
+                    onItemResize={this._onItemResize}
                 />
                 <div>{this.props.message}</div>
                 <button onClick={this._onButtonClick} />
@@ -65,8 +65,17 @@ export class EpicTimeline extends React.Component<
         );
     }
 
-    private _onItemMove = (itemId: number, dragTime: number): void => {
-        this.props.onUpdateStartDate(itemId, moment(dragTime));
+    private _onItemResize = (
+        itemId: number,
+        time: number,
+        edge: string
+    ): void => {
+        if (edge == "left") {
+            this.props.onUpdateStartDate(itemId, moment(time));
+        } else {
+            // "right"
+            this.props.onUpdateEndDate(itemId, moment(time));
+        }
     };
 
     private _onButtonClick = (): void => {
@@ -103,7 +112,8 @@ function mapStateToProps(
 
 const Actions = {
     onUpdateMessage: EpicTimelineActions.updateMessage,
-    onUpdateStartDate: EpicTimelineActions.updateStartDate
+    onUpdateStartDate: EpicTimelineActions.updateStartDate,
+    onUpdateEndDate: EpicTimelineActions.updateEndDate
 };
 
 export const ConnectedEpicTimeline = connect(

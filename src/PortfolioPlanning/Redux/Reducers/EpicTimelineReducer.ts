@@ -24,14 +24,25 @@ export function epicTimelineReducer(
                     epic => epic.id === epicId
                 );
 
-                const epicDuration =
-                    epicToUpdate.endDate.getTime() -
-                    epicToUpdate.startDate.getTime();
-
                 epicToUpdate.startDate = startDate.toDate();
-                epicToUpdate.endDate = startDate
-                    .add(epicDuration, "milliseconds")
-                    .toDate();
+
+                break;
+            }
+            case EpicTimelineActionTypes.UpdateEndDate: {
+                const { epicId, endDate } = action.payload;
+
+                const epicToUpdate = draft.epics.find(
+                    epic => epic.id === epicId
+                );
+
+                // const epicDuration =
+                //     epicToUpdate.endDate.getTime() -
+                //     epicToUpdate.startDate.getTime();
+
+                epicToUpdate.endDate = endDate.toDate();
+                // epicToUpdate.endDate = startDate
+                //     .add(epicDuration, "milliseconds")
+                //     .toDate();
 
                 break;
             }

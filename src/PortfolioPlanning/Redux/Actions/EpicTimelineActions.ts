@@ -6,7 +6,8 @@ import moment = require("moment");
 
 export const enum EpicTimelineActionTypes {
     UpdateMessage = "EpicTimeline/UpdateMessage",
-    UpdateStartDate = "EpicTimeline/UpdateStartDate"
+    UpdateStartDate = "EpicTimeline/UpdateStartDate",
+    UpdateEndDate = "EpicTimeline/UpdateEndDate"
 }
 
 export const EpicTimelineActions = {
@@ -18,6 +19,11 @@ export const EpicTimelineActions = {
         createAction(EpicTimelineActionTypes.UpdateStartDate, {
             epicId,
             startDate
+        }),
+    updateEndDate: (epicId: number, endDate: moment.Moment) =>
+        createAction(EpicTimelineActionTypes.UpdateEndDate, {
+            epicId,
+            endDate
         })
 };
 
