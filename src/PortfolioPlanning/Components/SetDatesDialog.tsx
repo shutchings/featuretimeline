@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Moment } from "moment";
+import * as moment from "moment";
 import {
     Dialog,
     DialogType,
@@ -13,15 +13,27 @@ import {
     DatePicker,
     IDatePickerStrings
 } from "office-ui-fabric-react/lib/DatePicker";
+import { initializeIcons } from "office-ui-fabric-react/lib/Icons";
+
+initializeIcons();
 
 export interface ISetDatesDialogProps {
     id: number;
     title: string;
-    startDate: Moment;
-    endDate: Moment;
+    startDate: moment.Moment;
+    endDate: moment.Moment;
     hidden: boolean;
-    save: (id: number, startDate: Moment, endDate: Moment) => void;
+    save: (
+        id: number,
+        startDate: moment.Moment,
+        endDate: moment.Moment
+    ) => void;
     close: () => void;
+}
+
+interface ISetDatesDialogState {
+    startDate: moment.Moment;
+    endDate: moment.Moment;
 }
 
 const datePickerStrings: IDatePickerStrings = {
@@ -74,7 +86,19 @@ const datePickerStrings: IDatePickerStrings = {
     nextYearAriaLabel: "Go to next year"
 };
 
-export class SetDatesDialog extends React.Component<ISetDatesDialogProps> {
+export class SetDatesDialog extends React.Component<
+    ISetDatesDialogProps,
+    ISetDatesDialogState
+> {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            startDate: this.props.startDate,
+            endDate: this.props.endDate
+        };
+    }
+
     public render() {
         return (
             <Dialog
@@ -84,16 +108,22 @@ export class SetDatesDialog extends React.Component<ISetDatesDialogProps> {
                     title: `Set Dates for ${this.props.title}`
                 }}
             >
+                Start Date:
                 <DatePicker
-                    value={this.props.startDate.toDate()}
+                    value={this.state.startDate.toDate()}
+                    onSelectDate={date =>
+                        this.setState({ startDate: moment(date) })
+                    }
                     strings={datePickerStrings}
                 />
+                End Date:
                 <DatePicker
-                    value={this.props.endDate.toDate()}
+                    value={this.state.endDate.toDate()}
+                    onSelectDate={date =>
+                        this.setState({ endDate: moment(date) })
+                    }
                     strings={datePickerStrings}
                 />
-                <div>Start Date: {this.props.startDate.toLocaleString()}</div>
-                <div>End Date: {this.props.endDate.toLocaleString()}</div>
                 <DialogFooter>
                     <PrimaryButton onClick={this._onSaveDialog} text="Save" />
                     <DefaultButton
@@ -108,8 +138,8 @@ export class SetDatesDialog extends React.Component<ISetDatesDialogProps> {
     private _onSaveDialog = (): void => {
         this.props.save(
             this.props.id,
-            this.props.startDate,
-            this.props.endDate
+            this.state.startDate,
+            this.state.endDate
         );
         this.props.close();
     };
