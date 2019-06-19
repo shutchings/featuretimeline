@@ -16,6 +16,9 @@ import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
 // import "react-calendar-timeline/lib/Timeline.css"; // TODO: Use this instead of copying timeline
 
+const day = 60 * 60 * 24 * 1000;
+const month = day * 30;
+
 interface IEpicTimelineOwnProps {}
 
 interface IEpicTimelineMappedProps {
@@ -52,6 +55,8 @@ export class EpicTimeline extends React.Component<
                     defaultTimeStart={moment().add(-6, "month")}
                     defaultTimeEnd={moment().add(6, "month")}
                     stackItems={true}
+                    dragSnap={day}
+                    minZoom={month}
                 />
                 <div>{this.props.message}</div>
                 <button onClick={this._onButtonClick} />
