@@ -64,6 +64,9 @@ export class EpicTimeline extends React.Component<
                     onItemResize={this._onItemResize}
                     onItemMove={this._onItemMove}
                     moveResizeValidator={this._validateResize}
+                    onItemClick={() => {
+                        this.props.onToggleSetDatesDialogHidden(false);
+                    }}
                 />
                 <SetDatesDialog
                     id={1}
