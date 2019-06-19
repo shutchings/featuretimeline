@@ -124,6 +124,12 @@ export class SetDatesDialog extends React.Component<
                     }
                     strings={datePickerStrings}
                 />
+                <div>
+                    Start Date (State): {this.state.startDate.toLocaleString()}
+                </div>
+                <div>
+                    End Date (State): {this.state.endDate.toLocaleString()}
+                </div>
                 <DialogFooter>
                     <PrimaryButton onClick={this._onSaveDialog} text="Save" />
                     <DefaultButton
