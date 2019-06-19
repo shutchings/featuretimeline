@@ -8,7 +8,8 @@ export const enum EpicTimelineActionTypes {
     UpdateStartDate = "EpicTimeline/UpdateStartDate",
     UpdateEndDate = "EpicTimeline/UpdateEndDate",
     ShiftEpic = "EpicTimeline/ShiftEpic",
-    ToggleSetDatesDialogHidden = "EpicTimeline/ToggleSetDatesDialogHidden"
+    ToggleSetDatesDialogHidden = "EpicTimeline/ToggleSetDatesDialogHidden",
+    SetSelectedEpicId = "EpicTimeline/SetSelectedEpicId"
 }
 
 export const EpicTimelineActions = {
@@ -27,7 +28,9 @@ export const EpicTimelineActions = {
     toggleSetDatesDialogHidden: (hidden: boolean) =>
         createAction(EpicTimelineActionTypes.ToggleSetDatesDialogHidden, {
             hidden
-        })
+        }),
+    setSelectedEpicId: (id: number) =>
+        createAction(EpicTimelineActionTypes.SetSelectedEpicId, { id })
 };
 
 export type EpicTimelineActions = ActionsUnion<typeof EpicTimelineActions>;

@@ -26,6 +26,7 @@ interface IEpicTimelineMappedProps {
     projects: IProject[];
     epics: IEpic[];
     setDatesDialogHidden: boolean;
+    selectedEpicId: number;
 }
 
 export type IEpicTimelineProps = IEpicTimelineOwnProps &
@@ -64,20 +65,35 @@ export class EpicTimeline extends React.Component<
                     onItemResize={this._onItemResize}
                     onItemMove={this._onItemMove}
                     moveResizeValidator={this._validateResize}
+                    onItemSelect={itemId =>
+                        this.props.onSetSelectedEpicId(itemId)
+                    }
                     onItemClick={() => {
                         this.props.onToggleSetDatesDialogHidden(false);
                     }}
                 />
-                <SetDatesDialog
-                    id={1}
-                    startDate={moment()}
-                    endDate={moment()}
-                    hidden={this.props.setDatesDialogHidden}
-                    save={(id, startDate, endDate) => alert(id)}
-                    close={() => {
-                        this.props.onToggleSetDatesDialogHidden(true);
-                    }}
-                />
+                {this.props.selectedEpicId && (
+                    <SetDatesDialog
+                        id={this.props.selectedEpicId}
+                        startDate={moment(
+                            this.props.epics.find(
+                                epic => epic.id === this.props.selectedEpicId
+                            ).startDate
+                        )}
+                        endDate={moment(
+                            this.props.epics.find(
+                                epic => epic.id === this.props.selectedEpicId
+                            ).endDate
+                        )}
+                        hidden={this.props.setDatesDialogHidden}
+                        save={(id, startDate, endDate) =>
+                            alert("Saving..." + id)
+                        }
+                        close={() => {
+                            this.props.onToggleSetDatesDialogHidden(true);
+                        }}
+                    />
+                )}
             </div>
         );
     }
@@ -148,7 +164,8 @@ function mapStateToProps(
     return {
         projects: getProjects(state.epicTimelineState),
         epics: getEpics(state.epicTimelineState),
-        setDatesDialogHidden: getSetDatesDialogHidden(state.epicTimelineState)
+        setDatesDialogHidden: getSetDatesDialogHidden(state.epicTimelineState),
+        selectedEpicId: state.epicTimelineState.selectedEpicId
     };
 }
 
@@ -156,7 +173,9 @@ const Actions = {
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
     onUpdateEndDate: EpicTimelineActions.updateEndDate,
     onShiftEpic: EpicTimelineActions.shiftEpic,
-    onToggleSetDatesDialogHidden: EpicTimelineActions.toggleSetDatesDialogHidden
+    onToggleSetDatesDialogHidden:
+        EpicTimelineActions.toggleSetDatesDialogHidden,
+    onSetSelectedEpicId: EpicTimelineActions.setSelectedEpicId
 };
 
 export const ConnectedEpicTimeline = connect(

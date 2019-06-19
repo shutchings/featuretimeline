@@ -8,4 +8,5 @@ export interface IEpicTimelineState {
     projects: IProject[];
     epics: IEpic[];
     setDatesDialogHidden: boolean;
+    selectedEpicId: number;
 }
