@@ -57,11 +57,38 @@ export class EpicTimeline extends React.Component<
                     dragSnap={day}
                     minZoom={month}
                     canResize={"both"}
+                    minResizeWidth={50}
                     onItemResize={this._onItemResize}
                     onItemMove={this._onItemMove}
+                    moveResizeValidator={this._validateResize}
                 />
             </div>
         );
+    }
+
+    private _validateResize(
+        action: string,
+        item: ITimelineItem,
+        time: number,
+        resizeEdge: string
+    ) {
+        if (action === "resize") {
+            if (resizeEdge === "right") {
+                const difference = time - item.start_time.valueOf();
+                if (difference < day) {
+                    time = item.start_time.valueOf() + day;
+                }
+            } else {
+                const difference = item.end_time.valueOf() - time;
+                if (difference < day) {
+                    time = item.end_time.valueOf() - day;
+                }
+            }
+        } else if (action === "move") {
+            // TODO: Any validation for moving?
+        }
+
+        return time;
     }
 
     private _onItemResize = (
