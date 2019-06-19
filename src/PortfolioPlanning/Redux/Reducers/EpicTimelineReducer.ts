@@ -18,7 +18,11 @@ export function epicTimelineReducer(
                 break;
             }
             case EpicTimelineActionTypes.UpdateStartDate: {
-                alert(action.payload.startDate);
+                const { epicId, startDate } = action.payload;
+
+                draft.epics.find(
+                    epic => epic.id === epicId
+                ).startDate = startDate.toDate();
 
                 break;
             }
