@@ -10,16 +10,16 @@ import {
     DefaultButton
 } from "office-ui-fabric-react/lib/Button";
 
-export interface IEpicDialogProps {
+export interface ISetDatesDialogProps {
     id: number;
     startDate: Moment;
     endDate: Moment;
     hidden: boolean;
     save: (id: number, startDate: Moment, endDate: Moment) => void;
-    cancel: () => void;
+    close: () => void;
 }
 
-export class EpicDialog extends React.Component<IEpicDialogProps> {
+export class SetDatesDialog extends React.Component<ISetDatesDialogProps> {
     public render() {
         return (
             <Dialog
@@ -49,9 +49,10 @@ export class EpicDialog extends React.Component<IEpicDialogProps> {
             this.props.startDate,
             this.props.endDate
         );
+        this.props.close();
     };
 
     private _onCancelDialog = (): void => {
-        this.props.cancel();
+        this.props.close();
     };
 }
