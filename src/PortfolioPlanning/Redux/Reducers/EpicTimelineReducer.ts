@@ -17,6 +17,11 @@ export function epicTimelineReducer(
 
                 break;
             }
+            case EpicTimelineActionTypes.UpdateStartDate: {
+                alert(action.payload.startDate);
+
+                break;
+            }
         }
     });
 }

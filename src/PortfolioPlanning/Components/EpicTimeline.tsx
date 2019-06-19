@@ -57,12 +57,17 @@ export class EpicTimeline extends React.Component<
                     stackItems={true}
                     dragSnap={day}
                     minZoom={month}
+                    onItemMove={this._onItemMove}
                 />
                 <div>{this.props.message}</div>
                 <button onClick={this._onButtonClick} />
             </div>
         );
     }
+
+    private _onItemMove = (itemId: number, dragTime: number): void => {
+        this.props.onUpdateStartDate(itemId, moment(dragTime));
+    };
 
     private _onButtonClick = (): void => {
         this.props.onUpdateMessage(this.props.message + ".");
@@ -97,7 +102,8 @@ function mapStateToProps(
 }
 
 const Actions = {
-    onUpdateMessage: EpicTimelineActions.updateMessage
+    onUpdateMessage: EpicTimelineActions.updateMessage,
+    onUpdateStartDate: EpicTimelineActions.updateStartDate
 };
 
 export const ConnectedEpicTimeline = connect(
