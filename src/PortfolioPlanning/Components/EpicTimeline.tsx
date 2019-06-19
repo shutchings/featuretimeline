@@ -13,6 +13,7 @@ import {
 } from "../Redux/Selectors/EpicTimelineSelectors";
 import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
+import { EpicDialog } from "./EpicDialog";
 // import "react-calendar-timeline/lib/Timeline.css"; // TODO: Use this instead of copying timeline
 
 const day = 60 * 60 * 24 * 1000;
@@ -61,6 +62,12 @@ export class EpicTimeline extends React.Component<
                     onItemResize={this._onItemResize}
                     onItemMove={this._onItemMove}
                     moveResizeValidator={this._validateResize}
+                />
+                <EpicDialog
+                    id={1}
+                    startDate={moment()}
+                    endDate={moment()}
+                    onClose={(id, startDate, endDate) => alert(id)}
                 />
             </div>
         );
