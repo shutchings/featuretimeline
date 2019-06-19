@@ -8,7 +8,6 @@ import {
     IPortfolioPlanningState
 } from "../Redux/Contracts";
 import {
-    getMessage,
     getEpics,
     getProjects
 } from "../Redux/Selectors/EpicTimelineSelectors";
@@ -24,7 +23,6 @@ interface IEpicTimelineOwnProps {}
 interface IEpicTimelineMappedProps {
     projects: IProject[];
     epics: IEpic[];
-    message: string;
 }
 
 export type IEpicTimelineProps = IEpicTimelineOwnProps &
@@ -58,10 +56,9 @@ export class EpicTimeline extends React.Component<
                     stackItems={true}
                     dragSnap={day}
                     minZoom={month}
+                    canResize={"both"}
                     onItemResize={this._onItemResize}
                 />
-                <div>{this.props.message}</div>
-                <button onClick={this._onButtonClick} />
             </div>
         );
     }
@@ -77,10 +74,6 @@ export class EpicTimeline extends React.Component<
             // "right"
             this.props.onUpdateEndDate(itemId, moment(time));
         }
-    };
-
-    private _onButtonClick = (): void => {
-        this.props.onUpdateMessage(this.props.message + ".");
     };
 
     private _mapProjectToTimelineGroups(project: IProject): ITimelineGroup {
@@ -106,13 +99,11 @@ function mapStateToProps(
 ): IEpicTimelineMappedProps {
     return {
         projects: getProjects(state.epicTimelineState),
-        epics: getEpics(state.epicTimelineState),
-        message: getMessage(state.epicTimelineState)
+        epics: getEpics(state.epicTimelineState)
     };
 }
 
 const Actions = {
-    onUpdateMessage: EpicTimelineActions.updateMessage,
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
     onUpdateEndDate: EpicTimelineActions.updateEndDate
 };

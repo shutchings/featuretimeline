@@ -12,11 +12,6 @@ export function epicTimelineReducer(
 ): IEpicTimelineState {
     return produce(state || getDefaultState(), (draft: IEpicTimelineState) => {
         switch (action.type) {
-            case EpicTimelineActionTypes.UpdateMessage: {
-                draft.message = action.payload.message;
-
-                break;
-            }
             case EpicTimelineActionTypes.UpdateStartDate: {
                 const { epicId, startDate } = action.payload;
 
