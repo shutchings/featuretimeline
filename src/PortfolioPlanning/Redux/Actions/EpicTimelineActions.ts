@@ -2,16 +2,27 @@ import {
     createAction,
     ActionsUnion
 } from "../../../Common/redux/Helpers/ActionHelper";
+import moment = require("moment");
 
 export const enum EpicTimelineActionTypes {
-    UpdateMessage = "EpicTimeline/UpdateMessage"
+    UpdateStartDate = "EpicTimeline/UpdateStartDate",
+    UpdateEndDate = "EpicTimeline/UpdateEndDate",
+    ShiftEpic = "EpicTimeline/ShiftEpic"
 }
 
 export const EpicTimelineActions = {
-    updateMessage: (message: string) =>
-        createAction(EpicTimelineActionTypes.UpdateMessage, {
-            message
-        })
+    updateStartDate: (epicId: number, startDate: moment.Moment) =>
+        createAction(EpicTimelineActionTypes.UpdateStartDate, {
+            epicId,
+            startDate
+        }),
+    updateEndDate: (epicId: number, endDate: moment.Moment) =>
+        createAction(EpicTimelineActionTypes.UpdateEndDate, {
+            epicId,
+            endDate
+        }),
+    shiftEpic: (epicId: number, startDate: moment.Moment) =>
+        createAction(EpicTimelineActionTypes.ShiftEpic, { epicId, startDate })
 };
 
 export type EpicTimelineActions = ActionsUnion<typeof EpicTimelineActions>;

@@ -8,7 +8,3 @@ export function getProjects(state: IEpicTimelineState): IProject[] {
 export function getEpics(state: IEpicTimelineState): IEpic[] {
     return state.epics;
 }
-
-export function getMessage(state: IEpicTimelineState): string {
-    return state.message;
-}
