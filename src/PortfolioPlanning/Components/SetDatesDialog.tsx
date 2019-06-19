@@ -12,6 +12,7 @@ import {
 
 export interface ISetDatesDialogProps {
     id: number;
+    title: string;
     startDate: Moment;
     endDate: Moment;
     hidden: boolean;
@@ -26,10 +27,9 @@ export class SetDatesDialog extends React.Component<ISetDatesDialogProps> {
                 hidden={this.props.hidden}
                 dialogContentProps={{
                     type: DialogType.normal,
-                    title: "Set Dates"
+                    title: `Set Dates for ${this.props.title}`
                 }}
             >
-                <div>ID: {this.props.id}</div>
                 <div>Start Date: {this.props.startDate.toLocaleString()}</div>
                 <div>End Date: {this.props.endDate.toLocaleString()}</div>
                 <DialogFooter>

@@ -42,6 +42,9 @@ export class EpicTimeline extends React.Component<
     }
 
     public render(): JSX.Element {
+        const selectedEpic = this.props.epics.find(
+            epic => epic.id === this.props.selectedEpicId
+        );
         const timelineGroups: ITimelineGroup[] = this.props.projects.map(
             this._mapProjectToTimelineGroups
         );
@@ -75,20 +78,14 @@ export class EpicTimeline extends React.Component<
                 {this.props.selectedEpicId && (
                     <SetDatesDialog
                         id={this.props.selectedEpicId}
-                        startDate={moment(
-                            this.props.epics.find(
-                                epic => epic.id === this.props.selectedEpicId
-                            ).startDate
-                        )}
-                        endDate={moment(
-                            this.props.epics.find(
-                                epic => epic.id === this.props.selectedEpicId
-                            ).endDate
-                        )}
+                        title={selectedEpic.title}
+                        startDate={moment(selectedEpic.startDate)}
+                        endDate={moment(selectedEpic.endDate)}
                         hidden={this.props.setDatesDialogHidden}
-                        save={(id, startDate, endDate) =>
-                            alert("Saving..." + id)
-                        }
+                        save={(id, startDate, endDate) => {
+                            this.props.onUpdateStartDate(id, startDate);
+                            this.props.onUpdateEndDate(id, endDate);
+                        }}
                         close={() => {
                             this.props.onToggleSetDatesDialogHidden(true);
                         }}
