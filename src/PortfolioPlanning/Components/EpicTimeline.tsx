@@ -9,7 +9,8 @@ import {
 } from "../Redux/Contracts";
 import {
     getEpics,
-    getProjects
+    getProjects,
+    getSetDatesDialogHidden
 } from "../Redux/Selectors/EpicTimelineSelectors";
 import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
@@ -24,6 +25,7 @@ interface IEpicTimelineOwnProps {}
 interface IEpicTimelineMappedProps {
     projects: IProject[];
     epics: IEpic[];
+    setDatesDialogHidden: boolean;
 }
 
 export type IEpicTimelineProps = IEpicTimelineOwnProps &
@@ -67,7 +69,11 @@ export class EpicTimeline extends React.Component<
                     id={1}
                     startDate={moment()}
                     endDate={moment()}
-                    onClose={(id, startDate, endDate) => alert(id)}
+                    hidden={this.props.setDatesDialogHidden}
+                    save={(id, startDate, endDate) => alert(id)}
+                    cancel={() => {
+                        this.props.onToggleSetDatesDialogHidden(true);
+                    }}
                 />
             </div>
         );
@@ -138,14 +144,16 @@ function mapStateToProps(
 ): IEpicTimelineMappedProps {
     return {
         projects: getProjects(state.epicTimelineState),
-        epics: getEpics(state.epicTimelineState)
+        epics: getEpics(state.epicTimelineState),
+        setDatesDialogHidden: getSetDatesDialogHidden(state.epicTimelineState)
     };
 }
 
 const Actions = {
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
     onUpdateEndDate: EpicTimelineActions.updateEndDate,
-    onShiftEpic: EpicTimelineActions.shiftEpic
+    onShiftEpic: EpicTimelineActions.shiftEpic,
+    onToggleSetDatesDialogHidden: EpicTimelineActions.toggleSetDatesDialogHidden
 };
 
 export const ConnectedEpicTimeline = connect(

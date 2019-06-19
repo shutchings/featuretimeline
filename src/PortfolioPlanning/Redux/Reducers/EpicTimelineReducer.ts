@@ -52,6 +52,13 @@ export function epicTimelineReducer(
 
                 break;
             }
+            case EpicTimelineActionTypes.ToggleSetDatesDialogHidden: {
+                const { hidden } = action.payload;
+
+                draft.setDatesDialogHidden = hidden;
+
+                break;
+            }
         }
     });
 }
@@ -59,6 +66,7 @@ export function epicTimelineReducer(
 export function getDefaultState(): IEpicTimelineState {
     return {
         projects: Projects,
-        epics: Epics
+        epics: Epics,
+        setDatesDialogHidden: false
     };
 }
