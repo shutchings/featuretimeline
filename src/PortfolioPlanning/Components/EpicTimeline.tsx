@@ -54,6 +54,7 @@ export class EpicTimeline extends React.Component<
                     items={timelineItems}
                     defaultTimeStart={moment().add(-6, "month")}
                     defaultTimeEnd={moment().add(6, "month")}
+                    canChangeGroup={false}
                     stackItems={true}
                     dragSnap={day}
                     minZoom={month}
