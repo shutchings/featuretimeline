@@ -30,14 +30,25 @@ export function epicTimelineReducer(
                     epic => epic.id === epicId
                 );
 
-                // const epicDuration =
-                //     epicToUpdate.endDate.getTime() -
-                //     epicToUpdate.startDate.getTime();
-
                 epicToUpdate.endDate = endDate.toDate();
-                // epicToUpdate.endDate = startDate
-                //     .add(epicDuration, "milliseconds")
-                //     .toDate();
+
+                break;
+            }
+            case EpicTimelineActionTypes.ShiftEpic: {
+                const { epicId, startDate } = action.payload;
+
+                const epicToUpdate = draft.epics.find(
+                    epic => epic.id === epicId
+                );
+
+                const epicDuration =
+                    epicToUpdate.endDate.getTime() -
+                    epicToUpdate.startDate.getTime();
+
+                epicToUpdate.startDate = startDate.toDate();
+                epicToUpdate.endDate = startDate
+                    .add(epicDuration, "milliseconds")
+                    .toDate();
 
                 break;
             }
@@ -48,7 +59,6 @@ export function epicTimelineReducer(
 export function getDefaultState(): IEpicTimelineState {
     return {
         projects: Projects,
-        epics: Epics,
-        message: "Initial message"
+        epics: Epics
     };
 }

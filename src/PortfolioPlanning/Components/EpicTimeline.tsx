@@ -58,6 +58,7 @@ export class EpicTimeline extends React.Component<
                     minZoom={month}
                     canResize={"both"}
                     onItemResize={this._onItemResize}
+                    onItemMove={this._onItemMove}
                 />
             </div>
         );
@@ -74,6 +75,10 @@ export class EpicTimeline extends React.Component<
             // "right"
             this.props.onUpdateEndDate(itemId, moment(time));
         }
+    };
+
+    private _onItemMove = (itemId: number, time: number): void => {
+        this.props.onShiftEpic(itemId, moment(time));
     };
 
     private _mapProjectToTimelineGroups(project: IProject): ITimelineGroup {
@@ -105,7 +110,8 @@ function mapStateToProps(
 
 const Actions = {
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
-    onUpdateEndDate: EpicTimelineActions.updateEndDate
+    onUpdateEndDate: EpicTimelineActions.updateEndDate,
+    onShiftEpic: EpicTimelineActions.shiftEpic
 };
 
 export const ConnectedEpicTimeline = connect(
