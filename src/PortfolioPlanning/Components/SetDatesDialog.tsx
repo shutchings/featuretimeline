@@ -103,6 +103,7 @@ export class SetDatesDialog extends React.Component<
         return (
             <Dialog
                 hidden={this.props.hidden}
+                onDismiss={this._onCancelDialog}
                 dialogContentProps={{
                     type: DialogType.normal,
                     title: `Set Dates for ${this.props.title}`
