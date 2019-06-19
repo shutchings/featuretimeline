@@ -20,9 +20,18 @@ export function epicTimelineReducer(
             case EpicTimelineActionTypes.UpdateStartDate: {
                 const { epicId, startDate } = action.payload;
 
-                draft.epics.find(
+                const epicToUpdate = draft.epics.find(
                     epic => epic.id === epicId
-                ).startDate = startDate.toDate();
+                );
+
+                const epicDuration =
+                    epicToUpdate.endDate.getTime() -
+                    epicToUpdate.startDate.getTime();
+
+                epicToUpdate.startDate = startDate.toDate();
+                epicToUpdate.endDate = startDate
+                    .add(epicDuration, "milliseconds")
+                    .toDate();
 
                 break;
             }
