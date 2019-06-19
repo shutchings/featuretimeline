@@ -1,11 +1,12 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { iePollyfill } from "../polyfill";
+import { ODataTest } from "./react/Components/ODataTest";
 
 export function initialize(): void {
     if (!isBackground()) {
         iePollyfill();
-        ReactDOM.render(<div>Hello world again</div>, document.getElementById("root"));
+        ReactDOM.render(<ODataTest/>, document.getElementById("root"));
     }
 }
 
