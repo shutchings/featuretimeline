@@ -32,8 +32,8 @@ export interface ISetDatesDialogProps {
 }
 
 interface ISetDatesDialogState {
-    startDate: moment.Moment;
-    endDate: moment.Moment;
+    selectedStartDate: moment.Moment;
+    selectedEndDate: moment.Moment;
 }
 
 const datePickerStrings: IDatePickerStrings = {
@@ -94,8 +94,8 @@ export class SetDatesDialog extends React.Component<
         super(props);
 
         this.state = {
-            startDate: this.props.startDate,
-            endDate: this.props.endDate
+            selectedStartDate: this.props.startDate,
+            selectedEndDate: this.props.endDate
         };
     }
 
@@ -110,26 +110,20 @@ export class SetDatesDialog extends React.Component<
             >
                 Start Date:
                 <DatePicker
-                    value={this.state.startDate.toDate()}
+                    value={this.state.selectedStartDate.toDate()}
                     onSelectDate={date =>
-                        this.setState({ startDate: moment(date) })
+                        this.setState({ selectedStartDate: moment(date) })
                     }
                     strings={datePickerStrings}
                 />
                 End Date:
                 <DatePicker
-                    value={this.state.endDate.toDate()}
+                    value={this.state.selectedEndDate.toDate()}
                     onSelectDate={date =>
-                        this.setState({ endDate: moment(date) })
+                        this.setState({ selectedEndDate: moment(date) })
                     }
                     strings={datePickerStrings}
                 />
-                <div>
-                    Start Date (State): {this.state.startDate.toLocaleString()}
-                </div>
-                <div>
-                    End Date (State): {this.state.endDate.toLocaleString()}
-                </div>
                 <DialogFooter>
                     <PrimaryButton onClick={this._onSaveDialog} text="Save" />
                     <DefaultButton
@@ -144,8 +138,8 @@ export class SetDatesDialog extends React.Component<
     private _onSaveDialog = (): void => {
         this.props.save(
             this.props.id,
-            this.state.startDate,
-            this.state.endDate
+            this.state.selectedStartDate,
+            this.state.selectedEndDate
         );
         this.props.close();
     };
