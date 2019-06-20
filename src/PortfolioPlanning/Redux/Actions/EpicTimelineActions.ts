@@ -2,6 +2,7 @@ import {
     createAction,
     ActionsUnion
 } from "../../../Common/redux/Helpers/ActionHelper";
+import { IEpic } from "../../Contracts";
 import moment = require("moment");
 
 export const enum EpicTimelineActionTypes {
@@ -10,7 +11,10 @@ export const enum EpicTimelineActionTypes {
     UpdateEndDate = "EpicTimeline/UpdateEndDate",
     ShiftEpic = "EpicTimeline/ShiftEpic",
     ToggleSetDatesDialogHidden = "EpicTimeline/ToggleSetDatesDialogHidden",
-    SetSelectedEpicId = "EpicTimeline/SetSelectedEpicId"
+    SetSelectedEpicId = "EpicTimeline/SetSelectedEpicId",
+    OpenAddEpicDialog = "EpicTimeline/OpenAddEpicDialog",
+    CloseAddEpicDialog = "EpicTimeline/CloseAddEpicDialog",
+    AddEpics = "EpicTimeline/AddEpics"
 }
 
 export const EpicTimelineActions = {
@@ -31,7 +35,13 @@ export const EpicTimelineActions = {
             hidden
         }),
     setSelectedEpicId: (id: number) =>
-        createAction(EpicTimelineActionTypes.SetSelectedEpicId, { id })
+        createAction(EpicTimelineActionTypes.SetSelectedEpicId, { id }),
+    openAddEpicDialog: () =>
+        createAction(EpicTimelineActionTypes.OpenAddEpicDialog),
+    closeAddEpicDialog: () =>
+        createAction(EpicTimelineActionTypes.CloseAddEpicDialog),
+    addEpics: (epicsToAdd: IEpic[]) =>
+        createAction(EpicTimelineActionTypes.AddEpics, { epicsToAdd })
 };
 
 export type EpicTimelineActions = ActionsUnion<typeof EpicTimelineActions>;

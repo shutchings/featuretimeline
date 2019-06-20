@@ -1,5 +1,5 @@
 import { IEpicTimelineState } from "../Contracts";
-import { Projects, Epics } from "../SampleData";
+import { Projects, Epics, OtherEpics } from "../SampleData";
 import {
     EpicTimelineActions,
     EpicTimelineActionTypes
@@ -66,6 +66,18 @@ export function epicTimelineReducer(
 
                 break;
             }
+            case EpicTimelineActionTypes.OpenAddEpicDialog: {
+                draft.addEpicDialogOpen = true;
+                break;
+            }
+            case EpicTimelineActionTypes.CloseAddEpicDialog: {
+                draft.addEpicDialogOpen = false;
+                break;
+            }
+            case EpicTimelineActionTypes.AddEpics: {
+                draft.epics.push(...action.payload.epicsToAdd);
+                break;
+            }
         }
     });
 }
@@ -74,6 +86,9 @@ export function getDefaultState(): IEpicTimelineState {
     return {
         projects: Projects,
         epics: Epics,
+        otherEpics: OtherEpics,
+        message: "Initial message",
+        addEpicDialogOpen: false,
         setDatesDialogHidden: false,
         selectedEpicId: null
     };

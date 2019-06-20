@@ -7,6 +7,9 @@ export interface IPortfolioPlanningState {
 export interface IEpicTimelineState {
     projects: IProject[];
     epics: IEpic[];
+    otherEpics: IEpic[];
+    message: string;
+    addEpicDialogOpen: boolean;
     setDatesDialogHidden: boolean;
     selectedEpicId: number;
 }
