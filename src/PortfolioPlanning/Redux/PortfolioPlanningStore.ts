@@ -25,7 +25,7 @@ const reducers: Reducer<IPortfolioPlanningState> = (
     return combinedReducers(state, action);
 };
 
-export const trackActions: Middleware = api => next => action => {
+const trackActions: Middleware = api => next => action => {
     //if (action["track"])
     {
         // TODO: Publish telemetry
