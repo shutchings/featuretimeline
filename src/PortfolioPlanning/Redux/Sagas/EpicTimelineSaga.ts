@@ -7,25 +7,74 @@ import {
 import { Action } from "redux";
 import { getEpicById } from "../Selectors/EpicTimelineSelectors";
 import { IEpic } from "../../Contracts";
+import * as VSS_Service from "VSS/Service";
+import { WorkItemTrackingHttpClient } from "TFS/WorkItemTracking/RestClient";
+import { JsonPatchDocument } from "VSS/WebApi/Contracts";
 
 export function* epicTimelineSaga(): SagaIterator {
-    // yield takeEvery(EpicTimelineActionTypes.UpdateStartDate, saveDatesToServer);
-    // yield takeEvery(EpicTimelineActionTypes.UpdateEndDate, saveDatesToServer);
-    yield takeEvery(EpicTimelineActionTypes.ShiftEpic, saveDatesToServer);
+    yield takeEvery(EpicTimelineActionTypes.UpdateStartDate, onUpdateStartDate);
+    yield takeEvery(EpicTimelineActionTypes.UpdateEndDate, onUpdateEndDate);
+    yield takeEvery(EpicTimelineActionTypes.ShiftEpic, onShiftEpic);
 }
 
-function* saveDatesToServer(
+function* onUpdateStartDate(
+    action: ActionsOfType<
+        EpicTimelineActions,
+        EpicTimelineActionTypes.UpdateStartDate
+    >
+): SagaIterator {
+    const epicId = action.payload.epicId;
+    yield effects.call(saveDatesToServer, epicId);
+}
+
+function* onUpdateEndDate(
+    action: ActionsOfType<
+        EpicTimelineActions,
+        EpicTimelineActionTypes.UpdateEndDate
+    >
+): SagaIterator {
+    const epicId = action.payload.epicId;
+    yield effects.call(saveDatesToServer, epicId);
+}
+
+function* onShiftEpic(
     action: ActionsOfType<
         EpicTimelineActions,
         EpicTimelineActionTypes.ShiftEpic
     >
 ): SagaIterator {
     const epicId = action.payload.epicId;
+    yield effects.call(saveDatesToServer, epicId);
+}
+
+function* saveDatesToServer(epicId: number): SagaIterator {
     const epic: IEpic = yield effects.select(getEpicById, epicId);
 
-    alert(`Epic id: ${epicId}`);
-    alert(`Start date: ${epic.startDate}`);
-    alert(`End date: ${epic.endDate}`);
+    const doc: JsonPatchDocument = [
+        {
+            op: "add",
+            path: "/fields/Microsoft.VSTS.Scheduling.StartDate",
+            value: epic.startDate
+        },
+        {
+            op: "add",
+            path: "/fields/Microsoft.VSTS.Scheduling.TargetDate",
+            value: epic.endDate
+        }
+    ];
+
+    const witHttpClient: WorkItemTrackingHttpClient = yield effects.call(
+        [VSS_Service, VSS_Service.getClient],
+        WorkItemTrackingHttpClient
+    );
+
+    yield effects.call(
+        [witHttpClient, witHttpClient.updateWorkItem],
+        doc,
+        epicId
+    );
+
+    // TODO: Error experience
 }
 
 // Helpers
