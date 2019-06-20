@@ -5,6 +5,7 @@ import {
 import moment = require("moment");
 
 export const enum EpicTimelineActionTypes {
+    // TODO: May update these date change actions to be single actio
     UpdateStartDate = "EpicTimeline/UpdateStartDate",
     UpdateEndDate = "EpicTimeline/UpdateEndDate",
     ShiftEpic = "EpicTimeline/ShiftEpic",
