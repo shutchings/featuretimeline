@@ -77,7 +77,11 @@ export class EpicTimeline extends React.Component<
                 />
                 {this.props.selectedEpicId && (
                     <SetDatesDialog
-                        key={this.props.selectedEpicId}
+                        key={
+                            this.props.selectedEpicId +
+                            selectedEpic.startDate.getTime() +
+                            selectedEpic.endDate.getTime()
+                        }
                         id={this.props.selectedEpicId}
                         title={selectedEpic.title}
                         startDate={moment(selectedEpic.startDate)}
