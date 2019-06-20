@@ -12,7 +12,7 @@ import { authTokenManager } from "VSS/Authentication/Services";
 export class ODataClient {
     private static instance: IPromise<ODataClient> = null;
     private authToken: string;
-    private static oDataVersion = "v1.0";
+    private static oDataVersion = "v3.0-preview"; // 3.0-preview supports Descendants
     public static valueKey = "value";
 
     private constructor(authToken: string) {
