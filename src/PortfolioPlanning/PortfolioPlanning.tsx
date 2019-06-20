@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { iePollyfill } from "../polyfill";
-import { ODataTest } from "./react/Components/ODataTest";
+import { ODataTest } from "./Components/ODataTest";
 
 export function initialize(): void {
     if (!isBackground()) {

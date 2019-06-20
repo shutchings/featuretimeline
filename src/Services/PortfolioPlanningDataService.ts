@@ -1,165 +1,32 @@
-import * as React from 'react';
-import { ODataClient } from '../../../Common/OData/ODataClient';
-
-export interface ODataTestState
+import
 {
-    results: PortfolioPlanningQueryResult;
-    input: string;
-}
+    PortfolioPlanningQueryInput,
+    PortfolioPlanningQueryResult, 
+    PortfolioPlanningQueryResultItem
+} from "../PortfolioPlanning/Models/PortfolioPlanningQueryModels";
+import { ODataClient } from "../Common/OData/ODataClient";
+import { ODataWorkItemQueryResult } from "../PortfolioPlanning/Models/ODataQueryModels";
 
-export interface ODataQueryProjectInput
-{
-    projectId: string;
-    workItemIds: number[];
-}
+export class PortfolioPlanningDataService {
 
-export interface PortfolioPlanningQueryInput
-{
-    /**
-     * TODO Supporting one work item type for now (e.g. 'Epic').
-     */
-    PortfolioWorkItemType: string;
+    private static _instance: PortfolioPlanningDataService;
+    public static getInstance(): PortfolioPlanningDataService {
+        if (!PortfolioPlanningDataService._instance) {
 
-    /**
-     * Requirement level work item types. e.g. User Story, Task, etc...
-     */
-    RequirementWorkItemTypes: string[];
-
-    /**
-     * Work item ids and their projects.
-     */
-    WorkItems: ODataQueryProjectInput[];
-}
-
-export interface PortfolioPlanningQueryResult
-{
-    exceptionMessage: string;
-    items: PortfolioPlanningQueryResultItem[];
-}
-
-export interface PortfolioPlanningQueryResultItem
-{
-    WorkItemId: number;
-    WorkItemType: string;
-    ProjectId: string;
-
-    CompletedCount: number;
-    TotalCount: number;
-
-    CompletedStoryPoints: number;
-    TotalStoryPoints: number;
-
-    StoryPointsProgress: number;
-    CountProgress: number;
-}
-
-export interface ODataWorkItemQueryResult
-{
-    WorkItemId: number;
-    WorkItemType: string;
-    ProjectSK: string;
-    Descendants: ODataWorkItemDescendants[]
-}
-
-export interface ODataWorkItemDescendants
-{
-    StoryPointsProgress: number;
-    CountProgress: number;
-    CompletedStoryPoints: number;
-    TotalStoryPoints: number;
-    CompletedCount: number;
-    TotalCount: number;
-}
-
-export class ODataTest extends React.Component<{}, ODataTestState> {
-
-    constructor(props) {
-        super(props);
-
-        const initialTestData:PortfolioPlanningQueryInput = {
-            PortfolioWorkItemType: "Epic",
-            RequirementWorkItemTypes: ["User Story"],
-            WorkItems: [
-                {
-                    projectId: "FBED1309-56DB-44DB-9006-24AD73EEE785",
-                    workItemIds: [5250, 5251]
-                },
-                {
-                    projectId: "6974D8FE-08C8-4123-AD1D-FB830A098DFB",
-                    workItemIds: [5249]
-                }
-            ]
-        };
-
-        this.state = { 
-            results: null, 
-            input: JSON.stringify(initialTestData, null, '    ')
-        };
-
-        this.HandleSubmit = this.HandleSubmit.bind(this);
-        this.HandleInputChange = this.HandleInputChange.bind(this);
-
-        //  Run initial query.
-        this.HandleSubmit(null);
-    }
-
-    public render() {
-        const inputStyle ={
-            width: '100%',
-            height: '150px'
-        };
-        const input  = (
-            <form onSubmit={this.HandleSubmit}>
-                <label>
-                    OData Query Input (json):
-                    <textarea style={inputStyle} value={this.state.input} onChange={this.HandleInputChange}/>
-                </label>
-                <input type="submit" value="Submit" />
-            </form>
-        );
-
-        if(!this.state || !this.state.results)
-        {
-            return input;
+            PortfolioPlanningDataService._instance = new PortfolioPlanningDataService();
         }
-
-        return (
-            <div>
-                {input}
-                <textarea style={inputStyle} value={JSON.stringify(this.state.results, null, '    ')} />
-            </div>
-        );
+        return PortfolioPlanningDataService._instance;
     }
 
-    public HandleSubmit(event){
-        this.RunQuery(this.state.input).then(
-            (results) => this.setState({results}),
-            (error) => this.setState({results: error})
-        );
-    }
+    public async runQuery(queryInput: PortfolioPlanningQueryInput) : Promise<PortfolioPlanningQueryResult> {
+        const odataQueryString = ODataQueryBuilder.BuildODataQueryString(queryInput);
 
-    public HandleInputChange(event)
-    {
-        this.setState({
-            input: event.target.value
-        });
-    }
+        const client = await ODataClient.getInstance();
+        const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
 
-    public RunQuery(inputString: string): IPromise<PortfolioPlanningQueryResult> {
-        const input: PortfolioPlanningQueryInput = JSON.parse(inputString);
-        return this.RunQueryInternal(input);
-    }
-
-    private RunQueryInternal(input: PortfolioPlanningQueryInput): IPromise<PortfolioPlanningQueryResult>
-    {
-        const odataQueryString = this.BuildODataQueryString(input);
-
-        return ODataClient.getInstance().then((client) => {
-            const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
-            return client.runGetQuery(fullQueryUrl).then(
-                (results: any) => this.ParseODataResponse(results),
-                (error) => this.ParseODataErrorResponse(error));
-        });
+        return client.runGetQuery(fullQueryUrl).then(
+            (results: any) => this.ParseODataResponse(results),
+            (error) => this.ParseODataErrorResponse(error));
     }
 
     private ParseODataResponse(results : any) : PortfolioPlanningQueryResult {
@@ -216,9 +83,17 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
             items: null
         };
     }
+}
 
-    private BuildODataQueryString(input: PortfolioPlanningQueryInput) : string {
-        return `WorkItems?$select=WorkItemId,WorkItemType,ProjectSK&$filter=${this.BuildODataQueryFilter(input)}&$expand=${this.BuildODataDescendantsQuery(input)}`;
+export class ODataQueryBuilder {
+    public static BuildODataQueryString(input: PortfolioPlanningQueryInput) : string {
+        return "WorkItems" +
+        "?" +
+            "$select=WorkItemId,WorkItemType,ProjectSK" +
+        "&" +
+            `$filter=${this.BuildODataQueryFilter(input)}` +
+        "&" +
+            `$expand=${this.BuildODataDescendantsQuery(input)}`;
     }
 
     /**
@@ -238,7 +113,7 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
         )
      * @param input 
      */
-    private BuildODataQueryFilter(input: PortfolioPlanningQueryInput) : string {
+    private static BuildODataQueryFilter(input: PortfolioPlanningQueryInput) : string {
         const projectFilters = input.WorkItems.map(
             (wi) =>
             {
@@ -272,7 +147,7 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
         )
      * @param input 
      */
-    private BuildODataDescendantsQuery(input: PortfolioPlanningQueryInput) : string {
+    private static BuildODataDescendantsQuery(input: PortfolioPlanningQueryInput) : string {
         const requirementWiTypes = input.RequirementWorkItemTypes.map((id) => `WorkItemType eq '${id}'`);
 
         return "Descendants(" + 
@@ -291,4 +166,3 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
                     ")";
     }
 }
-
