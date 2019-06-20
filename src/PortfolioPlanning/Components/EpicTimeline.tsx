@@ -8,16 +8,20 @@ import {
     IPortfolioPlanningState
 } from "../Redux/Contracts";
 import {
-    getMessage,
     getEpics,
     getProjects,
     getAddEpicDialogOpen,
-    getOtherEpics
+    getOtherEpics,
+    getSetDatesDialogHidden
 } from "../Redux/Selectors/EpicTimelineSelectors";
 import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
+import { SetDatesDialog } from "./SetDatesDialog";
 import { AddEpicDialog } from "./AddEpicDialog";
 // import "react-calendar-timeline/lib/Timeline.css"; // TODO: Use this instead of copying timeline
+
+const day = 60 * 60 * 24 * 1000;
+const week = day * 7;
 
 interface IEpicTimelineOwnProps {}
 
@@ -25,8 +29,9 @@ interface IEpicTimelineMappedProps {
     projects: IProject[];
     epics: IEpic[];
     otherEpics: IEpic[];
-    message: string;
     addEpicDialogOpen: boolean;
+    setDatesDialogHidden: boolean;
+    selectedEpicId: number;
 }
 
 export type IEpicTimelineProps = IEpicTimelineOwnProps &
@@ -42,6 +47,9 @@ export class EpicTimeline extends React.Component<
     }
 
     public render(): JSX.Element {
+        const selectedEpic = this.props.epics.find(
+            epic => epic.id === this.props.selectedEpicId
+        );
         const timelineGroups: ITimelineGroup[] = this.props.projects.map(
             this._mapProjectToTimelineGroups
         );
@@ -62,17 +70,88 @@ export class EpicTimeline extends React.Component<
                     items={timelineItems}
                     defaultTimeStart={moment().add(-6, "month")}
                     defaultTimeEnd={moment().add(6, "month")}
+                    canChangeGroup={false}
                     stackItems={true}
+                    dragSnap={day}
+                    minZoom={week}
+                    canResize={"both"}
+                    minResizeWidth={50}
+                    onItemResize={this._onItemResize}
+                    onItemMove={this._onItemMove}
+                    moveResizeValidator={this._validateResize}
+                    onItemSelect={itemId =>
+                        this.props.onSetSelectedEpicId(itemId)
+                    }
+                    onItemClick={() => {
+                        this.props.onToggleSetDatesDialogHidden(false);
+                    }}
                 />
-                <div>{this.props.message}</div>
-                <button onClick={this._onButtonClick} />
                 {this._renderAddEpicDialog()}
+                {this.props.selectedEpicId && (
+                    <SetDatesDialog
+                        key={
+                            this.props.selectedEpicId +
+                            selectedEpic.startDate.getTime() +
+                            selectedEpic.endDate.getTime()
+                        }
+                        id={this.props.selectedEpicId}
+                        title={selectedEpic.title}
+                        startDate={moment(selectedEpic.startDate)}
+                        endDate={moment(selectedEpic.endDate)}
+                        hidden={this.props.setDatesDialogHidden}
+                        save={(id, startDate, endDate) => {
+                            this.props.onUpdateStartDate(id, startDate);
+                            this.props.onUpdateEndDate(id, endDate);
+                        }}
+                        close={() => {
+                            this.props.onToggleSetDatesDialogHidden(true);
+                        }}
+                    />
+                )}
             </div>
         );
     }
 
-    private _onButtonClick = (): void => {
-        this.props.onUpdateMessage(this.props.message + ".");
+    private _validateResize(
+        action: string,
+        item: ITimelineItem,
+        time: number,
+        resizeEdge: string
+    ) {
+        if (action === "resize") {
+            if (resizeEdge === "right") {
+                const difference = time - item.start_time.valueOf();
+                if (difference < day) {
+                    time = item.start_time.valueOf() + day;
+                }
+            } else {
+                const difference = item.end_time.valueOf() - time;
+                if (difference < day) {
+                    time = item.end_time.valueOf() - day;
+                }
+            }
+        } else if (action === "move") {
+            // TODO: Any validation for moving?
+        }
+
+        return time;
+    }
+
+    private _onItemResize = (
+        itemId: number,
+        time: number,
+        edge: string
+    ): void => {
+        if (edge == "left") {
+            this.props.onUpdateStartDate(itemId, moment(time));
+        } else {
+            // "right"
+            this.props.onUpdateEndDate(itemId, moment(time));
+        }
+    };
+
+    private _onItemMove = (itemId: number, time: number): void => {
+        this.props.onShiftEpic(itemId, moment(time));
     };
 
     private _onAddEpicClick = (): void => {
@@ -116,16 +195,22 @@ function mapStateToProps(
         projects: getProjects(state.epicTimelineState),
         epics: getEpics(state.epicTimelineState),
         otherEpics: getOtherEpics(state.epicTimelineState),
-        message: getMessage(state.epicTimelineState),
-        addEpicDialogOpen: getAddEpicDialogOpen(state.epicTimelineState)
+        addEpicDialogOpen: getAddEpicDialogOpen(state.epicTimelineState),
+        setDatesDialogHidden: getSetDatesDialogHidden(state.epicTimelineState),
+        selectedEpicId: state.epicTimelineState.selectedEpicId
     };
 }
 
 const Actions = {
-    onUpdateMessage: EpicTimelineActions.updateMessage,
     onOpenAddEpicDialog: EpicTimelineActions.openAddEpicDialog,
     onCloseAddEpicDialog: EpicTimelineActions.closeAddEpicDialog,
-    onAddEpics: EpicTimelineActions.addEpics
+    onAddEpics: EpicTimelineActions.addEpics,
+    onUpdateStartDate: EpicTimelineActions.updateStartDate,
+    onUpdateEndDate: EpicTimelineActions.updateEndDate,
+    onShiftEpic: EpicTimelineActions.shiftEpic,
+    onToggleSetDatesDialogHidden:
+        EpicTimelineActions.toggleSetDatesDialogHidden,
+    onSetSelectedEpicId: EpicTimelineActions.setSelectedEpicId
 };
 
 export const ConnectedEpicTimeline = connect(

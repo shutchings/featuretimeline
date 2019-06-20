@@ -10,4 +10,6 @@ export interface IEpicTimelineState {
     otherEpics: IEpic[];
     message: string;
     addEpicDialogOpen: boolean;
+    setDatesDialogHidden: boolean;
+    selectedEpicId: number;
 }

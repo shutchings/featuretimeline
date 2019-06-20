@@ -16,7 +16,7 @@ export function initialize(): void {
             <Provider store={store}>
                 <ConnectedEpicTimeline />
             </Provider>,
-            document.getElementById("root")
+            document.getElementById("root")	
         );
     }
 }
