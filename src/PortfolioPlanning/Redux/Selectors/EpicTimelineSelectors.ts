@@ -8,3 +8,7 @@ export function getProjects(state: IEpicTimelineState): IProject[] {
 export function getEpics(state: IEpicTimelineState): IEpic[] {
     return state.epics;
 }
+
+export function getSetDatesDialogHidden(state: IEpicTimelineState): boolean {
+    return state.setDatesDialogHidden;
+}

@@ -52,6 +52,20 @@ export function epicTimelineReducer(
 
                 break;
             }
+            case EpicTimelineActionTypes.ToggleSetDatesDialogHidden: {
+                const { hidden } = action.payload;
+
+                draft.setDatesDialogHidden = hidden;
+
+                break;
+            }
+            case EpicTimelineActionTypes.SetSelectedEpicId: {
+                const { id } = action.payload;
+
+                draft.selectedEpicId = id;
+
+                break;
+            }
         }
     });
 }
@@ -59,6 +73,8 @@ export function epicTimelineReducer(
 export function getDefaultState(): IEpicTimelineState {
     return {
         projects: Projects,
-        epics: Epics
+        epics: Epics,
+        setDatesDialogHidden: false,
+        selectedEpicId: null
     };
 }
