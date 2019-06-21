@@ -5,6 +5,8 @@ import { PortfolioPlanningDataService } from '../../Services/PortfolioPlanningDa
 export interface ODataTestState
 {
     results: PortfolioModels.PortfolioPlanningQueryResult;
+    allProjects: string;
+    workItemsOfTypeInProject: string;
     input: string;
 }
 
@@ -30,7 +32,9 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
 
         this.state = { 
             results: null, 
-            input: JSON.stringify(initialTestData, null, '    ')
+            input: JSON.stringify(initialTestData, null, '    '),
+            workItemsOfTypeInProject: null,
+            allProjects: null
         };
 
         this.HandleSubmit = this.HandleSubmit.bind(this);
@@ -50,6 +54,14 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
                 <label>
                     OData Query Input (json):
                     <textarea style={inputStyle} value={this.state.input} onChange={this.HandleInputChange}/>
+                </label>
+                <label>
+                    All projects
+                    <textarea style={inputStyle} value={this.state.allProjects}/>
+                </label>
+                <label>
+                    Work Items of Type in Project
+                    <textarea style={inputStyle} value={this.state.workItemsOfTypeInProject}/>
                 </label>
                 <input type="submit" value="Submit" />
             </form>
@@ -73,6 +85,22 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
             (results) => this.setState({results}),
             (error) => this.setState({results: error})
         );
+
+        this.GetAllProjects().then(
+            (allProjects) => {
+                const stringValue = JSON.stringify(allProjects, null, '    ');
+                this.setState({allProjects: stringValue})
+            },
+            (error) => this.setState({results: error})
+        );
+
+        this.GetWorkItemsOfTypeInProject().then(
+            (workItems) => {
+                const stringValue = JSON.stringify(workItems, null, '    ');
+                this.setState({workItemsOfTypeInProject: stringValue})
+            },
+            (error) => this.setState({results: error})
+        );
     }
 
     public HandleInputChange(event)
@@ -86,5 +114,16 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
         const input: PortfolioModels.PortfolioPlanningQueryInput = JSON.parse(inputString);
         return PortfolioPlanningDataService.getInstance().runPortfolioItemsQuery(input);
     }
+
+    public GetAllProjects(): IPromise<PortfolioModels.PortfolioPlanningProjectQueryResult> {
+        return PortfolioPlanningDataService.getInstance().getAllProjects();
+    }
+
+    public GetWorkItemsOfTypeInProject(): IPromise<PortfolioModels.PortfolioPlanningWorkItemQueryResult> {
+        return PortfolioPlanningDataService.getInstance().getAllWorkItemsOfTypeInProject(
+            "fbed1309-56db-44db-9006-24ad73eee785",
+            "Epic");
+    }
+
 }
 
