@@ -18,6 +18,7 @@ import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
 import { SetDatesDialog } from "./SetDatesDialog";
 import { AddEpicDialog } from "./AddEpicDialog";
+import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -31,6 +32,7 @@ interface IEpicTimelineMappedProps {
     addEpicDialogOpen: boolean;
     setDatesDialogHidden: boolean;
     selectedEpicId: number;
+    progressTrackingCriteria: string;
 }
 
 export type IEpicTimelineProps = IEpicTimelineOwnProps &
@@ -56,14 +58,43 @@ export class EpicTimeline extends React.Component<
             this._mapEpicToTimelineItem
         );
 
+        const selectedKey =
+            this.props.progressTrackingCriteria === "completedCount"
+                ? "completedCount"
+                : "storyPoints";
+
         return (
             <div>
-                <button
-                    className="epictimeline-add-epic-button"
-                    onClick={this._onAddEpicClick}
-                >
-                    Add Epic
-                </button>
+                <div>
+                    <div className="progress-options">
+                        <div className="progress-options-label">
+                            Track Progress Using:{" "}
+                        </div>
+                        <ComboBox
+                            className="progress-options-dropdown"
+                            selectedKey={selectedKey}
+                            allowFreeform={false}
+                            autoComplete="off"
+                            options={[
+                                {
+                                    key: "completedCount",
+                                    text: "Completed Count"
+                                },
+                                {
+                                    key: "storyPoints",
+                                    text: "Completed Story Points"
+                                }
+                            ]}
+                            onChanged={this._onProgressTrackingCriteriaChanged}
+                        />
+                    </div>
+                    <button
+                        className="epictimeline-add-epic-button"
+                        onClick={this._onAddEpicClick}
+                    >
+                        Add Epic
+                    </button>
+                </div>
                 <Timeline
                     groups={timelineGroups}
                     items={timelineItems}
@@ -157,6 +188,20 @@ export class EpicTimeline extends React.Component<
         this.props.onOpenAddEpicDialog();
     };
 
+    private _onProgressTrackingCriteriaChanged = (item: {
+        key: string;
+        text: string;
+    }) => {
+        switch (item.key) {
+            case "completedCount":
+                this.props.onToggleProgressTrackingCriteria("Completed Count");
+                break;
+            case "storyPoints":
+                this.props.onToggleProgressTrackingCriteria("Story Points");
+                break;
+        }
+    };
+
     private _renderAddEpicDialog(): JSX.Element {
         if (this.props.addEpicDialogOpen) {
             return (
@@ -196,7 +241,9 @@ function mapStateToProps(
         otherEpics: getOtherEpics(state.epicTimelineState),
         addEpicDialogOpen: getAddEpicDialogOpen(state.epicTimelineState),
         setDatesDialogHidden: getSetDatesDialogHidden(state.epicTimelineState),
-        selectedEpicId: state.epicTimelineState.selectedEpicId
+        selectedEpicId: state.epicTimelineState.selectedEpicId,
+        progressTrackingCriteria:
+            state.epicTimelineState.progressTrackingCriteria
     };
 }
 
@@ -209,7 +256,9 @@ const Actions = {
     onShiftEpic: EpicTimelineActions.shiftEpic,
     onToggleSetDatesDialogHidden:
         EpicTimelineActions.toggleSetDatesDialogHidden,
-    onSetSelectedEpicId: EpicTimelineActions.setSelectedEpicId
+    onSetSelectedEpicId: EpicTimelineActions.setSelectedEpicId,
+    onToggleProgressTrackingCriteria:
+        EpicTimelineActions.ToggleProgressTrackingCriteria
 };
 
 export const ConnectedEpicTimeline = connect(

@@ -14,7 +14,8 @@ export const enum EpicTimelineActionTypes {
     SetSelectedEpicId = "EpicTimeline/SetSelectedEpicId",
     OpenAddEpicDialog = "EpicTimeline/OpenAddEpicDialog",
     CloseAddEpicDialog = "EpicTimeline/CloseAddEpicDialog",
-    AddEpics = "EpicTimeline/AddEpics"
+    AddEpics = "EpicTimeline/AddEpics",
+    ToggleProgressTrackingCriteria = "EpicTimeline/ToggleProgressTrackingCriteria"
 }
 
 export const EpicTimelineActions = {
@@ -41,7 +42,11 @@ export const EpicTimelineActions = {
     closeAddEpicDialog: () =>
         createAction(EpicTimelineActionTypes.CloseAddEpicDialog),
     addEpics: (epicsToAdd: IEpic[]) =>
-        createAction(EpicTimelineActionTypes.AddEpics, { epicsToAdd })
+        createAction(EpicTimelineActionTypes.AddEpics, { epicsToAdd }),
+    ToggleProgressTrackingCriteria: (criteria: string) =>
+        createAction(EpicTimelineActionTypes.ToggleProgressTrackingCriteria, {
+            criteria
+        })
 };
 
 export type EpicTimelineActions = ActionsUnion<typeof EpicTimelineActions>;

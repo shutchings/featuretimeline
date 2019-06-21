@@ -90,6 +90,7 @@ export function getDefaultState(): IEpicTimelineState {
         message: "Initial message",
         addEpicDialogOpen: false,
         setDatesDialogHidden: false,
-        selectedEpicId: null
+        selectedEpicId: null,
+        progressTrackingCriteria: "Completed Count"
     };
 }
