@@ -55,10 +55,23 @@ export interface PortfolioPlanningProjectQueryResult extends IQueryResultError
     projects: Project[];
 }
 
+export interface PortfolioPlanningWorkItemQueryResult extends IQueryResultError
+{
+    workItems: WorkItem[];
+}
+
 export interface Project 
 {
     ProjectSK: string;
     ProjectName: string;
+}
+
+export interface WorkItem
+{
+    WorkItemId: number;
+    WorkItemType: string;
+    Title: string;
+    State: string;
 }
 
 export interface IQueryResultError
