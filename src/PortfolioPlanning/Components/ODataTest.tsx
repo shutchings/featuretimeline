@@ -84,7 +84,7 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
 
     public RunQuery(inputString: string): IPromise<PortfolioModels.PortfolioPlanningQueryResult> {
         const input: PortfolioModels.PortfolioPlanningQueryInput = JSON.parse(inputString);
-        return PortfolioPlanningDataService.getInstance().runQuery(input);
+        return PortfolioPlanningDataService.getInstance().runPortfolioItemsQuery(input);
     }
 }
 

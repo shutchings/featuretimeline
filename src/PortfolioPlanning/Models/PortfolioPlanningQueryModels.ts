@@ -18,9 +18,8 @@ export interface PortfolioPlanningQueryInput
     WorkItems: ODataQueryProjectInput[];
 }
 
-export interface PortfolioPlanningQueryResult
+export interface PortfolioPlanningQueryResult extends IQueryResultError
 {
-    exceptionMessage: string;
     items: PortfolioPlanningQueryResultItem[];
 }
 
@@ -28,6 +27,12 @@ export interface PortfolioPlanningQueryResultItem
 {
     WorkItemId: number;
     WorkItemType: string;
+    Title: string;
+    State: string;
+
+    StartDate: Date;
+    TargetDate: Date;
+
     ProjectId: string;
 
     CompletedCount: number;
@@ -38,4 +43,25 @@ export interface PortfolioPlanningQueryResultItem
 
     StoryPointsProgress: number;
     CountProgress: number;
+}
+
+export interface PortfolioPlanningProjectQueryInput
+{
+    projectIds: string[];
+}
+
+export interface PortfolioPlanningProjectQueryResult extends IQueryResultError
+{
+    projects: Project[];
+}
+
+export interface Project 
+{
+    ProjectSK: string;
+    ProjectName: string;
+}
+
+export interface IQueryResultError
+{
+    exceptionMessage: string;
 }
