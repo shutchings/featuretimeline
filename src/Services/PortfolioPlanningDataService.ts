@@ -6,7 +6,9 @@ import
     PortfolioPlanningProjectQueryInput,
     PortfolioPlanningProjectQueryResult,
     IQueryResultError,
-    Project
+    Project,
+    WorkItem,
+    PortfolioPlanningWorkItemQueryResult
 } from "../PortfolioPlanning/Models/PortfolioPlanningQueryModels";
 import { ODataClient } from "../Common/OData/ODataClient";
 import { ODataWorkItemQueryResult } from "../PortfolioPlanning/Models/ODataQueryModels";
@@ -49,6 +51,33 @@ export class PortfolioPlanningDataService {
             (error) => this.ParseODataErrorResponse(error));
     }
 
+    public async getAllProjects() : Promise<PortfolioPlanningProjectQueryResult> {
+
+        const odataQueryString = ODataQueryBuilder.AllProjectsQueryString();
+
+        const client = await ODataClient.getInstance();
+        const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
+
+        return client.runGetQuery(fullQueryUrl).then(
+            (results: any) => this.ParseODataProjectQueryResultResponse(results),
+            (error) => this.ParseODataErrorResponse(error));
+    }
+
+    public async getAllWorkItemsOfTypeInProject(
+        projectGuid : string,
+        workItemType: string
+    ) : Promise<PortfolioPlanningWorkItemQueryResult> {
+
+        const odataQueryString = ODataQueryBuilder.WorkItemsOfTypeQueryString(workItemType);
+
+        const client = await ODataClient.getInstance();
+        const fullQueryUrl = client.generateProjectLink(projectGuid, odataQueryString);
+
+        return client.runGetQuery(fullQueryUrl).then(
+            (results: any) => this.ParseODataWorkItemQueryResultResponse(results),
+            (error) => this.ParseODataErrorResponse(error));
+    }    
+
     private ParseODataPortfolioPlanningQueryResultResponse(results : any) : PortfolioPlanningQueryResult {
         if(!results || !results["value"]) {
             return null;
@@ -59,6 +88,19 @@ export class PortfolioPlanningDataService {
         return {
             exceptionMessage: null,
             items: this.PortfolioPlanningQueryResultItems(rawResult)
+        }
+    }
+
+    private ParseODataWorkItemQueryResultResponse(results : any) : PortfolioPlanningWorkItemQueryResult {
+        if(!results || !results["value"]) {
+            return null;
+        }
+
+        const rawResult : WorkItem[] = results.value;
+
+        return {
+            exceptionMessage: null,
+            workItems: rawResult
         }
     }
 
@@ -73,7 +115,7 @@ export class PortfolioPlanningDataService {
             exceptionMessage: null,
             projects: rawResult
         }
-    }    
+    }
 
     private PortfolioPlanningQueryResultItems(rawItems: ODataWorkItemQueryResult[]) : PortfolioPlanningQueryResultItem[] {
         if(!rawItems)
@@ -122,6 +164,9 @@ export class PortfolioPlanningDataService {
 }
 
 export class ODataQueryBuilder {
+
+    private static readonly ProjectEntitySelect: string = "ProjectSK,ProjectName";
+
     public static WorkItemsQueryString(input: PortfolioPlanningQueryInput) : string {
         return "WorkItems" +
         "?" +
@@ -135,9 +180,23 @@ export class ODataQueryBuilder {
     public static ProjectsQueryString(input: PortfolioPlanningProjectQueryInput) : string {
         return "Projects" +
         "?" +
-            "$select=ProjectSK,ProjectName" +
+            `$select=${ODataQueryBuilder.ProjectEntitySelect}}` +
         "&" +
             `$filter=${this.ProjectsQueryFilter(input)}`;
+    }
+
+    public static AllProjectsQueryString() : string {
+        return "Projects" +
+        "?" + 
+            `$select=${ODataQueryBuilder.ProjectEntitySelect}`;
+    }
+
+    public static WorkItemsOfTypeQueryString(workItemType: string) : string {
+        return "WorkItems" +
+        "?" +
+            "$select=WorkItemId,WorkItemType,Title,State" +
+        "&" +
+            `$filter=WorkItemType eq '${workItemType}'`;
     }
 
     /**
