@@ -65,6 +65,10 @@ export class EpicTimeline extends React.Component<
                 ? "completedCount"
                 : "storyPoints";
 
+        const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(
+            this.props.items
+        );
+
         return (
             <div>
                 <div className="configuration-container">
@@ -101,8 +105,8 @@ export class EpicTimeline extends React.Component<
                 <Timeline
                     groups={this.props.groups}
                     items={this.props.items}
-                    defaultTimeStart={moment().add(-6, "month")}
-                    defaultTimeEnd={moment().add(6, "month")}
+                    defaultTimeStart={defaultTimeStart}
+                    defaultTimeEnd={defaultTimeEnd}
                     canChangeGroup={false}
                     stackItems={true}
                     dragSnap={day}
@@ -239,6 +243,25 @@ export class EpicTimeline extends React.Component<
                 />
             );
         }
+    }
+
+    // TODO: We only need this on first render
+    private _getDefaultTimes(
+        items: ITimelineItem[]
+    ): [moment.Moment, moment.Moment] {
+        let startTime = moment().add(-1, "months");
+        let endTime = moment().add(1, "months");
+
+        for (const item of items) {
+            if (item.start_time < startTime) {
+                startTime = moment(item.start_time);
+            }
+            if (item.end_time > endTime) {
+                endTime = moment(item.end_time);
+            }
+        }
+
+        return [startTime, endTime];
     }
 }
 
