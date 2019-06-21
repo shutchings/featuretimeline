@@ -18,7 +18,6 @@ import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
 import { SetDatesDialog } from "./SetDatesDialog";
 import { AddEpicDialog } from "./AddEpicDialog";
-// import "react-calendar-timeline/lib/Timeline.css"; // TODO: Use this instead of copying timeline
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
