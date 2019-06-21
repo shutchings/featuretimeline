@@ -2,6 +2,10 @@ export interface ODataWorkItemQueryResult
 {
     WorkItemId: number;
     WorkItemType: string;
+    Title: string;
+    State: string;
+    StartDate: Date;
+    TargetDate: Date;
     ProjectSK: string;
     Descendants: ODataWorkItemDescendants[]
 }

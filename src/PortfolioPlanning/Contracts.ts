@@ -11,6 +11,15 @@ export interface IEpic {
     title: string;
     startDate?: Date;
     endDate?: Date;
+
+    completedCount: number;
+    totalCount: number;
+
+    completedStoryPoints: number;
+    totalStoryPoints: number;
+
+    storyPointsProgress: number;
+    countProgress: number;
 }
 
 export interface ITimelineGroup {
