@@ -65,7 +65,7 @@ export class EpicTimeline extends React.Component<
 
         return (
             <div>
-                <div>
+                <div className="configuration-container">
                     <div className="progress-options">
                         <div className="progress-options-label">
                             Track Progress Using:{" "}
@@ -82,7 +82,7 @@ export class EpicTimeline extends React.Component<
                                 },
                                 {
                                     key: "storyPoints",
-                                    text: "Completed Story Points"
+                                    text: "Story Points"
                                 }
                             ]}
                             onChanged={this._onProgressTrackingCriteriaChanged}
