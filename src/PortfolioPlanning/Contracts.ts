@@ -34,3 +34,8 @@ export interface ITimelineItem {
     start_time: moment.Moment;
     end_time: moment.Moment;
 }
+
+export enum ProgressTrackingCriteria {
+    CompletedCount = "Completed Count",
+    StoryPoints = "Story Points"
+}

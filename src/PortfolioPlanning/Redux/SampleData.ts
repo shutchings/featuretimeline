@@ -20,12 +20,12 @@ export const Epics: IEpic[] = [
         title: "Epic 1",
         startDate: new Date(2019, 5, 1),
         endDate: new Date(2019, 6, 1),
-        completedCount: 0,
-        totalCount: 0,
-        completedStoryPoints: 0,
-        totalStoryPoints: 0,
-        storyPointsProgress: 0.0,
-        countProgress: 0.0
+        completedCount: 10,
+        totalCount: 10,
+        completedStoryPoints: 70,
+        totalStoryPoints: 70,
+        storyPointsProgress: 1.0,
+        countProgress: 1.0
     },
     {
         id: 2,
@@ -33,12 +33,12 @@ export const Epics: IEpic[] = [
         title: "Epic 2",
         startDate: new Date(2019, 4, 1),
         endDate: new Date(2019, 7, 15),
-        completedCount: 0,
-        totalCount: 0,
-        completedStoryPoints: 0,
-        totalStoryPoints: 0,
-        storyPointsProgress: 0.0,
-        countProgress: 0.0
+        completedCount: 3,
+        totalCount: 9,
+        completedStoryPoints: 30,
+        totalStoryPoints: 90,
+        storyPointsProgress: 0.333,
+        countProgress: 0.333
     },
     {
         id: 3,
@@ -47,9 +47,9 @@ export const Epics: IEpic[] = [
         startDate: new Date(2019, 4, 15),
         endDate: new Date(2019, 6, 30),
         completedCount: 0,
-        totalCount: 0,
+        totalCount: 5,
         completedStoryPoints: 0,
-        totalStoryPoints: 0,
+        totalStoryPoints: 30,
         storyPointsProgress: 0.0,
         countProgress: 0.0
     },

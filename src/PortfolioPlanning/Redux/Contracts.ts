@@ -1,4 +1,4 @@
-import { IProject, IEpic } from "../Contracts";
+import { IProject, IEpic, ProgressTrackingCriteria } from "../Contracts";
 
 export interface IPortfolioPlanningState {
     epicTimelineState: IEpicTimelineState;
@@ -11,5 +11,6 @@ export interface IEpicTimelineState {
     message: string;
     addEpicDialogOpen: boolean;
     setDatesDialogHidden: boolean;
-    selectedEpicId: number;
+    selectedItemId: number;
+    progressTrackingCriteria: ProgressTrackingCriteria;
 }

@@ -6,6 +6,7 @@ import {
     PortfolioItemsReceivedAction
 } from "../Actions/EpicTimelineActions";
 import produce from "immer";
+import { ProgressTrackingCriteria } from "../../Contracts";
 
 export function epicTimelineReducer(
     state: IEpicTimelineState,
@@ -60,17 +61,20 @@ export function epicTimelineReducer(
 
                 break;
             }
-            case EpicTimelineActionTypes.SetSelectedEpicId: {
+            case EpicTimelineActionTypes.SetSelectedItemId: {
                 const { id } = action.payload;
 
-                draft.selectedEpicId = id;
+                draft.selectedItemId = id;
 
                 break;
             }
             case EpicTimelineActionTypes.PortfolioItemsReceived:
-                return handlePortfolioItemsReceived(state, action as PortfolioItemsReceivedAction);
+                return handlePortfolioItemsReceived(
+                    state,
+                    action as PortfolioItemsReceivedAction
+                );
 
-                case EpicTimelineActionTypes.OpenAddEpicDialog: {
+            case EpicTimelineActionTypes.OpenAddEpicDialog: {
                 draft.addEpicDialogOpen = true;
                 break;
             }
@@ -80,6 +84,10 @@ export function epicTimelineReducer(
             }
             case EpicTimelineActionTypes.AddEpics: {
                 draft.epics.push(...action.payload.epicsToAdd);
+                break;
+            }
+            case EpicTimelineActionTypes.ToggleProgressTrackingCriteria: {
+                draft.progressTrackingCriteria = action.payload.criteria;
                 break;
             }
         }
@@ -94,47 +102,41 @@ export function getDefaultState(): IEpicTimelineState {
         message: "Initial message",
         addEpicDialogOpen: false,
         setDatesDialogHidden: false,
-        selectedEpicId: null
+        selectedItemId: null,
+        progressTrackingCriteria: ProgressTrackingCriteria.StoryPoints
     };
 }
 
 function handlePortfolioItemsReceived(
-    state: IEpicTimelineState, 
-    action: PortfolioItemsReceivedAction): IEpicTimelineState {
-
+    state: IEpicTimelineState,
+    action: PortfolioItemsReceivedAction
+): IEpicTimelineState {
     return produce(state, draft => {
-        const {
-            portfolioQueryResult,
-            projectsQueryResult
-        } = action.payload;
+        const { portfolioQueryResult, projectsQueryResult } = action.payload;
 
         //  TODO    Handle exception message from OData query results.
 
-        draft.projects = projectsQueryResult.projects.map(
-            (project) =>
-            {
-                return {
-                    id: project.ProjectSK,
-                    title: project.ProjectName
-                };
-            });
+        draft.projects = projectsQueryResult.projects.map(project => {
+            return {
+                id: project.ProjectSK,
+                title: project.ProjectName
+            };
+        });
 
-        draft.epics = portfolioQueryResult.items.map(
-            (item) =>
-            {
-                return {
-                    id: item.WorkItemId,
-                    project: item.ProjectId,
-                    title: item.Title,
-                    startDate: item.StartDate,
-                    endDate: item.TargetDate,
-                    completedCount: item.CompletedCount,
-                    totalCount: item.TotalCount,
-                    completedStoryPoints: item.CompletedStoryPoints,
-                    totalStoryPoints: item.TotalStoryPoints,
-                    storyPointsProgress: item.StoryPointsProgress,
-                    countProgress: item.CountProgress
-                }
-            });
+        draft.epics = portfolioQueryResult.items.map(item => {
+            return {
+                id: item.WorkItemId,
+                project: item.ProjectId,
+                title: item.Title,
+                startDate: item.StartDate,
+                endDate: item.TargetDate,
+                completedCount: item.CompletedCount,
+                totalCount: item.TotalCount,
+                completedStoryPoints: item.CompletedStoryPoints,
+                totalStoryPoints: item.TotalStoryPoints,
+                storyPointsProgress: item.StoryPointsProgress,
+                countProgress: item.CountProgress
+            };
+        });
     });
 }
