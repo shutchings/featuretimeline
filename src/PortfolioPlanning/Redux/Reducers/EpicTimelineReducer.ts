@@ -67,7 +67,6 @@ export function epicTimelineReducer(
 
                 break;
             }
-
             case EpicTimelineActionTypes.PortfolioItemsReceived:
                 return handlePortfolioItemsReceived(state, action as PortfolioItemsReceivedAction);
 
