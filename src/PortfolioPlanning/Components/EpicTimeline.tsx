@@ -26,6 +26,7 @@ import { SetDatesDialog } from "./SetDatesDialog";
 import { AddEpicDialog } from "./AddEpicDialog";
 import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
 import { ProgressDetails } from "../../Common/react/Components/ProgressDetails/ProgressDetails";
+import { InfoIcon } from "../../Common/react/Components/InfoIcon/InfoIcon";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -119,9 +120,6 @@ export class EpicTimeline extends React.Component<
                     onItemSelect={itemId =>
                         this.props.onSetSelectedItemId(itemId)
                     }
-                    onItemContextMenu={() => {
-                        this.props.onToggleSetDatesDialogHidden(false);
-                    }}
                     itemRenderer={({ item, itemContext, getItemProps }) => {
                         return (
                             <div {...getItemProps(item.itemProps)}>
@@ -133,15 +131,31 @@ export class EpicTimeline extends React.Component<
                                         display: "flex",
                                         justifyContent: "space-between",
                                         overflow: "hidden",
-                                        marginRight: "5px"
+                                        marginRight: "5px",
+                                        alignItems: "baseline"
                                     }}
                                 >
                                     {itemContext.title}
-                                    <ProgressDetails
-                                        completed={item.itemProps.completed}
-                                        total={item.itemProps.total}
-                                        onClick={() => {}}
-                                    />
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "flex-end"
+                                        }}
+                                    >
+                                        <InfoIcon
+                                            id={item.id}
+                                            onClick={() =>
+                                                this.props.onToggleSetDatesDialogHidden(
+                                                    false
+                                                )
+                                            }
+                                        />
+                                        <ProgressDetails
+                                            completed={item.itemProps.completed}
+                                            total={item.itemProps.total}
+                                            onClick={() => {}}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         );
