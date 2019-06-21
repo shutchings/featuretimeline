@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as moment from "moment";
 import {
-    IProject,
     IEpic,
     ITimelineGroup,
     ITimelineItem,
@@ -14,11 +13,12 @@ import {
     IPortfolioPlanningState
 } from "../Redux/Contracts";
 import {
-    getEpics,
-    getProjects,
     getAddEpicDialogOpen,
     getOtherEpics,
-    getSetDatesDialogHidden
+    getSetDatesDialogHidden,
+    getTimelineGroups,
+    getTimelineItems,
+    getProgressTrackingCriteria
 } from "../Redux/Selectors/EpicTimelineSelectors";
 import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
@@ -32,12 +32,12 @@ const week = day * 7;
 interface IEpicTimelineOwnProps {}
 
 interface IEpicTimelineMappedProps {
-    projects: IProject[];
-    epics: IEpic[];
+    groups: ITimelineGroup[];
+    items: ITimelineItem[];
     otherEpics: IEpic[];
     addEpicDialogOpen: boolean;
     setDatesDialogHidden: boolean;
-    selectedEpicId: number;
+    selectedItemId: number;
     progressTrackingCriteria: ProgressTrackingCriteria;
 }
 
@@ -54,14 +54,8 @@ export class EpicTimeline extends React.Component<
     }
 
     public render(): JSX.Element {
-        const selectedEpic = this.props.epics.find(
-            epic => epic.id === this.props.selectedEpicId
-        );
-        const timelineGroups: ITimelineGroup[] = this.props.projects.map(
-            this._mapProjectToTimelineGroups
-        );
-        const timelineItems: ITimelineItem[] = this.props.epics.map(
-            this._mapEpicToTimelineItem
+        const selectedItem = this.props.items.find(
+            item => item.id === this.props.selectedItemId
         );
 
         const selectedKey =
@@ -104,8 +98,8 @@ export class EpicTimeline extends React.Component<
                     </button>
                 </div>
                 <Timeline
-                    groups={timelineGroups}
-                    items={timelineItems}
+                    groups={this.props.groups}
+                    items={this.props.items}
                     defaultTimeStart={moment().add(-6, "month")}
                     defaultTimeEnd={moment().add(6, "month")}
                     canChangeGroup={false}
@@ -118,24 +112,47 @@ export class EpicTimeline extends React.Component<
                     onItemMove={this._onItemMove}
                     moveResizeValidator={this._validateResize}
                     onItemSelect={itemId =>
-                        this.props.onSetSelectedEpicId(itemId)
+                        this.props.onSetSelectedItemId(itemId)
                     }
                     onItemClick={() => {
                         this.props.onToggleSetDatesDialogHidden(false);
                     }}
+                    itemRenderer={({
+                        item,
+                        itemContext,
+                        getItemProps,
+                        getResizeProps
+                    }) => {
+                        return (
+                            <div {...getItemProps(item.itemProps)}>
+                                <div
+                                    style={{
+                                        maxHeight: `${
+                                            itemContext.dimensions.height
+                                        }`
+                                    }}
+                                >
+                                    {`${itemContext.title}    ${
+                                        item.itemProps.completed
+                                    }/${item.itemProps.total} (${item.itemProps
+                                        .progress / 1.0}%)`}
+                                </div>
+                            </div>
+                        );
+                    }}
                 />
                 {this._renderAddEpicDialog()}
-                {this.props.selectedEpicId && (
+                {this.props.selectedItemId && (
                     <SetDatesDialog
                         key={
-                            this.props.selectedEpicId +
-                            selectedEpic.startDate.getTime() +
-                            selectedEpic.endDate.getTime()
+                            this.props.selectedItemId +
+                            selectedItem.start_time.millisecond() +
+                            selectedItem.end_time.millisecond()
                         }
-                        id={this.props.selectedEpicId}
-                        title={selectedEpic.title}
-                        startDate={moment(selectedEpic.startDate)}
-                        endDate={moment(selectedEpic.endDate)}
+                        id={this.props.selectedItemId}
+                        title={selectedItem.title}
+                        startDate={selectedItem.start_time}
+                        endDate={selectedItem.end_time}
                         hidden={this.props.setDatesDialogHidden}
                         save={(id, startDate, endDate) => {
                             this.props.onUpdateStartDate(id, startDate);
@@ -225,37 +242,21 @@ export class EpicTimeline extends React.Component<
             );
         }
     }
-
-    private _mapProjectToTimelineGroups(project: IProject): ITimelineGroup {
-        return {
-            id: project.id,
-            title: project.title
-        };
-    }
-
-    private _mapEpicToTimelineItem(epic: IEpic): ITimelineItem {
-        return {
-            id: epic.id,
-            group: epic.project,
-            title: epic.title,
-            start_time: moment(epic.startDate),
-            end_time: moment(epic.endDate)
-        };
-    }
 }
 
 function mapStateToProps(
     state: IPortfolioPlanningState
 ): IEpicTimelineMappedProps {
     return {
-        projects: getProjects(state.epicTimelineState),
-        epics: getEpics(state.epicTimelineState),
+        groups: getTimelineGroups(state.epicTimelineState),
+        items: getTimelineItems(state.epicTimelineState),
         otherEpics: getOtherEpics(state.epicTimelineState),
         addEpicDialogOpen: getAddEpicDialogOpen(state.epicTimelineState),
         setDatesDialogHidden: getSetDatesDialogHidden(state.epicTimelineState),
-        selectedEpicId: state.epicTimelineState.selectedEpicId,
-        progressTrackingCriteria:
-            state.epicTimelineState.progressTrackingCriteria
+        selectedItemId: state.epicTimelineState.selectedItemId,
+        progressTrackingCriteria: getProgressTrackingCriteria(
+            state.epicTimelineState
+        )
     };
 }
 
@@ -268,7 +269,7 @@ const Actions = {
     onShiftEpic: EpicTimelineActions.shiftEpic,
     onToggleSetDatesDialogHidden:
         EpicTimelineActions.toggleSetDatesDialogHidden,
-    onSetSelectedEpicId: EpicTimelineActions.setSelectedEpicId,
+    onSetSelectedItemId: EpicTimelineActions.setSelectedItemId,
     onToggleProgressTrackingCriteria:
         EpicTimelineActions.ToggleProgressTrackingCriteria
 };

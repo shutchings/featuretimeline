@@ -4,11 +4,11 @@ import {
 } from "../../../Common/redux/Helpers/ActionHelper";
 import { IEpic, ProgressTrackingCriteria } from "../../Contracts";
 import moment = require("moment");
-import { 
+import {
     PortfolioPlanningQueryResult,
-    PortfolioPlanningProjectQueryResult 
+    PortfolioPlanningProjectQueryResult
 } from "../../Models/PortfolioPlanningQueryModels";
-import { Action } from 'redux';
+import { Action } from "redux";
 
 export const enum EpicTimelineActionTypes {
     // TODO: May update these date change actions to be single actio
@@ -16,7 +16,7 @@ export const enum EpicTimelineActionTypes {
     UpdateEndDate = "EpicTimeline/UpdateEndDate",
     ShiftEpic = "EpicTimeline/ShiftEpic",
     ToggleSetDatesDialogHidden = "EpicTimeline/ToggleSetDatesDialogHidden",
-    SetSelectedEpicId = "EpicTimeline/SetSelectedEpicId",
+    SetSelectedItemId = "EpicTimeline/SetSelectedItemId",
     PortfolioItemsReceived = "EpicTimeline/PortfolioItemsReceived",
     OpenAddEpicDialog = "EpicTimeline/OpenAddEpicDialog",
     CloseAddEpicDialog = "EpicTimeline/CloseAddEpicDialog",
@@ -41,19 +41,16 @@ export const EpicTimelineActions = {
         createAction(EpicTimelineActionTypes.ToggleSetDatesDialogHidden, {
             hidden
         }),
-    setSelectedEpicId: (id: number) =>
-        createAction(EpicTimelineActionTypes.SetSelectedEpicId, { id }),
-
+    setSelectedItemId: (id: number) =>
+        createAction(EpicTimelineActionTypes.SetSelectedItemId, { id }),
     portfolioItemsReceived: (
-        portfolioQueryResult: PortfolioPlanningQueryResult, 
-        projectsQueryResult: PortfolioPlanningProjectQueryResult) =>
-        createAction(
-            EpicTimelineActionTypes.PortfolioItemsReceived,
-            {
-                portfolioQueryResult,
-                projectsQueryResult
-            }),
-
+        portfolioQueryResult: PortfolioPlanningQueryResult,
+        projectsQueryResult: PortfolioPlanningProjectQueryResult
+    ) =>
+        createAction(EpicTimelineActionTypes.PortfolioItemsReceived, {
+            portfolioQueryResult,
+            projectsQueryResult
+        }),
     openAddEpicDialog: () =>
         createAction(EpicTimelineActionTypes.OpenAddEpicDialog),
     closeAddEpicDialog: () =>
@@ -71,7 +68,7 @@ export type EpicTimelineActions = ActionsUnion<typeof EpicTimelineActions>;
 export interface PortfolioItemsReceivedAction extends Action {
     type: EpicTimelineActionTypes.PortfolioItemsReceived;
     payload: {
-        portfolioQueryResult: PortfolioPlanningQueryResult,
-        projectsQueryResult: PortfolioPlanningProjectQueryResult
-    }
+        portfolioQueryResult: PortfolioPlanningQueryResult;
+        projectsQueryResult: PortfolioPlanningProjectQueryResult;
+    };
 }

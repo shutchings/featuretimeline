@@ -11,6 +11,6 @@ export interface IEpicTimelineState {
     message: string;
     addEpicDialogOpen: boolean;
     setDatesDialogHidden: boolean;
-    selectedEpicId: number;
+    selectedItemId: number;
     progressTrackingCriteria: ProgressTrackingCriteria;
 }
