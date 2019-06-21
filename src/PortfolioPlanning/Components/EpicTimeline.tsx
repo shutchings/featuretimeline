@@ -254,10 +254,10 @@ export class EpicTimeline extends React.Component<
 
         for (const item of items) {
             if (item.start_time < startTime) {
-                startTime = moment(item.start_time);
+                startTime = moment(item.start_time).add(-1, "months");
             }
             if (item.end_time > endTime) {
-                endTime = moment(item.end_time);
+                endTime = moment(item.end_time).add(1, "months");
             }
         }
 
