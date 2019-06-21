@@ -100,20 +100,38 @@ export const OtherEpics: IEpic[] = [
         project: firstProjectId,
         title: "Epic 7",
         startDate: new Date(2019, 2, 1),
-        endDate: new Date(2019, 6, 1)
+        endDate: new Date(2019, 6, 1),
+        completedCount: 0,
+        totalCount: 0,
+        completedStoryPoints: 0,
+        totalStoryPoints: 0,
+        storyPointsProgress: 0.0,
+        countProgress: 0.0
     },
     {
         id: 8,
         project: firstProjectId,
         title: "Epic 8",
         startDate: new Date(2019, 3, 1),
-        endDate: new Date(2019, 7, 15)
+        endDate: new Date(2019, 7, 15),
+        completedCount: 0,
+        totalCount: 0,
+        completedStoryPoints: 0,
+        totalStoryPoints: 0,
+        storyPointsProgress: 0.0,
+        countProgress: 0.0
     },
     {
         id: 9,
         project: secondProjectId,
         title: "Epic 9",
         startDate: new Date(2019, 5, 15),
-        endDate: new Date(2019, 9, 30)
+        endDate: new Date(2019, 9, 30),
+        completedCount: 0,
+        totalCount: 0,
+        completedStoryPoints: 0,
+        totalStoryPoints: 0,
+        storyPointsProgress: 0.0,
+        countProgress: 0.0
     }
 ];
