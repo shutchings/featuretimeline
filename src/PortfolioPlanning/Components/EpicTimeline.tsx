@@ -25,6 +25,7 @@ import { connect } from "react-redux";
 import { SetDatesDialog } from "./SetDatesDialog";
 import { AddEpicDialog } from "./AddEpicDialog";
 import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
+import { ProgressDetails } from "../../Common/react/Components/ProgressDetails/ProgressDetails";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -117,25 +118,26 @@ export class EpicTimeline extends React.Component<
                     onItemClick={() => {
                         this.props.onToggleSetDatesDialogHidden(false);
                     }}
-                    itemRenderer={({
-                        item,
-                        itemContext,
-                        getItemProps,
-                        getResizeProps
-                    }) => {
+                    itemRenderer={({ item, itemContext, getItemProps }) => {
                         return (
                             <div {...getItemProps(item.itemProps)}>
                                 <div
                                     style={{
                                         maxHeight: `${
                                             itemContext.dimensions.height
-                                        }`
+                                        }`,
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        overflow: "hidden",
+                                        marginRight: "5px"
                                     }}
                                 >
-                                    {`${itemContext.title}    ${
-                                        item.itemProps.completed
-                                    }/${item.itemProps.total} (${item.itemProps
-                                        .progress / 1.0}%)`}
+                                    {itemContext.title}
+                                    <ProgressDetails
+                                        completed={item.itemProps.completed}
+                                        total={item.itemProps.total}
+                                        onClick={() => {}}
+                                    />
                                 </div>
                             </div>
                         );
@@ -144,11 +146,7 @@ export class EpicTimeline extends React.Component<
                 {this._renderAddEpicDialog()}
                 {this.props.selectedItemId && (
                     <SetDatesDialog
-                        key={
-                            this.props.selectedItemId +
-                            selectedItem.start_time.millisecond() +
-                            selectedItem.end_time.millisecond()
-                        }
+                        key={Date.now()} // TODO: Is there a better way to reset the state?
                         id={this.props.selectedItemId}
                         title={selectedItem.title}
                         startDate={selectedItem.start_time}
