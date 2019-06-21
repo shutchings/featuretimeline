@@ -115,7 +115,7 @@ export class EpicTimeline extends React.Component<
                     onItemSelect={itemId =>
                         this.props.onSetSelectedItemId(itemId)
                     }
-                    onItemClick={() => {
+                    onItemContextMenu={() => {
                         this.props.onToggleSetDatesDialogHidden(false);
                     }}
                     itemRenderer={({ item, itemContext, getItemProps }) => {
