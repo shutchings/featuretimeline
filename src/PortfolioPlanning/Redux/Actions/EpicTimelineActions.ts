@@ -2,6 +2,7 @@ import {
     createAction,
     ActionsUnion
 } from "../../../Common/redux/Helpers/ActionHelper";
+import { IEpic } from "../../Contracts";
 import moment = require("moment");
 import { 
     PortfolioPlanningQueryResult,
@@ -16,7 +17,10 @@ export const enum EpicTimelineActionTypes {
     ShiftEpic = "EpicTimeline/ShiftEpic",
     ToggleSetDatesDialogHidden = "EpicTimeline/ToggleSetDatesDialogHidden",
     SetSelectedEpicId = "EpicTimeline/SetSelectedEpicId",
-    PortfolioItemsReceived = "EpicTimeline/PortfolioItemsReceived"
+    PortfolioItemsReceived = "EpicTimeline/PortfolioItemsReceived",
+    OpenAddEpicDialog = "EpicTimeline/OpenAddEpicDialog",
+    CloseAddEpicDialog = "EpicTimeline/CloseAddEpicDialog",
+    AddEpics = "EpicTimeline/AddEpics"
 }
 
 export const EpicTimelineActions = {
@@ -47,7 +51,15 @@ export const EpicTimelineActions = {
             {
                 portfolioQueryResult,
                 projectsQueryResult
-            })
+            }),
+
+    openAddEpicDialog: () =>
+        createAction(EpicTimelineActionTypes.OpenAddEpicDialog),
+    closeAddEpicDialog: () =>
+        createAction(EpicTimelineActionTypes.CloseAddEpicDialog),
+    addEpics: (epicsToAdd: IEpic[]) =>
+        createAction(EpicTimelineActionTypes.AddEpics, { epicsToAdd })
+
 };
 
 export type EpicTimelineActions = ActionsUnion<typeof EpicTimelineActions>;

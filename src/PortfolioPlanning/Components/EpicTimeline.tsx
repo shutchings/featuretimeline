@@ -10,11 +10,14 @@ import {
 import {
     getEpics,
     getProjects,
+    getAddEpicDialogOpen,
+    getOtherEpics,
     getSetDatesDialogHidden
 } from "../Redux/Selectors/EpicTimelineSelectors";
 import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
 import { SetDatesDialog } from "./SetDatesDialog";
+import { AddEpicDialog } from "./AddEpicDialog";
 // import "react-calendar-timeline/lib/Timeline.css"; // TODO: Use this instead of copying timeline
 
 const day = 60 * 60 * 24 * 1000;
@@ -25,6 +28,8 @@ interface IEpicTimelineOwnProps {}
 interface IEpicTimelineMappedProps {
     projects: IProject[];
     epics: IEpic[];
+    otherEpics: IEpic[];
+    addEpicDialogOpen: boolean;
     setDatesDialogHidden: boolean;
     selectedEpicId: number;
 }
@@ -54,6 +59,12 @@ export class EpicTimeline extends React.Component<
 
         return (
             <div>
+                <button
+                    className="epictimeline-add-epic-button"
+                    onClick={this._onAddEpicClick}
+                >
+                    Add Epic
+                </button>
                 <Timeline
                     groups={timelineGroups}
                     items={timelineItems}
@@ -75,6 +86,7 @@ export class EpicTimeline extends React.Component<
                         this.props.onToggleSetDatesDialogHidden(false);
                     }}
                 />
+                {this._renderAddEpicDialog()}
                 {this.props.selectedEpicId && (
                     <SetDatesDialog
                         key={
@@ -142,6 +154,22 @@ export class EpicTimeline extends React.Component<
         this.props.onShiftEpic(itemId, moment(time));
     };
 
+    private _onAddEpicClick = (): void => {
+        this.props.onOpenAddEpicDialog();
+    };
+
+    private _renderAddEpicDialog(): JSX.Element {
+        if (this.props.addEpicDialogOpen) {
+            return (
+                <AddEpicDialog
+                    onCloseAddEpicDialog={this.props.onCloseAddEpicDialog}
+                    otherEpics={this.props.otherEpics}
+                    onAddEpics={this.props.onAddEpics}
+                />
+            );
+        }
+    }
+
     private _mapProjectToTimelineGroups(project: IProject): ITimelineGroup {
         return {
             id: project.id,
@@ -166,12 +194,17 @@ function mapStateToProps(
     return {
         projects: getProjects(state.epicTimelineState),
         epics: getEpics(state.epicTimelineState),
+        otherEpics: getOtherEpics(state.epicTimelineState),
+        addEpicDialogOpen: getAddEpicDialogOpen(state.epicTimelineState),
         setDatesDialogHidden: getSetDatesDialogHidden(state.epicTimelineState),
         selectedEpicId: state.epicTimelineState.selectedEpicId
     };
 }
 
 const Actions = {
+    onOpenAddEpicDialog: EpicTimelineActions.openAddEpicDialog,
+    onCloseAddEpicDialog: EpicTimelineActions.closeAddEpicDialog,
+    onAddEpics: EpicTimelineActions.addEpics,
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
     onUpdateEndDate: EpicTimelineActions.updateEndDate,
     onShiftEpic: EpicTimelineActions.shiftEpic,
