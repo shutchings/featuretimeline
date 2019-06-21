@@ -19,42 +19,78 @@ export const Epics: IEpic[] = [
         project: firstProjectId,
         title: "Epic 1",
         startDate: new Date(2019, 5, 1),
-        endDate: new Date(2019, 6, 1)
+        endDate: new Date(2019, 6, 1),
+        completedCount: 0,
+        totalCount: 0,
+        completedStoryPoints: 0,
+        totalStoryPoints: 0,
+        storyPointsProgress: 0.0,
+        countProgress: 0.0
     },
     {
         id: 2,
         project: firstProjectId,
         title: "Epic 2",
         startDate: new Date(2019, 4, 1),
-        endDate: new Date(2019, 7, 15)
+        endDate: new Date(2019, 7, 15),
+        completedCount: 0,
+        totalCount: 0,
+        completedStoryPoints: 0,
+        totalStoryPoints: 0,
+        storyPointsProgress: 0.0,
+        countProgress: 0.0
     },
     {
         id: 3,
         project: firstProjectId,
         title: "Epic 3",
         startDate: new Date(2019, 4, 15),
-        endDate: new Date(2019, 6, 30)
+        endDate: new Date(2019, 6, 30),
+        completedCount: 0,
+        totalCount: 0,
+        completedStoryPoints: 0,
+        totalStoryPoints: 0,
+        storyPointsProgress: 0.0,
+        countProgress: 0.0
     },
     {
         id: 4,
         project: secondProjectId,
         title: "Epic 4",
         startDate: new Date(2019, 5, 1),
-        endDate: new Date(2019, 6, 1)
+        endDate: new Date(2019, 6, 1),
+        completedCount: 0,
+        totalCount: 0,
+        completedStoryPoints: 0,
+        totalStoryPoints: 0,
+        storyPointsProgress: 0.0,
+        countProgress: 0.0
     },
     {
         id: 5,
         project: secondProjectId,
         title: "Epic 5",
         startDate: new Date(2019, 4, 1),
-        endDate: new Date(2019, 7, 15)
+        endDate: new Date(2019, 7, 15),
+        completedCount: 0,
+        totalCount: 0,
+        completedStoryPoints: 0,
+        totalStoryPoints: 0,
+        storyPointsProgress: 0.0,
+        countProgress: 0.0
     },
     {
         id: 6,
         project: thirdProjectId,
         title: "Epic 6",
         startDate: new Date(2019, 4, 15),
-        endDate: new Date(2019, 6, 30)
+        endDate: new Date(2019, 6, 30),
+        completedCount: 0,
+        totalCount: 0,
+        completedStoryPoints: 0,
+        totalStoryPoints: 0,
+        storyPointsProgress: 0.0,
+        countProgress: 0.0
     }
 ];
 
@@ -64,20 +100,38 @@ export const OtherEpics: IEpic[] = [
         project: firstProjectId,
         title: "Epic 7",
         startDate: new Date(2019, 2, 1),
-        endDate: new Date(2019, 6, 1)
+        endDate: new Date(2019, 6, 1),
+        completedCount: 0,
+        totalCount: 0,
+        completedStoryPoints: 0,
+        totalStoryPoints: 0,
+        storyPointsProgress: 0.0,
+        countProgress: 0.0
     },
     {
         id: 8,
         project: firstProjectId,
         title: "Epic 8",
         startDate: new Date(2019, 3, 1),
-        endDate: new Date(2019, 7, 15)
+        endDate: new Date(2019, 7, 15),
+        completedCount: 0,
+        totalCount: 0,
+        completedStoryPoints: 0,
+        totalStoryPoints: 0,
+        storyPointsProgress: 0.0,
+        countProgress: 0.0
     },
     {
         id: 9,
         project: secondProjectId,
         title: "Epic 9",
         startDate: new Date(2019, 5, 15),
-        endDate: new Date(2019, 9, 30)
+        endDate: new Date(2019, 9, 30),
+        completedCount: 0,
+        totalCount: 0,
+        completedStoryPoints: 0,
+        totalStoryPoints: 0,
+        storyPointsProgress: 0.0,
+        countProgress: 0.0
     }
 ];
