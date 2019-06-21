@@ -1,6 +1,12 @@
 import * as React from "react";
 import * as moment from "moment";
-import { IProject, IEpic, ITimelineGroup, ITimelineItem } from "../Contracts";
+import {
+    IProject,
+    IEpic,
+    ITimelineGroup,
+    ITimelineItem,
+    ProgressTrackingCriteria
+} from "../Contracts";
 import Timeline from "react-calendar-timeline";
 import "./EpicTimeline.scss";
 import {
@@ -32,7 +38,7 @@ interface IEpicTimelineMappedProps {
     addEpicDialogOpen: boolean;
     setDatesDialogHidden: boolean;
     selectedEpicId: number;
-    progressTrackingCriteria: string;
+    progressTrackingCriteria: ProgressTrackingCriteria;
 }
 
 export type IEpicTimelineProps = IEpicTimelineOwnProps &
@@ -59,7 +65,8 @@ export class EpicTimeline extends React.Component<
         );
 
         const selectedKey =
-            this.props.progressTrackingCriteria === "completedCount"
+            this.props.progressTrackingCriteria ===
+            ProgressTrackingCriteria.CompletedCount
                 ? "completedCount"
                 : "storyPoints";
 
@@ -78,11 +85,12 @@ export class EpicTimeline extends React.Component<
                             options={[
                                 {
                                     key: "completedCount",
-                                    text: "Completed Count"
+                                    text:
+                                        ProgressTrackingCriteria.CompletedCount
                                 },
                                 {
                                     key: "storyPoints",
-                                    text: "Story Points"
+                                    text: ProgressTrackingCriteria.StoryPoints
                                 }
                             ]}
                             onChanged={this._onProgressTrackingCriteriaChanged}
@@ -194,10 +202,14 @@ export class EpicTimeline extends React.Component<
     }) => {
         switch (item.key) {
             case "completedCount":
-                this.props.onToggleProgressTrackingCriteria("Completed Count");
+                this.props.onToggleProgressTrackingCriteria(
+                    ProgressTrackingCriteria.CompletedCount
+                );
                 break;
             case "storyPoints":
-                this.props.onToggleProgressTrackingCriteria("Story Points");
+                this.props.onToggleProgressTrackingCriteria(
+                    ProgressTrackingCriteria.StoryPoints
+                );
                 break;
         }
     };

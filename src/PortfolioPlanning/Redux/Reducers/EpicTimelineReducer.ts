@@ -5,6 +5,7 @@ import {
     EpicTimelineActionTypes
 } from "../Actions/EpicTimelineActions";
 import produce from "immer";
+import { ProgressTrackingCriteria } from "../../Contracts";
 
 export function epicTimelineReducer(
     state: IEpicTimelineState,
@@ -78,6 +79,10 @@ export function epicTimelineReducer(
                 draft.epics.push(...action.payload.epicsToAdd);
                 break;
             }
+            case EpicTimelineActionTypes.ToggleProgressTrackingCriteria: {
+                draft.progressTrackingCriteria = action.payload.criteria;
+                break;
+            }
         }
     });
 }
@@ -91,6 +96,6 @@ export function getDefaultState(): IEpicTimelineState {
         addEpicDialogOpen: false,
         setDatesDialogHidden: false,
         selectedEpicId: null,
-        progressTrackingCriteria: "Completed Count"
+        progressTrackingCriteria: ProgressTrackingCriteria.StoryPoints
     };
 }

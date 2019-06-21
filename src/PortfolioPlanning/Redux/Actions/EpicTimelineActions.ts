@@ -2,7 +2,7 @@ import {
     createAction,
     ActionsUnion
 } from "../../../Common/redux/Helpers/ActionHelper";
-import { IEpic } from "../../Contracts";
+import { IEpic, ProgressTrackingCriteria } from "../../Contracts";
 import moment = require("moment");
 
 export const enum EpicTimelineActionTypes {
@@ -43,7 +43,7 @@ export const EpicTimelineActions = {
         createAction(EpicTimelineActionTypes.CloseAddEpicDialog),
     addEpics: (epicsToAdd: IEpic[]) =>
         createAction(EpicTimelineActionTypes.AddEpics, { epicsToAdd }),
-    ToggleProgressTrackingCriteria: (criteria: string) =>
+    ToggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>
         createAction(EpicTimelineActionTypes.ToggleProgressTrackingCriteria, {
             criteria
         })
