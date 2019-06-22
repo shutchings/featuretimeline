@@ -8,15 +8,19 @@ import
     IQueryResultError,
     Project,
     WorkItem,
-    PortfolioPlanningWorkItemQueryResult
+    PortfolioPlanningWorkItemQueryResult,
+    PortfolioPlanningDirectory,
+    PortfolioPlanning,
+    ExtensionStorageError
 } from "../PortfolioPlanning/Models/PortfolioPlanningQueryModels";
 import { ODataClient } from "../Common/OData/ODataClient";
 import { ODataWorkItemQueryResult } from "../PortfolioPlanning/Models/ODataQueryModels";
-
+import { GUIDUtil } from "../Common/GUIDUtil";
 
 export class PortfolioPlanningDataService {
 
     private static _instance: PortfolioPlanningDataService;
+
     public static getInstance(): PortfolioPlanningDataService {
         if (!PortfolioPlanningDataService._instance) {
 
@@ -76,7 +80,158 @@ export class PortfolioPlanningDataService {
         return client.runGetQuery(fullQueryUrl).then(
             (results: any) => this.ParseODataWorkItemQueryResultResponse(results),
             (error) => this.ParseODataErrorResponse(error));
+    }
+
+    public async GetAllPortfolioPlans() : Promise<PortfolioPlanningDirectory>
+    {
+        const client = await this.GetStorageClient();
+
+        return client.getDocument(
+            PortfolioPlanningDataService.DirectoryCollectionName,
+            PortfolioPlanningDataService.DirectoryDocumentId).then(
+                (doc) => this.ParsePortfolioDirectory(doc),
+                (error) => {
+                    const parsedError = this.ParseStorageError(error);
+
+                    if(parsedError.status === 404)
+                    {
+                        //  Collection has not been created, initialize it.
+                        const newDirectory: PortfolioPlanningDirectory = {
+                            exceptionMessage: null,
+                            id: PortfolioPlanningDataService.DirectoryDocumentId,
+                            entries: []
+                        };
+
+                        return client.createDocument(
+                            PortfolioPlanningDataService.DirectoryCollectionName,
+                            newDirectory).then(
+                                (newDirectory) => newDirectory,
+                                //  We failed while creating the collection for the first time.
+                                (error) => this.ParseStorageError(error)
+                            );
+                    }
+
+                    return parsedError;
+                }
+        );
+    }
+
+    private static readonly DirectoryDocumentId:string = "Default";
+    private static readonly DirectoryCollectionName:string = "Directory";
+    private static readonly PortfolioPlansCollectionName:string = "PortfolioPlans";
+
+    public async AddPortfolioPlan(newPlanName: string) : Promise<PortfolioPlanning> 
+    {
+        const client = await this.GetStorageClient();
+        const newPlan : PortfolioPlanning = {
+            id: GUIDUtil.newGuid(),
+            name: newPlanName,
+            createdOn: new Date(),
+            projects: []
+        };
+
+        const savedPlan = await client.setDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, newPlan);
+        let allPlans = await this.GetAllPortfolioPlans();
+
+        if(!allPlans)
+        {
+            allPlans = {
+                exceptionMessage: null,
+                id: PortfolioPlanningDataService.DirectoryDocumentId,
+                entries: []
+            };
+        }
+
+        allPlans.entries.push(savedPlan);
+
+        await client.updateDocument(PortfolioPlanningDataService.DirectoryCollectionName, allPlans);
+
+        return newPlan;
+    }
+
+    public async GetPortfolioPlanById(portfolioPlanId: string) : Promise<PortfolioPlanning> {
+        const client = await this.GetStorageClient();
+
+        return client.getDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, portfolioPlanId);
+    }
+
+    public async UpdatePortfolioPlan(newPlan: PortfolioPlanning) : Promise<PortfolioPlanning> {
+        const client = await this.GetStorageClient();
+
+        return client.updateDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, newPlan).then(
+            (doc) => doc
+        );
+    }
+
+    public async DeletePortfolioPlan(newPlan: PortfolioPlanning) : Promise<void> {
+        const client = await this.GetStorageClient();
+
+        return client.deleteDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, newPlan.id);
+    }
+
+    public async DeleteAllData() : Promise<number> {
+        const client = await this.GetStorageClient();
+        let totalThatWillBeDeleted = 0;
+
+        //  Delete documents in Directory collection.
+        const allEntriesInDirectory = await client.getDocuments(PortfolioPlanningDataService.DirectoryCollectionName);
+        totalThatWillBeDeleted += allEntriesInDirectory.length;
+
+        allEntriesInDirectory.forEach((doc) => {
+            client.deleteDocument(
+                PortfolioPlanningDataService.DirectoryCollectionName, 
+                doc.id).then(
+                    (deletedDoc) => console.log(`Deleted Directory collection document: ${doc.id}`)
+                );
+        });
+
+        //  Delete documents in Portfolio plans collection.
+        const allEntriesInPlans = await client.getDocuments(PortfolioPlanningDataService.PortfolioPlansCollectionName);
+        totalThatWillBeDeleted += allEntriesInPlans.length;
+
+        allEntriesInPlans.forEach((doc) => {
+            client.deleteDocument(
+                PortfolioPlanningDataService.PortfolioPlansCollectionName, 
+                doc.id).then(
+                    (deletedDoc) => console.log(`Deleted Plans collection document: ${doc.id}`)
+               );
+        });
+
+        return totalThatWillBeDeleted;
     }    
+
+    private async GetStorageClient() : Promise<IExtensionDataService> {
+        return VSS.getService<IExtensionDataService>(VSS.ServiceIds.ExtensionData);
+    }
+
+    private ParsePortfolioDirectory(doc : any) : PortfolioPlanningDirectory {
+        if(!doc) {
+            return {
+                exceptionMessage: null,
+                id: null,
+                entries: null
+            };
+        }
+
+        const directory : PortfolioPlanningDirectory = doc;
+        return directory;
+    }
+
+    private ParseStorageError(error: any) : IQueryResultError {
+        if(!error)
+        {
+            return {
+                exceptionMessage: "no error information"
+            };
+        }
+
+        const parsedError: ExtensionStorageError = error;
+
+        return {
+            exceptionMessage: parsedError.message,
+            status: parsedError.status
+        };
+    }
 
     private ParseODataPortfolioPlanningQueryResultResponse(results : any) : PortfolioPlanningQueryResult {
         if(!results || !results["value"]) {
@@ -180,7 +335,7 @@ export class ODataQueryBuilder {
     public static ProjectsQueryString(input: PortfolioPlanningProjectQueryInput) : string {
         return "Projects" +
         "?" +
-            `$select=${ODataQueryBuilder.ProjectEntitySelect}}` +
+            `$select=${ODataQueryBuilder.ProjectEntitySelect}` +
         "&" +
             `$filter=${this.ProjectsQueryFilter(input)}`;
     }
