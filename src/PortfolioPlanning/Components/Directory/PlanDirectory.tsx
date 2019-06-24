@@ -48,7 +48,7 @@ export class PlanDirectory extends React.Component<
                             this.props.toggleNewPlanDialogVisible(false)
                         }
                         onCreate={(name: string, description: string) => {
-                            alert(`Created with ${name} : ${description}`);
+                            this.props.createPlan(name, description);
                             this.props.toggleNewPlanDialogVisible(false);
                         }}
                     />
@@ -68,7 +68,7 @@ function mapStateToProps(
 }
 
 const Actions = {
-    onCreatePlan: PlanDirectoryActions.createPlan,
+    createPlan: PlanDirectoryActions.createPlan,
     toggleNewPlanDialogVisible: PlanDirectoryActions.toggleNewPlanDialogVisible
 };
 

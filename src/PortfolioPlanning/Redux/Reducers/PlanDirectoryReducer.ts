@@ -14,7 +14,13 @@ export function planDirectoryReducer(
             case PlanDirectoryActionTypes.CreatePlan: {
                 const { title, description } = action.payload;
 
-                alert(`Created with ${title} : ${description}`);
+                draft.plans.push({
+                    title: title,
+                    description: description,
+                    projects: ["Fabrikam"],
+                    teams: ["Contoso"],
+                    tags: ["Some tag"]
+                });
 
                 break;
             }
