@@ -27,7 +27,7 @@ export default class PlanHeader extends React.Component<PlanHeaderProps> {
                 />
                 <HeaderTitleArea>
                     <HeaderTitleRow>
-                        <HeaderTitle titleSize={TitleSize.Medium}>
+                        <HeaderTitle titleSize={TitleSize.Large}>
                             {this.props.title}
                         </HeaderTitle>
                     </HeaderTitleRow>
