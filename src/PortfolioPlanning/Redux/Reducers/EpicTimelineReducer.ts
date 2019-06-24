@@ -93,8 +93,8 @@ export function epicTimelineReducer(
                 );
 
                 draft.epics.splice(indexToRemove, 1);
+                draft.selectedItemId = undefined;
 
-                alert("Going to remove epic at " + indexToRemove.toString());
                 break;
             }
             case EpicTimelineActionTypes.ToggleProgressTrackingCriteria: {

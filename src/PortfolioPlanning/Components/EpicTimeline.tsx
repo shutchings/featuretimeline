@@ -56,9 +56,11 @@ export class EpicTimeline extends React.Component<
     }
 
     public render(): JSX.Element {
-        const selectedItem = this.props.items.find(
-            item => item.id === this.props.selectedItemId
-        );
+        const selectedItem = this.props.selectedItemId
+            ? this.props.items.find(
+                  item => item.id === this.props.selectedItemId
+              )
+            : undefined;
 
         const selectedKey =
             this.props.progressTrackingCriteria ===
@@ -124,6 +126,7 @@ export class EpicTimeline extends React.Component<
                     onItemResize={this._onItemResize}
                     onItemMove={this._onItemMove}
                     moveResizeValidator={this._validateResize}
+                    selected={[this.props.selectedItemId]}
                     onItemSelect={itemId =>
                         this.props.onSetSelectedItemId(itemId)
                     }
