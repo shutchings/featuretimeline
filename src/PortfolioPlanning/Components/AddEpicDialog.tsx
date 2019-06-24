@@ -63,9 +63,7 @@ export class AddEpicDialog extends React.Component<
                 onDismiss={() => this.props.onCloseAddEpicDialog()}
                 dialogContentProps={{
                     type: DialogType.close,
-                    title: "Add Epic",
-                    subText:
-                        "Enter id(s) of Epic you want to add, separate with comma"
+                    title: "Add Epic"
                 }}
                 modalProps={{
                     isBlocking: true
