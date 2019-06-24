@@ -26,7 +26,6 @@ export default class PlanDirectoryPage extends React.Component<
                         teams={["Contoso"]}
                         projects={["Fabrikam"]}
                         tags={["Marketing", "Engineering"]}
-                        owner={"Mona Kane"}
                     />
                     <PlanCard
                         title={"Q2 Roadmap"}
@@ -36,7 +35,6 @@ export default class PlanDirectoryPage extends React.Component<
                         teams={["Contoso", "Adatum"]}
                         projects={["Fabrikam"]}
                         tags={["Some tag"]}
-                        owner={"Colin Ballinger"}
                     />
                     <PlanCard
                         title={"Contoso Team's OKRs"}
@@ -44,7 +42,20 @@ export default class PlanDirectoryPage extends React.Component<
                         teams={["Contoso"]}
                         projects={["Fabrikam"]}
                         tags={["Some tag", "Engineering"]}
-                        owner={"Ashely McCarthy"}
+                    />
+                    <PlanCard
+                        title={"Contoso Team's OKRs"}
+                        description={"Contoso OKRs"}
+                        teams={["Contoso"]}
+                        projects={["Fabrikam"]}
+                        tags={["Some tag", "Engineering"]}
+                    />
+                    <PlanCard
+                        title={"Contoso Team's OKRs"}
+                        description={"Contoso OKRs"}
+                        teams={["Contoso"]}
+                        projects={["Fabrikam"]}
+                        tags={["Some tag", "Engineering"]}
                     />
                 </div>
             </Page>

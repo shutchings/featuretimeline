@@ -3,4 +3,6 @@
 .plan-directory-page-content {
     margin-top: 24px;
     background-color: $neutral-2;
+    display: flex;
+    flex-wrap: wrap;
 }
