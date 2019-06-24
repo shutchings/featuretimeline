@@ -6,17 +6,20 @@ import {
     HeaderTitle,
     HeaderTitleRow
 } from "azure-devops-ui/Header";
-import {
-    HeaderCommandBar,
-    IHeaderCommandBarItem
-} from "azure-devops-ui/HeaderCommandBar";
+import { HeaderCommandBar } from "azure-devops-ui/HeaderCommandBar";
 import "./PlanDirectoryHeader.scss";
 
-export interface PlanDirectoryProps {}
+export interface PlanDirectoryProps {
+    onNewPlanClick: () => void;
+}
 
 export default class PlanDirectoryHeader extends React.Component<
     PlanDirectoryProps
 > {
+    constructor(props) {
+        super(props);
+    }
+
     public render() {
         return (
             <CustomHeader className="bolt-header-with-commandbar">
@@ -27,20 +30,16 @@ export default class PlanDirectoryHeader extends React.Component<
                         </HeaderTitle>
                     </HeaderTitleRow>
                 </HeaderTitleArea>
-                <HeaderCommandBar items={this._getHeaderCommandBarItems()} />
+                <HeaderCommandBar
+                    items={[
+                        {
+                            id: "new-plan",
+                            text: "New plan",
+                            onActivate: this.props.onNewPlanClick
+                        }
+                    ]}
+                />
             </CustomHeader>
         );
     }
-
-    private _getHeaderCommandBarItems = (): IHeaderCommandBarItem[] => {
-        return [
-            {
-                id: "new-plan",
-                text: "New plan",
-                onActivate: () => {
-                    alert("Adding a new plan");
-                }
-            }
-        ];
-    };
 }

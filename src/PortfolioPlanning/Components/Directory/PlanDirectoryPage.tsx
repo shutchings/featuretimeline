@@ -7,17 +7,30 @@ import NewPlanDialog from "./NewPlanDialog";
 
 export interface PlanDirectoryPageProps {}
 
+interface PlanDirectoryPageState {
+    createNewPlanDialogOpen: boolean;
+}
+
 export default class PlanDirectoryPage extends React.Component<
-    PlanDirectoryPageProps
+    PlanDirectoryPageProps,
+    PlanDirectoryPageState
 > {
     constructor(props) {
         super(props);
+
+        this.state = { createNewPlanDialogOpen: false };
     }
 
     public render() {
         return (
             <Page className="plan-page">
-                <PlanDirectoryHeader />
+                <PlanDirectoryHeader
+                    onNewPlanClick={() => {
+                        this.setState({
+                            createNewPlanDialogOpen: true
+                        });
+                    }}
+                />
                 <div className="page-content plan-directory-page-content">
                     <PlanCard
                         title={"Q1 Planning"}
@@ -59,7 +72,13 @@ export default class PlanDirectoryPage extends React.Component<
                         tags={["Some tag", "Engineering"]}
                     />
                 </div>
-                <NewPlanDialog onDismiss={() => alert()} />
+                {this.state.createNewPlanDialogOpen && (
+                    <NewPlanDialog
+                        onDismiss={() =>
+                            this.setState({ createNewPlanDialogOpen: false })
+                        }
+                    />
+                )}
             </Page>
         );
     }
