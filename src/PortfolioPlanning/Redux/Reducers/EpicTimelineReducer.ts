@@ -83,7 +83,17 @@ export function epicTimelineReducer(
                 break;
             }
             case EpicTimelineActionTypes.AddEpics: {
-                draft.epics.push(...action.payload.epicsToAdd);
+                action.payload.epicsToAdd.map(epic => {
+                    if(draft.epics.findIndex(epicInDraft => epicInDraft.id === epic.id) === -1) {
+                        draft.epics.push(epic);
+                    }
+                })
+                break;
+            }
+            case EpicTimelineActionTypes.AddProject: {
+                if(draft.projects.findIndex(projectInDraft => projectInDraft.id === action.payload.projectToAdd.id) === -1) {
+                    draft.projects.push(action.payload.projectToAdd);
+                }
                 break;
             }
             case EpicTimelineActionTypes.ToggleProgressTrackingCriteria: {

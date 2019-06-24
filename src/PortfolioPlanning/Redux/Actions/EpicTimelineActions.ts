@@ -2,7 +2,7 @@ import {
     createAction,
     ActionsUnion
 } from "../../../Common/redux/Helpers/ActionHelper";
-import { IEpic, ProgressTrackingCriteria } from "../../Contracts";
+import { IEpic, ProgressTrackingCriteria, IProject } from "../../Contracts";
 import moment = require("moment");
 import {
     PortfolioPlanningQueryResult,
@@ -21,6 +21,7 @@ export const enum EpicTimelineActionTypes {
     OpenAddEpicDialog = "EpicTimeline/OpenAddEpicDialog",
     CloseAddEpicDialog = "EpicTimeline/CloseAddEpicDialog",
     AddEpics = "EpicTimeline/AddEpics",
+    AddProject = "EpicTimeline/AddProject",
     ToggleProgressTrackingCriteria = "EpicTimeline/ToggleProgressTrackingCriteria"
 }
 
@@ -57,6 +58,8 @@ export const EpicTimelineActions = {
         createAction(EpicTimelineActionTypes.CloseAddEpicDialog),
     addEpics: (epicsToAdd: IEpic[]) =>
         createAction(EpicTimelineActionTypes.AddEpics, { epicsToAdd }),
+    addProject: (projectToAdd: IProject) => 
+        createAction(EpicTimelineActionTypes.AddProject, { projectToAdd }),
     ToggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>
         createAction(EpicTimelineActionTypes.ToggleProgressTrackingCriteria, {
             criteria

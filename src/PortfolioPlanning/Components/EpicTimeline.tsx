@@ -238,6 +238,7 @@ export class EpicTimeline extends React.Component<
                     onCloseAddEpicDialog={this.props.onCloseAddEpicDialog}
                     otherEpics={this.props.otherEpics}
                     onAddEpics={this.props.onAddEpics}
+                    onAddProject={this.props.onAddProject}
                 />
             );
         }
@@ -264,6 +265,7 @@ const Actions = {
     onOpenAddEpicDialog: EpicTimelineActions.openAddEpicDialog,
     onCloseAddEpicDialog: EpicTimelineActions.closeAddEpicDialog,
     onAddEpics: EpicTimelineActions.addEpics,
+    onAddProject: EpicTimelineActions.addProject,
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
     onUpdateEndDate: EpicTimelineActions.updateEndDate,
     onShiftEpic: EpicTimelineActions.shiftEpic,

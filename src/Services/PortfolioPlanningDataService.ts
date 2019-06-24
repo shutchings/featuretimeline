@@ -180,7 +180,7 @@ export class ODataQueryBuilder {
     public static ProjectsQueryString(input: PortfolioPlanningProjectQueryInput) : string {
         return "Projects" +
         "?" +
-            `$select=${ODataQueryBuilder.ProjectEntitySelect}}` +
+            `$select=${ODataQueryBuilder.ProjectEntitySelect}` +
         "&" +
             `$filter=${this.ProjectsQueryFilter(input)}`;
     }
