@@ -3,6 +3,7 @@ import "./PlanDirectoryPage.scss";
 import { Page } from "azure-devops-ui/Page";
 import PlanDirectoryHeader from "./PlanDirectoryHeader";
 import PlanCard from "./PlanCard";
+import NewPlanDialog from "./NewPlanDialog";
 
 export interface PlanDirectoryPageProps {}
 
@@ -58,6 +59,7 @@ export default class PlanDirectoryPage extends React.Component<
                         tags={["Some tag", "Engineering"]}
                     />
                 </div>
+                <NewPlanDialog onDismiss={() => alert()} />
             </Page>
         );
     }
