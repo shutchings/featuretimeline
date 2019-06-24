@@ -88,12 +88,24 @@ export function epicTimelineReducer(
             }
             case EpicTimelineActionTypes.RemoveEpic: {
                 const { id } = action.payload;
-                const indexToRemove = state.epics.findIndex(
+                const indexToRemoveEpic = state.epics.findIndex(
                     epic => epic.id === id
                 );
 
-                draft.epics.splice(indexToRemove, 1);
+                const removedEpic = draft.epics.splice(indexToRemoveEpic, 1)[0];
                 draft.selectedItemId = undefined;
+
+                // Remove the project if it's the last epic in the project
+                if (
+                    !draft.epics.some(
+                        epic => epic.project === removedEpic.project
+                    )
+                ) {
+                    const indexToRemoveProject = state.projects.findIndex(
+                        project => project.id === removedEpic.project
+                    );
+                    draft.projects.splice(indexToRemoveProject, 1);
+                }
 
                 break;
             }
