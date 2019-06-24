@@ -10,6 +10,7 @@ import {
     HeaderCommandBar,
     IHeaderCommandBarItem
 } from "azure-devops-ui/HeaderCommandBar";
+import "./PlanDirectoryHeader.scss";
 
 export interface PlanDirectoryProps {}
 

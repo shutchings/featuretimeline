@@ -1,4 +1,5 @@
 import * as React from "react";
+import "./PlanDirectoryPage.scss";
 import { Page } from "azure-devops-ui/Page";
 import PlanDirectoryHeader from "./PlanDirectoryHeader";
 
@@ -15,7 +16,9 @@ export default class PlanDirectoryPage extends React.Component<
         return (
             <Page className="plan-page">
                 <PlanDirectoryHeader />
-                <div className="page-content page-content-top">Some stuff</div>
+                <div className="page-content plan-directory-page-content">
+                    stuff
+                </div>
             </Page>
         );
     }
