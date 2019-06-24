@@ -95,7 +95,7 @@ export function epicTimelineReducer(
                     ) {
                         draft.projects.push({
                             id: epic.project,
-                            title: "Newly added project"
+                            title: "Newly added project" // TODO: Add real project name once we work the real scenario with Ed
                         });
                     }
                 }
