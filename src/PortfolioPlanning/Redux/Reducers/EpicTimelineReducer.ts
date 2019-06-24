@@ -83,7 +83,23 @@ export function epicTimelineReducer(
                 break;
             }
             case EpicTimelineActionTypes.AddEpics: {
-                draft.epics.push(...action.payload.epicsToAdd);
+                const { epicsToAdd } = action.payload;
+
+                draft.epics.push(...epicsToAdd);
+
+                for (let epic of epicsToAdd) {
+                    if (
+                        !draft.projects.find(
+                            project => project.id === epic.project
+                        )
+                    ) {
+                        draft.projects.push({
+                            id: epic.project,
+                            title: "Newly added project"
+                        });
+                    }
+                }
+
                 break;
             }
             case EpicTimelineActionTypes.RemoveEpic: {
