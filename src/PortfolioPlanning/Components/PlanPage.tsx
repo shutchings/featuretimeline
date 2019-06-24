@@ -10,10 +10,14 @@ export default class PlanPage extends React.Component<PlanPageProps> {
     constructor(props) {
         super(props);
     }
+
     public render() {
         return (
-            <Page className={"plan-page"}>
-                <PlanHeader title={"Header title"} />
+            <Page className="plan-page">
+                <PlanHeader
+                    title={"Header title"}
+                    description={"Header description"}
+                />
                 <div className="page-content">
                     <ConnectedEpicTimeline />
                 </div>

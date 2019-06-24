@@ -1,4 +1,11 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+
 .plan-page {
     position: absolute;
     width: 100%;
+}
+
+.bolt-button.bolt-header-back-button {
+    font-size: $fontSizeML;
+    margin-right: $spacing-8;
 }
