@@ -89,7 +89,12 @@ module.exports = {
     devtool: "source-map",
     mode: mode,
     resolve: {
-        extensions: [".ts", ".tsx", ".js", ".json"]
+        extensions: [".ts", ".tsx", ".js", ".json"],
+        alias: {
+            "azure-devops-extension-sdk": path.resolve(
+                "node_modules/azure-devops-extension-sdk"
+            )
+        }
     },
     module: {
         rules: [
@@ -113,11 +118,7 @@ module.exports = {
             },
             {
                 test: /\.css$/,
-                use: [
-                    {
-                        loader: "style-loader!css-loader?modules"
-                    }
-                ]
+                use: ["style-loader", "css-loader"]
             },
             {
                 test: /\.(scss)$/,
@@ -136,10 +137,22 @@ module.exports = {
                         }
                     },
                     {
+                        loader:
+                            "azure-devops-ui/buildScripts/css-variables-loader"
+                    },
+                    {
                         loader: "sass-loader",
                         options: {
                             sourcemap: sourcemap
                         }
+                    }
+                ]
+            },
+            {
+                test: /\.woff$/,
+                use: [
+                    {
+                        loader: "base64-inline-loader"
                     }
                 ]
             }

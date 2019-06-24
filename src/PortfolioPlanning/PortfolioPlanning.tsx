@@ -1,10 +1,10 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { iePollyfill } from "../polyfill";
-import { ConnectedEpicTimeline } from "./Components/EpicTimeline";
 import configurePortfolioPlanningStore from "./Redux/PortfolioPlanningStore";
 import { Provider } from "react-redux";
 import { getDefaultState } from "./Redux/Reducers/EpicTimelineReducer";
+import PlanPage from "./Components/PlanPage";
 
 export function initialize(): void {
     if (!isBackground()) {
@@ -14,9 +14,9 @@ export function initialize(): void {
         });
         ReactDOM.render(
             <Provider store={store}>
-                <ConnectedEpicTimeline />
+                <PlanPage />
             </Provider>,
-            document.getElementById("root")	
+            document.getElementById("root")
         );
     }
 }
