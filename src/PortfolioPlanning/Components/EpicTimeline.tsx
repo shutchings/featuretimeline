@@ -127,6 +127,9 @@ export class EpicTimeline extends React.Component<
                     onItemSelect={itemId =>
                         this.props.onSetSelectedItemId(itemId)
                     }
+                    onCanvasClick={() =>
+                        this.props.onSetSelectedItemId(undefined)
+                    }
                     itemRenderer={({ item, itemContext, getItemProps }) => {
                         return (
                             <div {...getItemProps(item.itemProps)}>

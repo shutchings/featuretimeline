@@ -88,9 +88,11 @@ export function epicTimelineReducer(
             }
             case EpicTimelineActionTypes.RemoveEpic: {
                 const { id } = action.payload;
-                const indexToRemove = draft.epics.findIndex(
+                const indexToRemove = state.epics.findIndex(
                     epic => epic.id === id
                 );
+
+                draft.epics.splice(indexToRemove, 1);
 
                 alert("Going to remove epic at " + indexToRemove.toString());
                 break;
