@@ -22,9 +22,11 @@ import {
 } from "../Redux/Selectors/EpicTimelineSelectors";
 import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
-import { SetDatesDialog } from "./SetDatesDialog";
+import { DetailsDialog } from "./DetailsDialog";
 import { AddEpicDialog } from "./AddEpicDialog";
 import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
+import { ProgressDetails } from "../../Common/react/Components/ProgressDetails/ProgressDetails";
+import { InfoIcon } from "../../Common/react/Components/InfoIcon/InfoIcon";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -58,11 +60,15 @@ export class EpicTimeline extends React.Component<
             item => item.id === this.props.selectedItemId
         );
 
-        const selectedKey =
+        const selectedProgressCriteriaKey =
             this.props.progressTrackingCriteria ===
             ProgressTrackingCriteria.CompletedCount
                 ? "completedCount"
                 : "storyPoints";
+
+        const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(
+            this.props.items
+        );
 
         return (
             <div>
@@ -73,7 +79,7 @@ export class EpicTimeline extends React.Component<
                         </div>
                         <ComboBox
                             className="progress-options-dropdown"
-                            selectedKey={selectedKey}
+                            selectedKey={selectedProgressCriteriaKey}
                             allowFreeform={false}
                             autoComplete="off"
                             options={[
@@ -96,12 +102,19 @@ export class EpicTimeline extends React.Component<
                     >
                         Add Epic
                     </button>
+                    <button
+                        className="epictimeline-add-epic-button"
+                        disabled={!this.props.selectedItemId}
+                        onClick={this._onRemoveSelectedEpicClick}
+                    >
+                        Remove selected epic from plan
+                    </button>
                 </div>
                 <Timeline
                     groups={this.props.groups}
                     items={this.props.items}
-                    defaultTimeStart={moment().add(-6, "month")}
-                    defaultTimeEnd={moment().add(6, "month")}
+                    defaultTimeStart={defaultTimeStart}
+                    defaultTimeEnd={defaultTimeEnd}
                     canChangeGroup={false}
                     stackItems={true}
                     dragSnap={day}
@@ -111,31 +124,49 @@ export class EpicTimeline extends React.Component<
                     onItemResize={this._onItemResize}
                     onItemMove={this._onItemMove}
                     moveResizeValidator={this._validateResize}
+                    selecte={[this.props.selectedItemId]}
                     onItemSelect={itemId =>
                         this.props.onSetSelectedItemId(itemId)
                     }
-                    onItemClick={() => {
-                        this.props.onToggleSetDatesDialogHidden(false);
-                    }}
-                    itemRenderer={({
-                        item,
-                        itemContext,
-                        getItemProps,
-                        getResizeProps
-                    }) => {
+                    onCanvasClick={() =>
+                        this.props.onSetSelectedItemId(undefined)
+                    }
+                    itemRenderer={({ item, itemContext, getItemProps }) => {
                         return (
                             <div {...getItemProps(item.itemProps)}>
                                 <div
                                     style={{
                                         maxHeight: `${
                                             itemContext.dimensions.height
-                                        }`
+                                        }`,
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        overflow: "hidden",
+                                        marginRight: "5px",
+                                        alignItems: "baseline"
                                     }}
                                 >
-                                    {`${itemContext.title}    ${
-                                        item.itemProps.completed
-                                    }/${item.itemProps.total} (${item.itemProps
-                                        .progress / 1.0}%)`}
+                                    {itemContext.title}
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "flex-end"
+                                        }}
+                                    >
+                                        <InfoIcon
+                                            id={item.id}
+                                            onClick={() =>
+                                                this.props.onToggleSetDatesDialogHidden(
+                                                    false
+                                                )
+                                            }
+                                        />
+                                        <ProgressDetails
+                                            completed={item.itemProps.completed}
+                                            total={item.itemProps.total}
+                                            onClick={() => {}}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         );
@@ -143,12 +174,8 @@ export class EpicTimeline extends React.Component<
                 />
                 {this._renderAddEpicDialog()}
                 {this.props.selectedItemId && (
-                    <SetDatesDialog
-                        key={
-                            this.props.selectedItemId +
-                            selectedItem.start_time.millisecond() +
-                            selectedItem.end_time.millisecond()
-                        }
+                    <DetailsDialog
+                        key={Date.now()} // TODO: Is there a better way to reset the state?
                         id={this.props.selectedItemId}
                         title={selectedItem.title}
                         startDate={selectedItem.start_time}
@@ -213,6 +240,10 @@ export class EpicTimeline extends React.Component<
         this.props.onOpenAddEpicDialog();
     };
 
+    private _onRemoveSelectedEpicClick = (): void => {
+        this.props.onRemoveSelectedEpic(this.props.selectedItemId);
+    };
+
     private _onProgressTrackingCriteriaChanged = (item: {
         key: string;
         text: string;
@@ -238,10 +269,28 @@ export class EpicTimeline extends React.Component<
                     onCloseAddEpicDialog={this.props.onCloseAddEpicDialog}
                     otherEpics={this.props.otherEpics}
                     onAddEpics={this.props.onAddEpics}
-                    onAddProject={this.props.onAddProject}
                 />
             );
         }
+    }
+
+    // TODO: We only need this on first render
+    private _getDefaultTimes(
+        items: ITimelineItem[]
+    ): [moment.Moment, moment.Moment] {
+        let startTime = moment().add(-1, "months");
+        let endTime = moment().add(1, "months");
+
+        for (const item of items) {
+            if (item.start_time < startTime) {
+                startTime = moment(item.start_time).add(-1, "months");
+            }
+            if (item.end_time > endTime) {
+                endTime = moment(item.end_time).add(1, "months");
+            }
+        }
+
+        return [startTime, endTime];
     }
 }
 
@@ -265,7 +314,6 @@ const Actions = {
     onOpenAddEpicDialog: EpicTimelineActions.openAddEpicDialog,
     onCloseAddEpicDialog: EpicTimelineActions.closeAddEpicDialog,
     onAddEpics: EpicTimelineActions.addEpics,
-    onAddProject: EpicTimelineActions.addProject,
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
     onUpdateEndDate: EpicTimelineActions.updateEndDate,
     onShiftEpic: EpicTimelineActions.shiftEpic,
@@ -273,7 +321,8 @@ const Actions = {
         EpicTimelineActions.toggleSetDatesDialogHidden,
     onSetSelectedItemId: EpicTimelineActions.setSelectedItemId,
     onToggleProgressTrackingCriteria:
-        EpicTimelineActions.ToggleProgressTrackingCriteria
+        EpicTimelineActions.toggleProgressTrackingCriteria,
+    onRemoveSelectedEpic: EpicTimelineActions.removeEpic
 };
 
 export const ConnectedEpicTimeline = connect(

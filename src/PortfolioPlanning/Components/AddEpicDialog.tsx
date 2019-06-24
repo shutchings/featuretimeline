@@ -20,8 +20,7 @@ import "./AddEpicDialog.scss";
 export interface IAddEpicDialogProps {
     onCloseAddEpicDialog: () => void;
     otherEpics: IEpic[];
-    onAddEpics: (epicsToAdd: IEpic[]) => void;
-    onAddProject: (projectToAdd: IProject) => void;
+    onAddEpics: (epicsToAdd: IEpic[], projectTitle: string) => void;
 }
 
 interface IAddEpicDialogState {
@@ -172,8 +171,7 @@ export class AddEpicDialog extends React.Component<
     };
 
     private _onAddEpics = (): void => {
-        this.props.onAddProject(this.state.selectedProject);
-        this.props.onAddEpics(this.state.selectedEpics);
+        this.props.onAddEpics(this.state.selectedEpics, this.state.selectedProject.title);
         this.props.onCloseAddEpicDialog();
     };
 

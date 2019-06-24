@@ -2,7 +2,7 @@ import {
     createAction,
     ActionsUnion
 } from "../../../Common/redux/Helpers/ActionHelper";
-import { IEpic, ProgressTrackingCriteria, IProject } from "../../Contracts";
+import { IEpic, ProgressTrackingCriteria } from "../../Contracts";
 import moment = require("moment");
 import {
     PortfolioPlanningQueryResult,
@@ -21,7 +21,7 @@ export const enum EpicTimelineActionTypes {
     OpenAddEpicDialog = "EpicTimeline/OpenAddEpicDialog",
     CloseAddEpicDialog = "EpicTimeline/CloseAddEpicDialog",
     AddEpics = "EpicTimeline/AddEpics",
-    AddProject = "EpicTimeline/AddProject",
+    RemoveEpic = "EpicTimeline/RemoveEpic",
     ToggleProgressTrackingCriteria = "EpicTimeline/ToggleProgressTrackingCriteria"
 }
 
@@ -56,11 +56,11 @@ export const EpicTimelineActions = {
         createAction(EpicTimelineActionTypes.OpenAddEpicDialog),
     closeAddEpicDialog: () =>
         createAction(EpicTimelineActionTypes.CloseAddEpicDialog),
-    addEpics: (epicsToAdd: IEpic[]) =>
-        createAction(EpicTimelineActionTypes.AddEpics, { epicsToAdd }),
-    addProject: (projectToAdd: IProject) => 
-        createAction(EpicTimelineActionTypes.AddProject, { projectToAdd }),
-    ToggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>
+    addEpics: (epicsToAdd: IEpic[], projectTitle: string) =>
+        createAction(EpicTimelineActionTypes.AddEpics, { epicsToAdd, projectTitle }),
+    removeEpic: (id: number) =>
+        createAction(EpicTimelineActionTypes.RemoveEpic, { id }),
+    toggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>
         createAction(EpicTimelineActionTypes.ToggleProgressTrackingCriteria, {
             criteria
         })

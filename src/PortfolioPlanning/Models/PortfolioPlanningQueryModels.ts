@@ -77,4 +77,41 @@ export interface WorkItem
 export interface IQueryResultError
 {
     exceptionMessage: string;
+    status?: number;
+}
+
+
+export interface PortfolioPlanningMetadata
+{
+    id: string;
+    name: string;
+    createdOn: Date;
+}
+
+export interface PortfolioPlanning extends PortfolioPlanningMetadata
+{
+    projects: ProjectPortfolioPlanning[]
+}
+
+export interface ProjectPortfolioPlanning
+{
+    ProjectId: string;
+    PortfolioWorkItemType: string;
+    RequirementWorkItemType: string;
+    WorkItemIds: number[];
+}
+
+export interface PortfolioPlanningDirectory extends IQueryResultError
+{
+    id: string;
+    entries: PortfolioPlanningMetadata[]
+}
+
+export interface ExtensionStorageError 
+{
+    stack: string;
+    message: string;
+    name: string;
+    status: number;
+    responseText: string;
 }

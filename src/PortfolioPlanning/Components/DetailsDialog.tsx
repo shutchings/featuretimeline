@@ -86,7 +86,7 @@ const datePickerStrings: IDatePickerStrings = {
     nextYearAriaLabel: "Go to next year"
 };
 
-export class SetDatesDialog extends React.Component<
+export class DetailsDialog extends React.Component<
     ISetDatesDialogProps,
     ISetDatesDialogState
 > {
@@ -100,33 +100,36 @@ export class SetDatesDialog extends React.Component<
     }
 
     public render() {
+        const errorMessage = this._getErrorMessage();
+
         return (
             <Dialog
                 hidden={this.props.hidden}
                 onDismiss={this._onCancelDialog}
                 dialogContentProps={{
                     type: DialogType.normal,
-                    title: `Set Dates for ${this.props.title}`
+                    title: `Details for ${this.props.title}`
                 }}
             >
                 Start Date:
                 <DatePicker
                     value={this.state.selectedStartDate.toDate()}
-                    onSelectDate={date =>
-                        this.setState({ selectedStartDate: moment(date) })
-                    }
+                    onSelectDate={this._onSetSelectedStartDate}
                     strings={datePickerStrings}
                 />
                 End Date:
                 <DatePicker
                     value={this.state.selectedEndDate.toDate()}
-                    onSelectDate={date =>
-                        this.setState({ selectedEndDate: moment(date) })
-                    }
+                    onSelectDate={this._onSetSelectedEndDate}
                     strings={datePickerStrings}
                 />
+                {errorMessage}
                 <DialogFooter>
-                    <PrimaryButton onClick={this._onSaveDialog} text="Save" />
+                    <PrimaryButton
+                        onClick={this._onSaveDialog}
+                        disabled={!!errorMessage}
+                        text="Save"
+                    />
                     <DefaultButton
                         onClick={this._onCancelDialog}
                         text="Cancel"
@@ -147,5 +150,25 @@ export class SetDatesDialog extends React.Component<
 
     private _onCancelDialog = (): void => {
         this.props.close();
+    };
+
+    private _onSetSelectedStartDate = (date: Date): void => {
+        this.setState({ selectedStartDate: moment(date) });
+    };
+
+    private _onSetSelectedEndDate = (date: Date): void => {
+        this.setState({ selectedEndDate: moment(date) });
+    };
+
+    private _getErrorMessage = (): JSX.Element => {
+        if (this.state.selectedStartDate > this.state.selectedEndDate) {
+            return (
+                <div style={{ color: "red" }}>
+                    Start date must be before end date.
+                </div>
+            );
+        } else {
+            return null;
+        }
     };
 }
