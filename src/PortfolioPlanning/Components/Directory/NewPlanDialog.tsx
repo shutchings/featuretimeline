@@ -10,12 +10,13 @@ import { ButtonGroup } from "azure-devops-ui/ButtonGroup";
 
 export interface NewPlanDialogProps {
     onDismiss: () => void;
+    onCreate: (name: string, description: string) => void;
 }
 
-const nameObservable = new ObservableValue<string>("");
-const descriptionObservable = new ObservableValue<string>("");
-
 export default class NewPlanDialog extends React.Component<NewPlanDialogProps> {
+    private nameObservable = new ObservableValue<string>("");
+    private descriptionObservable = new ObservableValue<string>("");
+
     public render() {
         return (
             <CustomDialog
@@ -32,18 +33,18 @@ export default class NewPlanDialog extends React.Component<NewPlanDialogProps> {
                     <div className="flex-column">
                         <TextField
                             className="text-field"
-                            value={nameObservable}
+                            value={this.nameObservable}
                             onChange={(e, newValue) =>
-                                (nameObservable.value = newValue)
+                                (this.nameObservable.value = newValue)
                             }
                             width={TextFieldWidth.standard}
                             placeholder="Add your plan name"
                         />
                         <TextField
                             className="text-field"
-                            value={descriptionObservable}
+                            value={this.descriptionObservable}
                             onChange={(e, newValue) =>
-                                (descriptionObservable.value = newValue)
+                                (this.descriptionObservable.value = newValue)
                             }
                             multiline
                             rows={4}
@@ -58,13 +59,13 @@ export default class NewPlanDialog extends React.Component<NewPlanDialogProps> {
                         <Button
                             text="Create"
                             primary={true}
-                            onClick={() =>
-                                alert(
-                                    `Created plan ${nameObservable.value}: ${
-                                        descriptionObservable.value
-                                    }`
-                                )
-                            }
+                            onClick={() => {
+                                this.props.onCreate(
+                                    this.nameObservable.value,
+                                    this.descriptionObservable.value
+                                );
+                            }}
+                            disabled={false} // TODO: Add disabled logic
                         />
                     </ButtonGroup>
                 </PanelFooter>

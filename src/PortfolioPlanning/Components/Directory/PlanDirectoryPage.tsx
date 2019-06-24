@@ -77,6 +77,10 @@ export default class PlanDirectoryPage extends React.Component<
                         onDismiss={() =>
                             this.setState({ createNewPlanDialogOpen: false })
                         }
+                        onCreate={(name: string, description: string) => {
+                            alert(`Created with ${name} : ${description}`);
+                            this.setState({ createNewPlanDialogOpen: false });
+                        }}
                     />
                 )}
             </Page>
