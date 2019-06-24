@@ -1,24 +1,24 @@
 import * as React from "react";
-import "./PlanDirectoryPage.scss";
+import "./PlanDirectory.scss";
 import { Page } from "azure-devops-ui/Page";
 import PlanDirectoryHeader from "./PlanDirectoryHeader";
 import PlanCard from "./PlanCard";
 import NewPlanDialog from "./NewPlanDialog";
+import { PlanDirectoryActions } from "../../Redux/Actions/PlanDirectoryActions";
+import { connect } from "react-redux";
+import { IPortfolioPlanningState } from "../../Redux/Contracts";
 
-export interface PlanDirectoryPageProps {}
+export interface IPlanDirectoryProps {}
 
-interface PlanDirectoryPageState {
-    createNewPlanDialogOpen: boolean;
+interface IPlanDirectoryMappedProps {
+    newPlanDialogVisible: boolean;
 }
 
-export default class PlanDirectoryPage extends React.Component<
-    PlanDirectoryPageProps,
-    PlanDirectoryPageState
+export class PlanDirectory extends React.Component<
+    IPlanDirectoryProps & IPlanDirectoryMappedProps & typeof Actions
 > {
     constructor(props) {
         super(props);
-
-        this.state = { createNewPlanDialogOpen: false };
     }
 
     public render() {
@@ -26,9 +26,7 @@ export default class PlanDirectoryPage extends React.Component<
             <Page className="plan-page">
                 <PlanDirectoryHeader
                     onNewPlanClick={() => {
-                        this.setState({
-                            createNewPlanDialogOpen: true
-                        });
+                        this.props.toggleNewPlanDialogVisible(true);
                     }}
                 />
                 <div className="page-content plan-directory-page-content">
@@ -72,14 +70,14 @@ export default class PlanDirectoryPage extends React.Component<
                         tags={["Some tag", "Engineering"]}
                     />
                 </div>
-                {this.state.createNewPlanDialogOpen && (
+                {this.props.newPlanDialogVisible && (
                     <NewPlanDialog
                         onDismiss={() =>
-                            this.setState({ createNewPlanDialogOpen: false })
+                            this.props.toggleNewPlanDialogVisible(false)
                         }
                         onCreate={(name: string, description: string) => {
                             alert(`Created with ${name} : ${description}`);
-                            this.setState({ createNewPlanDialogOpen: false });
+                            this.props.toggleNewPlanDialogVisible(false);
                         }}
                     />
                 )}
@@ -87,3 +85,21 @@ export default class PlanDirectoryPage extends React.Component<
         );
     }
 }
+
+function mapStateToProps(
+    state: IPortfolioPlanningState
+): IPlanDirectoryMappedProps {
+    return {
+        newPlanDialogVisible: state.planDirectoryState.newPlanDialogVisible
+    };
+}
+
+const Actions = {
+    onCreatePlan: PlanDirectoryActions.createPlan,
+    toggleNewPlanDialogVisible: PlanDirectoryActions.toggleNewPlanDialogVisible
+};
+
+export const ConnectedPlanDirectory = connect(
+    mapStateToProps,
+    Actions
+)(PlanDirectory);
