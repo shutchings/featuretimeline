@@ -15,9 +15,7 @@ export default class PlanDirectoryPage extends React.Component<
         return (
             <Page className="plan-page">
                 <PlanDirectoryHeader />
-                {/* <div className="page-content">
-                    <ConnectedEpicTimeline />
-                </div>{" "} */}
+                <div className="page-content page-content-top">Some stuff</div>
             </Page>
         );
     }

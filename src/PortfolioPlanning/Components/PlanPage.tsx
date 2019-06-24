@@ -18,7 +18,7 @@ export default class PlanPage extends React.Component<PlanPageProps> {
                     title={"Header title"}
                     description={"Header description"}
                 />
-                <div className="page-content">
+                <div className="page-content page-content-top">
                     <ConnectedEpicTimeline />
                 </div>
             </Page>
