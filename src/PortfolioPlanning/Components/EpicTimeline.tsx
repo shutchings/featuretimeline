@@ -22,7 +22,7 @@ import {
 } from "../Redux/Selectors/EpicTimelineSelectors";
 import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
-import { SetDatesDialog } from "./SetDatesDialog";
+import { DetailsDialog } from "./DetailsDialog";
 import { AddEpicDialog } from "./AddEpicDialog";
 import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
 import { ProgressDetails } from "../../Common/react/Components/ProgressDetails/ProgressDetails";
@@ -60,7 +60,7 @@ export class EpicTimeline extends React.Component<
             item => item.id === this.props.selectedItemId
         );
 
-        const selectedKey =
+        const selectedProgressCriteriaKey =
             this.props.progressTrackingCriteria ===
             ProgressTrackingCriteria.CompletedCount
                 ? "completedCount"
@@ -79,7 +79,7 @@ export class EpicTimeline extends React.Component<
                         </div>
                         <ComboBox
                             className="progress-options-dropdown"
-                            selectedKey={selectedKey}
+                            selectedKey={selectedProgressCriteriaKey}
                             allowFreeform={false}
                             autoComplete="off"
                             options={[
@@ -102,6 +102,13 @@ export class EpicTimeline extends React.Component<
                     >
                         Add Epic
                     </button>
+                    <button
+                        className="epictimeline-add-epic-button"
+                        disabled={!this.props.selectedItemId}
+                        onClick={this._onRemoveSelectedEpicClick}
+                    >
+                        Remove selected epic from plan
+                    </button>
                 </div>
                 <Timeline
                     groups={this.props.groups}
@@ -117,8 +124,12 @@ export class EpicTimeline extends React.Component<
                     onItemResize={this._onItemResize}
                     onItemMove={this._onItemMove}
                     moveResizeValidator={this._validateResize}
+                    selecte={[this.props.selectedItemId]}
                     onItemSelect={itemId =>
                         this.props.onSetSelectedItemId(itemId)
+                    }
+                    onCanvasClick={() =>
+                        this.props.onSetSelectedItemId(undefined)
                     }
                     itemRenderer={({ item, itemContext, getItemProps }) => {
                         return (
@@ -163,7 +174,7 @@ export class EpicTimeline extends React.Component<
                 />
                 {this._renderAddEpicDialog()}
                 {this.props.selectedItemId && (
-                    <SetDatesDialog
+                    <DetailsDialog
                         key={Date.now()} // TODO: Is there a better way to reset the state?
                         id={this.props.selectedItemId}
                         title={selectedItem.title}
@@ -227,6 +238,10 @@ export class EpicTimeline extends React.Component<
 
     private _onAddEpicClick = (): void => {
         this.props.onOpenAddEpicDialog();
+    };
+
+    private _onRemoveSelectedEpicClick = (): void => {
+        this.props.onRemoveSelectedEpic(this.props.selectedItemId);
     };
 
     private _onProgressTrackingCriteriaChanged = (item: {
@@ -306,7 +321,8 @@ const Actions = {
         EpicTimelineActions.toggleSetDatesDialogHidden,
     onSetSelectedItemId: EpicTimelineActions.setSelectedItemId,
     onToggleProgressTrackingCriteria:
-        EpicTimelineActions.ToggleProgressTrackingCriteria
+        EpicTimelineActions.toggleProgressTrackingCriteria,
+    onRemoveSelectedEpic: EpicTimelineActions.removeEpic
 };
 
 export const ConnectedEpicTimeline = connect(

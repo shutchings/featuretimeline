@@ -86,7 +86,7 @@ const datePickerStrings: IDatePickerStrings = {
     nextYearAriaLabel: "Go to next year"
 };
 
-export class SetDatesDialog extends React.Component<
+export class DetailsDialog extends React.Component<
     ISetDatesDialogProps,
     ISetDatesDialogState
 > {
@@ -108,7 +108,7 @@ export class SetDatesDialog extends React.Component<
                 onDismiss={this._onCancelDialog}
                 dialogContentProps={{
                     type: DialogType.normal,
-                    title: `Set Dates for ${this.props.title}`
+                    title: `Details for ${this.props.title}`
                 }}
             >
                 Start Date:

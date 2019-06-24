@@ -6,6 +6,7 @@ const secondProjectId = "2";
 const secondProjectName = "Project 2";
 const thirdProjectId = "3";
 const thirdProjectName = "Project 3";
+const fourthProjectId = "4";
 
 export const Projects: IProject[] = [
     { id: firstProjectId, title: firstProjectName },
@@ -133,5 +134,18 @@ export const OtherEpics: IEpic[] = [
         totalStoryPoints: 0,
         storyPointsProgress: 0.0,
         countProgress: 0.0
+    },
+    {
+        id: 10,
+        project: fourthProjectId,
+        title: "Epic 10",
+        startDate: new Date(2019, 5, 15),
+        endDate: new Date(2019, 7, 30),
+        completedCount: 4,
+        totalCount: 8,
+        completedStoryPoints: 20,
+        totalStoryPoints: 80,
+        storyPointsProgress: 0.25,
+        countProgress: 0.5
     }
 ];

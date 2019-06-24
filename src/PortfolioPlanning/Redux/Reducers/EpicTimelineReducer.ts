@@ -83,7 +83,46 @@ export function epicTimelineReducer(
                 break;
             }
             case EpicTimelineActionTypes.AddEpics: {
-                draft.epics.push(...action.payload.epicsToAdd);
+                const { epicsToAdd } = action.payload;
+
+                draft.epics.push(...epicsToAdd);
+
+                for (let epic of epicsToAdd) {
+                    if (
+                        !draft.projects.find(
+                            project => project.id === epic.project
+                        )
+                    ) {
+                        draft.projects.push({
+                            id: epic.project,
+                            title: "Newly added project" // TODO: Add real project name once we work the real scenario with Ed
+                        });
+                    }
+                }
+
+                break;
+            }
+            case EpicTimelineActionTypes.RemoveEpic: {
+                const { id } = action.payload;
+                const indexToRemoveEpic = state.epics.findIndex(
+                    epic => epic.id === id
+                );
+
+                const removedEpic = draft.epics.splice(indexToRemoveEpic, 1)[0];
+                draft.selectedItemId = undefined;
+
+                // Remove the project if it's the last epic in the project
+                if (
+                    !draft.epics.some(
+                        epic => epic.project === removedEpic.project
+                    )
+                ) {
+                    const indexToRemoveProject = state.projects.findIndex(
+                        project => project.id === removedEpic.project
+                    );
+                    draft.projects.splice(indexToRemoveProject, 1);
+                }
+
                 break;
             }
             case EpicTimelineActionTypes.ToggleProgressTrackingCriteria: {
