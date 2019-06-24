@@ -13,6 +13,17 @@ export interface PlanCardProps {
 
 export default class PlanCard extends React.Component<PlanCardProps> {
     public render() {
-        return <Card />;
+        return (
+            <Card>
+                <div className="flex-column">
+                    <div>{this.props.title}</div>
+                    <div>{this.props.description}</div>
+                    <div>{this.props.teams.join(" ")}</div>
+                    <div>{this.props.projects.join(" ")}</div>
+                    <div>{this.props.tags.join(" ")}</div>
+                    <div>{this.props.owner}</div>
+                </div>
+            </Card>
+        );
     }
 }
