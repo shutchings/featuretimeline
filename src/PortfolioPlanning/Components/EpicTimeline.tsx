@@ -56,13 +56,11 @@ export class EpicTimeline extends React.Component<
     }
 
     public render(): JSX.Element {
-        const selectedItem = this.props.selectedItemId
-            ? this.props.items.find(
-                  item => item.id === this.props.selectedItemId
-              )
-            : undefined;
+        const selectedItem = this.props.items.find(
+            item => item.id === this.props.selectedItemId
+        );
 
-        const selectedKey =
+        const selectedProgressCriteriaKey =
             this.props.progressTrackingCriteria ===
             ProgressTrackingCriteria.CompletedCount
                 ? "completedCount"
@@ -81,7 +79,7 @@ export class EpicTimeline extends React.Component<
                         </div>
                         <ComboBox
                             className="progress-options-dropdown"
-                            selectedKey={selectedKey}
+                            selectedKey={selectedProgressCriteriaKey}
                             allowFreeform={false}
                             autoComplete="off"
                             options={[
@@ -126,7 +124,7 @@ export class EpicTimeline extends React.Component<
                     onItemResize={this._onItemResize}
                     onItemMove={this._onItemMove}
                     moveResizeValidator={this._validateResize}
-                    selected={[this.props.selectedItemId]}
+                    selecte={[this.props.selectedItemId]}
                     onItemSelect={itemId =>
                         this.props.onSetSelectedItemId(itemId)
                     }
