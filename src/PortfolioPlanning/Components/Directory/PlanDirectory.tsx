@@ -7,10 +7,12 @@ import NewPlanDialog from "./NewPlanDialog";
 import { PlanDirectoryActions } from "../../Redux/Actions/PlanDirectoryActions";
 import { connect } from "react-redux";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
+import { IPlan } from "../../Contracts";
 
 export interface IPlanDirectoryProps {}
 
 interface IPlanDirectoryMappedProps {
+    plans: IPlan[];
     newPlanDialogVisible: boolean;
 }
 
@@ -30,45 +32,15 @@ export class PlanDirectory extends React.Component<
                     }}
                 />
                 <div className="page-content plan-directory-page-content">
-                    <PlanCard
-                        title={"Q1 Planning"}
-                        description={
-                            "Features we plan to deliver Q1 of this year"
-                        }
-                        teams={["Contoso"]}
-                        projects={["Fabrikam"]}
-                        tags={["Marketing", "Engineering"]}
-                    />
-                    <PlanCard
-                        title={"Q2 Roadmap"}
-                        description={
-                            "Roadmap of features our organization plans to deliver in Q2"
-                        }
-                        teams={["Contoso", "Adatum"]}
-                        projects={["Fabrikam"]}
-                        tags={["Some tag"]}
-                    />
-                    <PlanCard
-                        title={"Contoso Team's OKRs"}
-                        description={"Contoso OKRs"}
-                        teams={["Contoso"]}
-                        projects={["Fabrikam"]}
-                        tags={["Some tag", "Engineering"]}
-                    />
-                    <PlanCard
-                        title={"Contoso Team's OKRs"}
-                        description={"Contoso OKRs"}
-                        teams={["Contoso"]}
-                        projects={["Fabrikam"]}
-                        tags={["Some tag", "Engineering"]}
-                    />
-                    <PlanCard
-                        title={"Contoso Team's OKRs"}
-                        description={"Contoso OKRs"}
-                        teams={["Contoso"]}
-                        projects={["Fabrikam"]}
-                        tags={["Some tag", "Engineering"]}
-                    />
+                    {this.props.plans.map(plan => (
+                        <PlanCard
+                            title={plan.title}
+                            description={plan.description}
+                            teams={plan.teams}
+                            projects={plan.projects}
+                            tags={plan.tags}
+                        />
+                    ))}
                 </div>
                 {this.props.newPlanDialogVisible && (
                     <NewPlanDialog
@@ -90,6 +62,7 @@ function mapStateToProps(
     state: IPortfolioPlanningState
 ): IPlanDirectoryMappedProps {
     return {
+        plans: state.planDirectoryState.plans,
         newPlanDialogVisible: state.planDirectoryState.newPlanDialogVisible
     };
 }
