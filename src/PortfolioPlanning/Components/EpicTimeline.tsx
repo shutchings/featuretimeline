@@ -25,6 +25,8 @@ import { connect } from "react-redux";
 import { SetDatesDialog } from "./SetDatesDialog";
 import { AddEpicDialog } from "./AddEpicDialog";
 import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
+import { ProgressDetails } from "../../Common/react/Components/ProgressDetails/ProgressDetails";
+import { InfoIcon } from "../../Common/react/Components/InfoIcon/InfoIcon";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -64,6 +66,10 @@ export class EpicTimeline extends React.Component<
                 ? "completedCount"
                 : "storyPoints";
 
+        const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(
+            this.props.items
+        );
+
         return (
             <div>
                 <div className="configuration-container">
@@ -100,8 +106,8 @@ export class EpicTimeline extends React.Component<
                 <Timeline
                     groups={this.props.groups}
                     items={this.props.items}
-                    defaultTimeStart={moment().add(-6, "month")}
-                    defaultTimeEnd={moment().add(6, "month")}
+                    defaultTimeStart={defaultTimeStart}
+                    defaultTimeEnd={defaultTimeEnd}
                     canChangeGroup={false}
                     stackItems={true}
                     dragSnap={day}
@@ -114,28 +120,42 @@ export class EpicTimeline extends React.Component<
                     onItemSelect={itemId =>
                         this.props.onSetSelectedItemId(itemId)
                     }
-                    onItemClick={() => {
-                        this.props.onToggleSetDatesDialogHidden(false);
-                    }}
-                    itemRenderer={({
-                        item,
-                        itemContext,
-                        getItemProps,
-                        getResizeProps
-                    }) => {
+                    itemRenderer={({ item, itemContext, getItemProps }) => {
                         return (
                             <div {...getItemProps(item.itemProps)}>
                                 <div
                                     style={{
                                         maxHeight: `${
                                             itemContext.dimensions.height
-                                        }`
+                                        }`,
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        overflow: "hidden",
+                                        marginRight: "5px",
+                                        alignItems: "baseline"
                                     }}
                                 >
-                                    {`${itemContext.title}    ${
-                                        item.itemProps.completed
-                                    }/${item.itemProps.total} (${item.itemProps
-                                        .progress / 1.0}%)`}
+                                    {itemContext.title}
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "flex-end"
+                                        }}
+                                    >
+                                        <InfoIcon
+                                            id={item.id}
+                                            onClick={() =>
+                                                this.props.onToggleSetDatesDialogHidden(
+                                                    false
+                                                )
+                                            }
+                                        />
+                                        <ProgressDetails
+                                            completed={item.itemProps.completed}
+                                            total={item.itemProps.total}
+                                            onClick={() => {}}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         );
@@ -144,11 +164,7 @@ export class EpicTimeline extends React.Component<
                 {this._renderAddEpicDialog()}
                 {this.props.selectedItemId && (
                     <SetDatesDialog
-                        key={
-                            this.props.selectedItemId +
-                            selectedItem.start_time.millisecond() +
-                            selectedItem.end_time.millisecond()
-                        }
+                        key={Date.now()} // TODO: Is there a better way to reset the state?
                         id={this.props.selectedItemId}
                         title={selectedItem.title}
                         startDate={selectedItem.start_time}
@@ -241,6 +257,25 @@ export class EpicTimeline extends React.Component<
                 />
             );
         }
+    }
+
+    // TODO: We only need this on first render
+    private _getDefaultTimes(
+        items: ITimelineItem[]
+    ): [moment.Moment, moment.Moment] {
+        let startTime = moment().add(-1, "months");
+        let endTime = moment().add(1, "months");
+
+        for (const item of items) {
+            if (item.start_time < startTime) {
+                startTime = moment(item.start_time).add(-1, "months");
+            }
+            if (item.end_time > endTime) {
+                endTime = moment(item.end_time).add(1, "months");
+            }
+        }
+
+        return [startTime, endTime];
     }
 }
 
