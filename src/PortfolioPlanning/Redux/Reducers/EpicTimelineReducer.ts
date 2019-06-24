@@ -86,6 +86,15 @@ export function epicTimelineReducer(
                 draft.epics.push(...action.payload.epicsToAdd);
                 break;
             }
+            case EpicTimelineActionTypes.RemoveEpic: {
+                const { id } = action.payload;
+                const indexToRemove = draft.epics.findIndex(
+                    epic => epic.id === id
+                );
+
+                alert("Going to remove epic at " + indexToRemove.toString());
+                break;
+            }
             case EpicTimelineActionTypes.ToggleProgressTrackingCriteria: {
                 draft.progressTrackingCriteria = action.payload.criteria;
                 break;

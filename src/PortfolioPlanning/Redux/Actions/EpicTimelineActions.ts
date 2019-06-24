@@ -21,6 +21,7 @@ export const enum EpicTimelineActionTypes {
     OpenAddEpicDialog = "EpicTimeline/OpenAddEpicDialog",
     CloseAddEpicDialog = "EpicTimeline/CloseAddEpicDialog",
     AddEpics = "EpicTimeline/AddEpics",
+    RemoveEpic = "EpicTimeline/RemoveEpic",
     ToggleProgressTrackingCriteria = "EpicTimeline/ToggleProgressTrackingCriteria"
 }
 
@@ -57,7 +58,9 @@ export const EpicTimelineActions = {
         createAction(EpicTimelineActionTypes.CloseAddEpicDialog),
     addEpics: (epicsToAdd: IEpic[]) =>
         createAction(EpicTimelineActionTypes.AddEpics, { epicsToAdd }),
-    ToggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>
+    removeEpic: (id: number) =>
+        createAction(EpicTimelineActionTypes.RemoveEpic, { id }),
+    toggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>
         createAction(EpicTimelineActionTypes.ToggleProgressTrackingCriteria, {
             criteria
         })
