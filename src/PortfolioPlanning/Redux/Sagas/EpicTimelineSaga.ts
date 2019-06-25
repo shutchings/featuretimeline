@@ -94,9 +94,7 @@ function* onToggleSelectedPlanId(
 ): SagaIterator {
     const selectedPlanId = action.payload.id;
 
-    if (selectedPlanId) {
-        yield effects.call(LoadPortfolio, selectedPlanId);
-    }
+    yield effects.call(LoadPortfolio, selectedPlanId);
 }
 
 // Helpers

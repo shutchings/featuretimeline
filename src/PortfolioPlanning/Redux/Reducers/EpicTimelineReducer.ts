@@ -1,5 +1,5 @@
 import { IEpicTimelineState } from "../Contracts";
-import { Projects, Epics, OtherEpics } from "../SampleData";
+import { OtherEpics } from "../SampleData";
 import {
     EpicTimelineActions,
     EpicTimelineActionTypes,

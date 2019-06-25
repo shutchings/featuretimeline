@@ -22,7 +22,7 @@ export function* LoadPortfolio(planId: string) {
     );
 
     // No data for this plan, just return empty info
-    if (planInfo.projects.length === 0) {
+    if (!planInfo.projects || planInfo.projects.length === 0) {
         yield put(
             EpicTimelineActions.portfolioItemsReceived(
                 {
@@ -39,6 +39,8 @@ export function* LoadPortfolio(planId: string) {
                 }
             )
         );
+
+        return;
     }
 
     const portfolioQueryInput: PortfolioPlanningQueryInput = {
