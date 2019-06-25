@@ -2,7 +2,7 @@ import {
     createAction,
     ActionsUnion
 } from "../../../Common/redux/Helpers/ActionHelper";
-import { ProgressTrackingCriteria, IAddEpics } from "../../Contracts";
+import { ProgressTrackingCriteria, IAddEpics, IRemoveEpic } from "../../Contracts";
 import moment = require("moment");
 import {
     PortfolioPlanningFullContentQueryResult
@@ -17,6 +17,7 @@ export const enum EpicTimelineActionTypes {
     ToggleSetDatesDialogHidden = "EpicTimeline/ToggleSetDatesDialogHidden",
     SetSelectedItemId = "EpicTimeline/SetSelectedItemId",
     PortfolioItemsReceived = "EpicTimeline/PortfolioItemsReceived",
+    PortfolioItemDeleted = "EpicTimeline/PortfolioItemDeleted",
     OpenAddEpicDialog = "EpicTimeline/OpenAddEpicDialog",
     CloseAddEpicDialog = "EpicTimeline/CloseAddEpicDialog",
     AddEpics = "EpicTimeline/AddEpics",
@@ -45,14 +46,16 @@ export const EpicTimelineActions = {
         createAction(EpicTimelineActionTypes.SetSelectedItemId, { id }),
     portfolioItemsReceived: (result: PortfolioPlanningFullContentQueryResult) =>
         createAction(EpicTimelineActionTypes.PortfolioItemsReceived, result),
+    portfolioItemDeleted: (itemDeleted: IRemoveEpic) =>
+        createAction(EpicTimelineActionTypes.PortfolioItemDeleted, itemDeleted),
     openAddEpicDialog: () =>
         createAction(EpicTimelineActionTypes.OpenAddEpicDialog),
     closeAddEpicDialog: () =>
         createAction(EpicTimelineActionTypes.CloseAddEpicDialog),
     addEpics: (epicsToAdd: IAddEpics) =>
-        createAction(EpicTimelineActionTypes.AddEpics, { epicsToAdd }),
-    removeEpic: (id: number) =>
-        createAction(EpicTimelineActionTypes.RemoveEpic, { id }),
+        createAction(EpicTimelineActionTypes.AddEpics, epicsToAdd),
+    removeEpic: (epicToRemove: IRemoveEpic) =>
+        createAction(EpicTimelineActionTypes.RemoveEpic, epicToRemove),
     toggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>
         createAction(EpicTimelineActionTypes.ToggleProgressTrackingCriteria, {
             criteria
@@ -64,4 +67,9 @@ export type EpicTimelineActions = ActionsUnion<typeof EpicTimelineActions>;
 export interface PortfolioItemsReceivedAction extends Action {
     type: EpicTimelineActionTypes.PortfolioItemsReceived;
     payload: PortfolioPlanningFullContentQueryResult;
+}
+
+export interface PortfolioItemDeletedAction extends Action {
+    type: EpicTimelineActionTypes.PortfolioItemDeleted;
+    payload: IRemoveEpic;
 }

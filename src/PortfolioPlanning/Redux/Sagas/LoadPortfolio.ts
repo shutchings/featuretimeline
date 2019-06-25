@@ -20,21 +20,23 @@ export function* LoadPortfolio(planId: string) {
 
     // No data for this plan, just return empty info
     if (!planInfo.projects || Object.keys(planInfo.projects).length === 0) {
-        yield put(EpicTimelineActions.portfolioItemsReceived({
-            items: { 
-                exceptionMessage: null,
-                items: [] 
-            },
-            projects: { 
-                exceptionMessage: null,
-                projects: [] 
-            },
-            teamAreas: {
-                exceptionMessage: null,
-                teamsInArea: {}
-            },
-            mergeStrategy: MergeType.Replace
-        }));
+        yield put(
+            EpicTimelineActions.portfolioItemsReceived({
+                items: { 
+                    exceptionMessage: null,
+                    items: [] 
+                },
+                projects: { 
+                    exceptionMessage: null,
+                    projects: [] 
+                },
+                teamAreas: {
+                    exceptionMessage: null,
+                    teamsInArea: {}
+                },
+                mergeStrategy: MergeType.Replace
+            }));
+
         return;
     }
 

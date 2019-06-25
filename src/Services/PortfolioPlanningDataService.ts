@@ -138,7 +138,7 @@ export class PortfolioPlanningDataService {
             teamAreas: teamAreasQueryResult,
             mergeStrategy: null
         };
-    }    
+    }
 
     public async getAllProjects() : Promise<PortfolioPlanningProjectQueryResult> {
         const odataQueryString = ODataQueryBuilder.AllProjectsQueryString();

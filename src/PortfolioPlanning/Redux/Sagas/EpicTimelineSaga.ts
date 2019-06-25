@@ -27,6 +27,7 @@ export function* epicTimelineSaga(): SagaIterator {
         PlanDirectoryActionTypes.ToggleSelectedPlanId,
         onToggleSelectedPlanId
     );
+    yield takeEvery(EpicTimelineActionTypes.RemoveEpic, onRemoveEpic);
 }
 
 function* onUpdateStartDate(
@@ -101,7 +102,7 @@ function* onAddEpics(
         epicsToAdd,
         workItemType,
         requirementWorkItemType
-    } = action.payload.epicsToAdd;
+    } = action.payload;
 
     //  TODO    sanitize input epics ids (unique ids only)
 
@@ -152,6 +153,50 @@ function* onAddEpics(
     queryResult.mergeStrategy = MergeType.Add;
 
     yield put(EpicTimelineActions.portfolioItemsReceived(queryResult));
+}
+
+function* onRemoveEpic(
+    action: ActionsOfType<
+        EpicTimelineActions,
+        EpicTimelineActionTypes.RemoveEpic
+    >
+): SagaIterator {
+
+    const {
+        planId,
+        epicToRemove
+    } = action.payload;
+
+    const epic: IEpic = yield effects.select(getEpicById, epicToRemove);
+
+    const portfolioService = PortfolioPlanningDataService.getInstance();
+    const projectIdLowerCase = epic.project.toLowerCase();
+
+    const storedPlan: PortfolioPlanning= yield effects.call(
+        [portfolioService, portfolioService.GetPortfolioPlanById],
+        planId);
+
+    if(storedPlan.projects[projectIdLowerCase])
+    {
+        const updatedEpics = storedPlan.projects[projectIdLowerCase].WorkItemIds.filter(current => current !== epicToRemove);
+
+        if(updatedEpics.length > 0)
+        {
+            storedPlan.projects[projectIdLowerCase].WorkItemIds = updatedEpics;
+        }
+        else
+        {
+            delete storedPlan.projects[projectIdLowerCase];
+        }
+
+        //  Save plan with epic removed.
+        yield effects.call(
+            [portfolioService, portfolioService.UpdatePortfolioPlan],
+            storedPlan
+        );
+    }
+
+    yield put(EpicTimelineActions.portfolioItemDeleted(action.payload));
 }
 
 function* onToggleSelectedPlanId(
