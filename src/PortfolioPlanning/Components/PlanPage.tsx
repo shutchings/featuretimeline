@@ -19,8 +19,8 @@ export default class PlanPage extends React.Component<PlanPageProps> {
         return (
             <Page className="plan-page">
                 <PlanHeader
-                    title={"Header title"}
-                    description={"Header description"}
+                    title={this.props.title}
+                    description={this.props.description}
                     backButtonClicked={this.props.backButtonClicked}
                 />
                 <div className="page-content page-content-top">
