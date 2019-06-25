@@ -7,15 +7,15 @@ import NewPlanDialog from "./NewPlanDialog";
 import { PlanDirectoryActions } from "../../Redux/Actions/PlanDirectoryActions";
 import { connect } from "react-redux";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
-import { IPlan } from "../../Contracts";
 import PlanPage from "../PlanPage";
 import { PortfolioPlanningDataService } from "../../../Services/PortfolioPlanningDataService";
+import { PortfolioPlanningMetadata } from "../../Models/PortfolioPlanningQueryModels";
 
 export interface IPlanDirectoryProps {}
 
 interface IPlanDirectoryMappedProps {
     selectedPlanId: string;
-    plans: IPlan[];
+    plans: PortfolioPlanningMetadata[];
     newPlanDialogVisible: boolean;
 }
 
@@ -34,7 +34,7 @@ export class PlanDirectory extends React.Component<
 
             return (
                 <PlanPage
-                    title={selectedPlan.title}
+                    title={selectedPlan.name}
                     description={selectedPlan.description}
                     backButtonClicked={() =>
                         this.props.toggleSelectedPlanId(undefined)
@@ -53,7 +53,7 @@ export class PlanDirectory extends React.Component<
                         {this.props.plans.map(plan => (
                             <PlanCard
                                 id={plan.id}
-                                title={plan.title}
+                                title={plan.name}
                                 description={plan.description}
                                 onClick={id =>
                                     this.props.toggleSelectedPlanId(id)

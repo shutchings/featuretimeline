@@ -1,4 +1,5 @@
-import { IProject, IEpic, ProgressTrackingCriteria, IPlan } from "../Contracts";
+import { IProject, IEpic, ProgressTrackingCriteria } from "../Contracts";
+import { PortfolioPlanningMetadata } from "../Models/PortfolioPlanningQueryModels";
 
 export interface IPortfolioPlanningState {
     planDirectoryState: IPlanDirectoryState;
@@ -19,5 +20,5 @@ export interface IEpicTimelineState {
 export interface IPlanDirectoryState {
     selectedPlanId: string;
     newPlanDialogVisible: boolean;
-    plans: IPlan[];
+    plans: PortfolioPlanningMetadata[];
 }

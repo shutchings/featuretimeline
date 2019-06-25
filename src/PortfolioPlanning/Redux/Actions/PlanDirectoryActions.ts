@@ -2,18 +2,22 @@ import {
     createAction,
     ActionsUnion
 } from "../../../Common/redux/Helpers/ActionHelper";
+import { PortfolioPlanningDirectory } from "../../Models/PortfolioPlanningQueryModels";
 
 export const enum PlanDirectoryActionTypes {
+    Initialize = "PlanDirectory/Initialize",
     CreatePlan = "PlanDirectory/CreatePlan",
     ToggleSelectedPlanId = "PlanDirectory/SelectPlan",
     ToggleNewPlanDialogVisible = "PlanDirectory/ToggleNewPlanDialogVisible"
 }
 
 export const PlanDirectoryActions = {
-    createPlan: (id: string, title: string, description: string) =>
+    initialize: (directoryData: PortfolioPlanningDirectory) =>
+        createAction(PlanDirectoryActionTypes.Initialize, { directoryData }),
+    createPlan: (id: string, name: string, description: string) =>
         createAction(PlanDirectoryActionTypes.CreatePlan, {
             id,
-            title,
+            name,
             description
         }),
     toggleSelectedPlanId: (id: string) =>
