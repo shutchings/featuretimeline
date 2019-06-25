@@ -84,7 +84,7 @@ export default class NewPlanDialog extends React.Component<
                                 );
                             }}
                             disabled={
-                                this.nameObservable.value !== "" ||
+                                this.nameObservable.value === "" ||
                                 this.state.errorMessage !== ""
                             }
                         />
