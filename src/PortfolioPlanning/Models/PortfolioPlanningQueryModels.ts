@@ -1,7 +1,6 @@
 import { ODataQueryProjectInput } from "./ODataQueryModels";
 
-export interface PortfolioPlanningQueryInput
-{
+export interface PortfolioPlanningQueryInput {
     /**
      * TODO Supporting one work item type for now (e.g. 'Epic').
      */
@@ -18,13 +17,11 @@ export interface PortfolioPlanningQueryInput
     WorkItems: ODataQueryProjectInput[];
 }
 
-export interface PortfolioPlanningQueryResult extends IQueryResultError
-{
+export interface PortfolioPlanningQueryResult extends IQueryResultError {
     items: PortfolioPlanningQueryResultItem[];
 }
 
-export interface PortfolioPlanningQueryResultItem
-{
+export interface PortfolioPlanningQueryResultItem {
     WorkItemId: number;
     WorkItemType: string;
     Title: string;
@@ -47,70 +44,60 @@ export interface PortfolioPlanningQueryResultItem
     CountProgress: number;
 }
 
-export interface PortfolioPlanningProjectQueryInput
-{
+export interface PortfolioPlanningProjectQueryInput {
     projectIds: string[];
 }
 
-export interface PortfolioPlanningProjectQueryResult extends IQueryResultError
-{
+export interface PortfolioPlanningProjectQueryResult extends IQueryResultError {
     projects: Project[];
 }
 
-export interface PortfolioPlanningWorkItemQueryResult extends IQueryResultError
-{
+export interface PortfolioPlanningWorkItemQueryResult
+    extends IQueryResultError {
     workItems: WorkItem[];
 }
 
-export interface Project 
-{
+export interface Project {
     ProjectSK: string;
     ProjectName: string;
 }
 
-export interface WorkItem
-{
+export interface WorkItem {
     WorkItemId: number;
     WorkItemType: string;
     Title: string;
     State: string;
 }
 
-export interface IQueryResultError
-{
+export interface IQueryResultError {
     exceptionMessage: string;
     status?: number;
 }
 
-
-export interface PortfolioPlanningMetadata
-{
+export interface PortfolioPlanningMetadata {
     id: string;
     name: string;
+    description: string;
     createdOn: Date;
 }
 
-export interface PortfolioPlanning extends PortfolioPlanningMetadata
-{
-    projects: ProjectPortfolioPlanning[]
+export interface PortfolioPlanning extends PortfolioPlanningMetadata {
+    projects: ProjectPortfolioPlanning[];
 }
 
-export interface ProjectPortfolioPlanning
-{
+export interface ProjectPortfolioPlanning {
     ProjectId: string;
     PortfolioWorkItemType: string;
     RequirementWorkItemType: string;
     WorkItemIds: number[];
 }
 
-export interface PortfolioPlanningDirectory extends IQueryResultError
-{
+export interface PortfolioPlanningDirectory extends IQueryResultError {
     id: string;
-    entries: PortfolioPlanningMetadata[]
+    entries: PortfolioPlanningMetadata[];
 }
 
-export interface ExtensionStorageError 
-{
+export interface ExtensionStorageError {
     stack: string;
     message: string;
     name: string;
@@ -118,28 +105,23 @@ export interface ExtensionStorageError
     responseText: string;
 }
 
-
-export interface PortfolioPlanningTeamsInAreaQueryInput
-{
+export interface PortfolioPlanningTeamsInAreaQueryInput {
     /**
      * AreaIds by project id.
      */
-    [projectId: string] : string[];
+    [projectId: string]: string[];
 }
 
-export interface PortfolioPlanningTeamsInAreaQueryResult extends IQueryResultError
-{
+export interface PortfolioPlanningTeamsInAreaQueryResult
+    extends IQueryResultError {
     teamsInArea: TeamsInArea;
 }
 
-export interface TeamsInArea
-{
-    [areaId: string] : Team[]
+export interface TeamsInArea {
+    [areaId: string]: Team[];
 }
 
-export interface Team
-{
+export interface Team {
     teamId: string;
     teamName: string;
 }
-

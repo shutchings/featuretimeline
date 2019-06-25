@@ -1,5 +1,4 @@
 import { IEpicTimelineState } from "../Contracts";
-import { Projects, Epics } from "../SampleData";
 import {
     EpicTimelineActions,
     EpicTimelineActionTypes,
@@ -143,8 +142,8 @@ export function epicTimelineReducer(
 
 export function getDefaultState(): IEpicTimelineState {
     return {
-        projects: Projects,
-        epics: Epics,
+        projects: [],
+        epics: [],
         message: "Initial message",
         addEpicDialogOpen: false,
         setDatesDialogHidden: false,
@@ -155,14 +154,14 @@ export function getDefaultState(): IEpicTimelineState {
 
 function handlePortfolioItemsReceived(
     state: IEpicTimelineState,
-    action: PortfolioItemsReceivedAction,
+    action: PortfolioItemsReceivedAction
 ): IEpicTimelineState {
     return produce(state, draft => {
-        const { 
-            portfolioQueryResult, 
+        const {
+            portfolioQueryResult,
             projectsQueryResult,
             teamAreasQueryResult
-         } = action.payload;
+        } = action.payload;
 
         //  TODO    Handle exception message from OData query results.
 
@@ -173,27 +172,28 @@ function handlePortfolioItemsReceived(
             };
         });
 
-        draft.epics = portfolioQueryResult.items.map(
-            item => {
-                //  Using the first team found for the area, if available.
-                const teamIdValue: string = (teamAreasQueryResult.teamsInArea[item.AreaId] && teamAreasQueryResult.teamsInArea[item.AreaId][0]) ?
-                    teamAreasQueryResult.teamsInArea[item.AreaId][0].teamId :
-                    null;
+        draft.epics = portfolioQueryResult.items.map(item => {
+            //  Using the first team found for the area, if available.
+            const teamIdValue: string =
+                teamAreasQueryResult.teamsInArea[item.AreaId] &&
+                teamAreasQueryResult.teamsInArea[item.AreaId][0]
+                    ? teamAreasQueryResult.teamsInArea[item.AreaId][0].teamId
+                    : null;
 
-                return {
-                    id: item.WorkItemId,
-                    project: item.ProjectId,
-                    teamId: teamIdValue,
-                    title: item.Title,
-                    startDate: item.StartDate,
-                    endDate: item.TargetDate,
-                    completedCount: item.CompletedCount,
-                    totalCount: item.TotalCount,
-                    completedStoryPoints: item.CompletedStoryPoints,
-                    totalStoryPoints: item.TotalStoryPoints,
-                    storyPointsProgress: item.StoryPointsProgress,
-                    countProgress: item.CountProgress
-                };
+            return {
+                id: item.WorkItemId,
+                project: item.ProjectId,
+                teamId: teamIdValue,
+                title: item.Title,
+                startDate: item.StartDate,
+                endDate: item.TargetDate,
+                completedCount: item.CompletedCount,
+                totalCount: item.TotalCount,
+                completedStoryPoints: item.CompletedStoryPoints,
+                totalStoryPoints: item.TotalStoryPoints,
+                storyPointsProgress: item.StoryPointsProgress,
+                countProgress: item.CountProgress
+            };
         });
     });
 }
