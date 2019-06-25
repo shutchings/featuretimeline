@@ -7,6 +7,7 @@ const secondProjectName = "Project 2";
 const thirdProjectId = "3";
 const thirdProjectName = "Project 3";
 const fourthProjectId = "4";
+const teamId = "fbed1309-56db-44db-9006-24ad73eee785";
 
 export const Projects: IProject[] = [
     { id: firstProjectId, title: firstProjectName },
@@ -18,6 +19,7 @@ export const Epics: IEpic[] = [
     {
         id: 1,
         project: firstProjectId,
+        teamId: teamId,
         title: "Epic 1",
         startDate: new Date(2019, 5, 1),
         endDate: new Date(2019, 6, 1),
@@ -31,6 +33,7 @@ export const Epics: IEpic[] = [
     {
         id: 2,
         project: firstProjectId,
+        teamId: teamId,
         title: "Epic 2",
         startDate: new Date(2019, 4, 1),
         endDate: new Date(2019, 7, 15),
@@ -44,6 +47,7 @@ export const Epics: IEpic[] = [
     {
         id: 3,
         project: firstProjectId,
+        teamId: teamId,
         title: "Epic 3",
         startDate: new Date(2019, 4, 15),
         endDate: new Date(2019, 6, 30),
@@ -57,6 +61,7 @@ export const Epics: IEpic[] = [
     {
         id: 4,
         project: secondProjectId,
+        teamId: teamId,
         title: "Epic 4",
         startDate: new Date(2019, 5, 1),
         endDate: new Date(2019, 6, 1),
@@ -70,6 +75,7 @@ export const Epics: IEpic[] = [
     {
         id: 5,
         project: secondProjectId,
+        teamId: teamId,
         title: "Epic 5",
         startDate: new Date(2019, 4, 1),
         endDate: new Date(2019, 7, 15),
@@ -83,6 +89,7 @@ export const Epics: IEpic[] = [
     {
         id: 6,
         project: thirdProjectId,
+        teamId: teamId,
         title: "Epic 6",
         startDate: new Date(2019, 4, 15),
         endDate: new Date(2019, 6, 30),
@@ -99,6 +106,7 @@ export const OtherEpics: IEpic[] = [
     {
         id: 7,
         project: firstProjectId,
+        teamId: teamId,
         title: "Epic 7",
         startDate: new Date(2019, 2, 1),
         endDate: new Date(2019, 6, 1),
@@ -112,6 +120,7 @@ export const OtherEpics: IEpic[] = [
     {
         id: 8,
         project: firstProjectId,
+        teamId: teamId,
         title: "Epic 8",
         startDate: new Date(2019, 3, 1),
         endDate: new Date(2019, 7, 15),
@@ -125,6 +134,7 @@ export const OtherEpics: IEpic[] = [
     {
         id: 9,
         project: secondProjectId,
+        teamId: teamId,
         title: "Epic 9",
         startDate: new Date(2019, 5, 15),
         endDate: new Date(2019, 9, 30),
@@ -138,6 +148,7 @@ export const OtherEpics: IEpic[] = [
     {
         id: 10,
         project: fourthProjectId,
+        teamId: teamId,
         title: "Epic 10",
         startDate: new Date(2019, 5, 15),
         endDate: new Date(2019, 7, 30),

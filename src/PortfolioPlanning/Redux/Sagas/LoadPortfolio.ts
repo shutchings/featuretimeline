@@ -6,7 +6,9 @@ import {
     PortfolioPlanningQueryInput, 
     PortfolioPlanningProjectQueryInput, 
     PortfolioPlanningDirectory,
-    PortfolioPlanning
+    PortfolioPlanning,
+    PortfolioPlanningQueryResult,
+    PortfolioPlanningTeamsInAreaQueryInput
 } from "../../Models/PortfolioPlanningQueryModels";
 import { 
     EpicTimelineActions 
@@ -42,6 +44,8 @@ export function* LoadPortfolio() {
         })
     };
 
+    //  TODO    Move this logic to a separate service in PortfolioPlanningDataService, so it can also be used when
+    //          loading data for a single Epic.
     const projectsQueryInput: PortfolioPlanningProjectQueryInput = {
         projectIds: planInfo.projects.map((projectInfo) => projectInfo.ProjectId)
     };
@@ -52,5 +56,25 @@ export function* LoadPortfolio() {
             call([portfolioService, portfolioService.runProjectQuery], projectsQueryInput)
         ]);
 
-    yield put(EpicTimelineActions.portfolioItemsReceived(portfolioQueryResult, projectQueryResult));
+    const teamsInAreaQueryInput : PortfolioPlanningTeamsInAreaQueryInput = {};
+    for(let entry of (portfolioQueryResult as PortfolioPlanningQueryResult).items) {
+        const projectIdKey = entry.ProjectId.toLowerCase();
+        const areaIdKey = entry.AreaId.toLowerCase();
+
+        if(!teamsInAreaQueryInput[projectIdKey])
+        {
+            teamsInAreaQueryInput[projectIdKey] = [];
+        }
+
+        if(teamsInAreaQueryInput[projectIdKey].indexOf(areaIdKey) === -1)
+        {
+            teamsInAreaQueryInput[projectIdKey].push(areaIdKey);
+        }
+    }
+
+    const teamAreasQueryResult = yield call(
+        [portfolioService, portfolioService.runTeamsInAreasQuery],
+        teamsInAreaQueryInput);
+
+    yield put(EpicTimelineActions.portfolioItemsReceived(portfolioQueryResult, projectQueryResult, teamAreasQueryResult));
 }

@@ -70,6 +70,10 @@ export class EpicTimeline extends React.Component<
             this.props.items
         );
 
+        const forwardCircleStyle ={
+            padding: '0px 0px 0px 10px',
+        };
+
         return (
             <div>
                 <div className="configuration-container">
@@ -166,6 +170,12 @@ export class EpicTimeline extends React.Component<
                                             total={item.itemProps.total}
                                             onClick={() => {}}
                                         />
+                                        <div
+                                            className="bowtie-icon bowtie-navigate-forward-circle"
+                                            style={forwardCircleStyle}
+                                            onClick={() => this.navigateToEpicRoadmap(item)}>
+                                            &nbsp;
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -291,6 +301,23 @@ export class EpicTimeline extends React.Component<
         }
 
         return [startTime, endTime];
+    }
+
+    private navigateToEpicRoadmap(item: ITimelineItem)
+    {
+        const collectionUri = VSS.getWebContext().collection.uri;
+        const projectName = item.group;
+        const teamId = item.teamId;
+        //  TODO    Need to get the backlog level somewhere....
+        const backlogLevel = "Epics";
+        const workItemId = item.id;
+
+        const targerUrl = `${collectionUri}${projectName}/_backlogs/ms-devlabs.workitem-feature-timeline-extension-dev.workitem-epic-roadmap/${teamId}/${backlogLevel}#${workItemId}`;
+
+        VSS.getService<IHostNavigationService>(VSS.ServiceIds.Navigation).then(
+            (client) => client.navigate(targerUrl),
+            (error) => alert(error)
+        );
     }
 }
 
