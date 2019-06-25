@@ -5,7 +5,7 @@ import "./PlanCard.scss";
 
 export interface PlanCardProps {
     id: string;
-    title: string;
+    name: string;
     description: string;
     onClick: (id: string) => void;
 }
@@ -19,7 +19,7 @@ export default class PlanCard extends React.Component<PlanCardProps> {
             >
                 <Card className="plan-card">
                     <div className="flex-column">
-                        <div className="title-s title">{this.props.title}</div>
+                        <div className="title-s name">{this.props.name}</div>
                         <div className="body-m description">
                             {this.props.description}
                         </div>

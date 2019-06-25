@@ -13,6 +13,7 @@ import { IPortfolioPlanningState } from "./Contracts";
 import { epicTimelineReducer } from "./Reducers/EpicTimelineReducer";
 import { epicTimelineSaga } from "./Sagas/EpicTimelineSaga";
 import { planDirectoryReducer } from "./Reducers/PlanDirectoryReducer";
+import { planDirectorySaga } from "./Sagas/PlanDirectorySaga";
 
 // setup reducers
 const combinedReducers = combineReducers<IPortfolioPlanningState>({
@@ -55,10 +56,11 @@ export default function configurePortfolioPlanningStore(
     );
 
     sagaMiddleWare.run(epicTimelineSaga);
+    sagaMiddleWare.run(planDirectorySaga);
 
     //  Comment out 'LoadPortfolio' to use OData service to retrieve items information.
     //  TODO    User Story 1559920: Load epics and project information from extension storage
-    //sagaMiddleWare.run(LoadPortfolio)
+    // sagaMiddleWare.run(LoadPortfolio);
 
     return store;
 }

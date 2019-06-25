@@ -1,5 +1,4 @@
 import { IEpicTimelineState } from "../Contracts";
-import { Projects, Epics, OtherEpics } from "../SampleData";
 import {
     EpicTimelineActions,
     EpicTimelineActionTypes,
@@ -116,9 +115,8 @@ export function epicTimelineReducer(
 
 export function getDefaultState(): IEpicTimelineState {
     return {
-        projects: Projects,
-        epics: Epics,
-        otherEpics: OtherEpics,
+        projects: [],
+        epics: [],
         message: "Initial message",
         addEpicDialogOpen: false,
         setDatesDialogHidden: false,
@@ -129,7 +127,7 @@ export function getDefaultState(): IEpicTimelineState {
 
 function handlePortfolioItemsReceived(
     state: IEpicTimelineState,
-    action: PortfolioItemsReceivedAction,
+    action: PortfolioItemsReceivedAction
 ): IEpicTimelineState {
     return produce(state, draft => {
         const { 

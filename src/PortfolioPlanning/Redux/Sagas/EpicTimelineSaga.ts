@@ -12,12 +12,21 @@ import { WorkItemTrackingHttpClient } from "TFS/WorkItemTracking/RestClient";
 import { JsonPatchDocument } from "VSS/WebApi/Contracts";
 import { PortfolioPlanningQueryInput, PortfolioPlanningFullContentQueryResult, MergeType, PortfolioPlanning } from "../../Models/PortfolioPlanningQueryModels";
 import { PortfolioPlanningDataService } from "../../../Services/PortfolioPlanningDataService";
+import {
+    PlanDirectoryActionTypes,
+    PlanDirectoryActions
+} from "../Actions/PlanDirectoryActions";
+import { LoadPortfolio } from "./LoadPortfolio";
 
 export function* epicTimelineSaga(): SagaIterator {
     yield takeEvery(EpicTimelineActionTypes.UpdateStartDate, onUpdateStartDate);
     yield takeEvery(EpicTimelineActionTypes.UpdateEndDate, onUpdateEndDate);
     yield takeEvery(EpicTimelineActionTypes.ShiftEpic, onShiftEpic);
     yield takeEvery(EpicTimelineActionTypes.AddEpics, onAddEpics);
+    yield takeEvery(
+        PlanDirectoryActionTypes.ToggleSelectedPlanId,
+        onToggleSelectedPlanId
+    );
 }
 
 function* onUpdateStartDate(
@@ -143,6 +152,17 @@ function* onAddEpics(
     queryResult.mergeStrategy = MergeType.Add;
 
     yield put(EpicTimelineActions.portfolioItemsReceived(queryResult));
+}
+
+function* onToggleSelectedPlanId(
+    action: ActionsOfType<
+        PlanDirectoryActions,
+        PlanDirectoryActionTypes.ToggleSelectedPlanId
+    >
+): SagaIterator {
+    const selectedPlanId = action.payload.id;
+
+    yield effects.call(LoadPortfolio, selectedPlanId);
 }
 
 // Helpers

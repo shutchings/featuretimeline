@@ -27,6 +27,7 @@ interface IAddEpicDialogState {
     selectedProject: IProject;
     epics: IDropdownOption[];
     selectedEpics: number[];
+    epicsLoaded: boolean;
 }
 export class AddEpicDialog extends React.Component<
     IAddEpicDialogProps,
@@ -39,7 +40,8 @@ export class AddEpicDialog extends React.Component<
             projects: [],
             selectedProject: null,
             epics: [],
-            selectedEpics: []
+            selectedEpics: [],
+            epicsLoaded: false
         };
 
         this._getAllProjects().then(projects => {
@@ -110,12 +112,12 @@ export class AddEpicDialog extends React.Component<
                     text: epic.Title
                 });
             });
-            this.setState({ epics: allEpics });
+            this.setState({ epics: allEpics, epicsLoaded: true });
         });
     };
 
     private _renderEpicsPicker = () => {
-        if (this.state.selectedProject) {
+        if (this.state.selectedProject && this.state.epicsLoaded) {
             if (this.state.epics.length > 0) {
                 return (
                     <Dropdown
@@ -127,30 +129,21 @@ export class AddEpicDialog extends React.Component<
                     />
                 );
             }
-            else
-            {
-                return (
-                    <div>
-                        The project {this.state.selectedProject.title} doesn't have
-                        any epic.
-                    </div>
-                );
-            }
+            return (
+                <div className="errorMessage">
+                    The project {this.state.selectedProject.title} doesn't have
+                    any epic.
+                </div>
+            );
         }
     };
 
     private _onEpicChange = (item: IDropdownOption): void => {
-        console.log(
-            `Selection change: ${item.text} ${
-                item.selected ? "selected" : "unselected"
-            }`
-        );
-
         let newSelectedEpics = [...this.state.selectedEpics];
 
         const now = new Date();
-        const fiveDaysFromNow = new Date();
-        fiveDaysFromNow.setDate(now.getDate() + 30);
+        const oneMonthFromNow = new Date();
+        oneMonthFromNow.setDate(now.getDate() + 30);
 
         const workItemId = Number(item.key.toString());
 

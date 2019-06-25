@@ -11,13 +11,21 @@ export function planDirectoryReducer(
 ): IPlanDirectoryState {
     return produce(state || getDefaultState(), (draft: IPlanDirectoryState) => {
         switch (action.type) {
+            case PlanDirectoryActionTypes.Initialize: {
+                const { directoryData } = action.payload;
+
+                draft.plans = directoryData.entries;
+
+                break;
+            }
             case PlanDirectoryActionTypes.CreatePlan: {
-                const { title, description } = action.payload;
+                const { id, name, description } = action.payload;
 
                 draft.plans.push({
-                    id: "6",
-                    title: title,
-                    description: description
+                    id: id,
+                    name: name,
+                    description: description,
+                    createdOn: new Date()
                 });
 
                 break;
@@ -43,34 +51,40 @@ export function planDirectoryReducer(
 export function getDefaultState(): IPlanDirectoryState {
     return {
         selectedPlanId: undefined,
-        plans: [
-            {
-                id: "1",
-                title: "Q1 Planning",
-                description: "Features we plan to deliver Q1 of this year"
-            },
-            {
-                id: "2",
-                title: "Q2 Roadmap",
-                description:
-                    "Roadmap of features our organization plans to deliver in Q2"
-            },
-            {
-                id: "3",
-                title: "Contoso Team's OKRs",
-                description: "Contoso OKRs"
-            },
-            {
-                id: "4",
-                title: "Contoso Team's OKRs",
-                description: "Contoso OKRs"
-            },
-            {
-                id: "5",
-                title: "Contoso Team's OKRs",
-                description: "Contoso OKRs"
-            }
-        ],
+        plans: [],
         newPlanDialogVisible: false
+        // plans: [
+        //     {
+        //         id: "1",
+        //         name: "Q1 Planning",
+        //         description: "Features we plan to deliver Q1 of this year",
+        //         createdOn: new Date()
+        //     },
+        //     {
+        //         id: "2",
+        //         name: "Q2 Roadmap",
+        //         description:
+        //             "Roadmap of features our organization plans to deliver in Q2",
+        //         createdOn: new Date()
+        //     },
+        //     {
+        //         id: "3",
+        //         name: "Contoso Team's OKRs",
+        //         description: "Contoso OKRs",
+        //         createdOn: new Date()
+        //     },
+        //     {
+        //         id: "4",
+        //         name: "Contoso Team's OKRs",
+        //         description: "Contoso OKRs",
+        //         createdOn: new Date()
+        //     },
+        //     {
+        //         id: "5",
+        //         name: "Contoso Team's OKRs",
+        //         description: "Contoso OKRs",
+        //         createdOn: new Date()
+        //     }
+        // ],
     };
 }
