@@ -10,11 +10,20 @@ import { IEpic } from "../../Contracts";
 import * as VSS_Service from "VSS/Service";
 import { WorkItemTrackingHttpClient } from "TFS/WorkItemTracking/RestClient";
 import { JsonPatchDocument } from "VSS/WebApi/Contracts";
+import {
+    PlanDirectoryActionTypes,
+    PlanDirectoryActions
+} from "../Actions/PlanDirectoryActions";
+import { LoadPortfolio } from "./LoadPortfolio";
 
 export function* epicTimelineSaga(): SagaIterator {
     yield takeEvery(EpicTimelineActionTypes.UpdateStartDate, onUpdateStartDate);
     yield takeEvery(EpicTimelineActionTypes.UpdateEndDate, onUpdateEndDate);
     yield takeEvery(EpicTimelineActionTypes.ShiftEpic, onShiftEpic);
+    yield takeEvery(
+        PlanDirectoryActionTypes.ToggleSelectedPlanId,
+        onToggleSelectedPlanId
+    );
 }
 
 function* onUpdateStartDate(
@@ -75,6 +84,19 @@ function* saveDatesToServer(epicId: number): SagaIterator {
     );
 
     // TODO: Error experience
+}
+
+function* onToggleSelectedPlanId(
+    action: ActionsOfType<
+        PlanDirectoryActions,
+        PlanDirectoryActionTypes.ToggleSelectedPlanId
+    >
+): SagaIterator {
+    const selectedPlanId = action.payload.id;
+
+    if (selectedPlanId) {
+        yield effects.call(LoadPortfolio, selectedPlanId);
+    }
 }
 
 // Helpers
