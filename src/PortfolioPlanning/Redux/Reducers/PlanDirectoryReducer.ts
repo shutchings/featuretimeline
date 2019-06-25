@@ -19,10 +19,10 @@ export function planDirectoryReducer(
                 break;
             }
             case PlanDirectoryActionTypes.CreatePlan: {
-                const { name, description } = action.payload;
+                const { id, name, description } = action.payload;
 
                 draft.plans.push({
-                    id: "6",
+                    id: id,
                     name: name,
                     description: description,
                     createdOn: new Date()

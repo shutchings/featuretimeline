@@ -53,7 +53,7 @@ export class PlanDirectory extends React.Component<
                         {this.props.plans.map(plan => (
                             <PlanCard
                                 id={plan.id}
-                                title={plan.name}
+                                name={plan.name}
                                 description={plan.description}
                                 onClick={id =>
                                     this.props.toggleSelectedPlanId(id)
