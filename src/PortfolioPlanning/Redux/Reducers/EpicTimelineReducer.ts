@@ -1,5 +1,5 @@
 import { IEpicTimelineState } from "../Contracts";
-import { Projects, Epics, OtherEpics } from "../SampleData";
+import { Projects, Epics } from "../SampleData";
 import {
     EpicTimelineActions,
     EpicTimelineActionTypes,
@@ -145,7 +145,6 @@ export function getDefaultState(): IEpicTimelineState {
     return {
         projects: Projects,
         epics: Epics,
-        otherEpics: OtherEpics,
         message: "Initial message",
         addEpicDialogOpen: false,
         setDatesDialogHidden: false,

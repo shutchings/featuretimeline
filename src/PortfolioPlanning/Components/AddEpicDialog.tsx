@@ -16,7 +16,6 @@ import "./AddEpicDialog.scss";
 
 export interface IAddEpicDialogProps {
     onCloseAddEpicDialog: () => void;
-    otherEpics: IEpic[];
     onAddEpics: (epicsToAdd: IEpic[], projectTitle: string) => void;
 }
 
@@ -26,6 +25,7 @@ interface IAddEpicDialogState {
     selectedProject: IProject;
     epics: IDropdownOption[];
     selectedEpics: IEpic[];
+    epicsLoaded: boolean;
 }
 export class AddEpicDialog extends React.Component<
     IAddEpicDialogProps,
@@ -38,7 +38,8 @@ export class AddEpicDialog extends React.Component<
             projects: [],
             selectedProject: null,
             epics: [],
-            selectedEpics: []
+            selectedEpics: [],
+            epicsLoaded: false
         };
 
         this._getAllProjects().then(projects => {
@@ -109,12 +110,12 @@ export class AddEpicDialog extends React.Component<
                     text: epic.Title
                 });
             });
-            this.setState({ epics: allEpics });
+            this.setState({ epics: allEpics, epicsLoaded: true });
         });
     };
 
     private _renderEpicsPicker = () => {
-        if (this.state.selectedProject) {
+        if (this.state.selectedProject && this.state.epicsLoaded) {
             if (this.state.epics.length > 0) {
                 return (
                     <Dropdown
@@ -127,7 +128,7 @@ export class AddEpicDialog extends React.Component<
                 );
             }
             return (
-                <div>
+                <div className="errorMessage">
                     The project {this.state.selectedProject.title} doesn't have
                     any epic.
                 </div>
@@ -136,17 +137,11 @@ export class AddEpicDialog extends React.Component<
     };
 
     private _onEpicChange = (item: IDropdownOption): void => {
-        console.log(
-            `Selection change: ${item.text} ${
-                item.selected ? "selected" : "unselected"
-            }`
-        );
-
         const newSelectedEpics = [...this.state.selectedEpics];
 
         const now = new Date();
-        const fiveDaysFromNow = new Date();
-        fiveDaysFromNow.setDate(now.getDate() + 30);
+        const oneMonthFromNow = new Date();
+        oneMonthFromNow.setDate(now.getDate() + 30);
 
         if (item.selected) {
             // add the option if it's checked
@@ -156,7 +151,7 @@ export class AddEpicDialog extends React.Component<
                 title: item.text,
                 startDate: now,
                 teamId: "",
-                endDate: fiveDaysFromNow,
+                endDate: oneMonthFromNow,
                 completedCount: 0,
                 totalCount: 0,
                 completedStoryPoints: 0,
