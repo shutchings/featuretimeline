@@ -12,9 +12,11 @@ import createSagaMiddleware from "redux-saga";
 import { IPortfolioPlanningState } from "./Contracts";
 import { epicTimelineReducer } from "./Reducers/EpicTimelineReducer";
 import { epicTimelineSaga } from "./Sagas/EpicTimelineSaga";
+import { planDirectoryReducer } from "./Reducers/PlanDirectoryReducer";
 
 // setup reducers
 const combinedReducers = combineReducers<IPortfolioPlanningState>({
+    planDirectoryState: planDirectoryReducer,
     epicTimelineState: epicTimelineReducer
 });
 

@@ -13,6 +13,7 @@ import { Button } from "azure-devops-ui/Button";
 export interface PlanHeaderProps {
     title: string;
     description: string;
+    backButtonClicked: () => void;
 }
 
 export default class PlanHeader extends React.Component<PlanHeaderProps> {
@@ -23,11 +24,11 @@ export default class PlanHeader extends React.Component<PlanHeaderProps> {
                     className="bolt-header-back-button"
                     iconProps={{ iconName: "Back" }}
                     subtle={true}
-                    onClick={() => alert("Back button Clicked!!")}
+                    onClick={this.props.backButtonClicked}
                 />
                 <HeaderTitleArea>
                     <HeaderTitleRow>
-                        <HeaderTitle titleSize={TitleSize.Medium}>
+                        <HeaderTitle titleSize={TitleSize.Large}>
                             {this.props.title}
                         </HeaderTitle>
                     </HeaderTitleRow>

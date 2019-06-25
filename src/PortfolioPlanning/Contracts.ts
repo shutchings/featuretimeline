@@ -1,5 +1,11 @@
 import moment = require("moment");
 
+export interface IPlan {
+    id: string;
+    title: string;
+    description: string;
+}
+
 export interface IProject {
     id: string;
     title: string;
