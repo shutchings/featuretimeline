@@ -4,7 +4,9 @@ import { Page } from "azure-devops-ui/Page";
 import PlanHeader from "./PlanHeader";
 import { ConnectedEpicTimeline } from "./EpicTimeline";
 
-export interface PlanPageProps {}
+export interface PlanPageProps {
+    backButtonClicked: () => void;
+}
 
 export default class PlanPage extends React.Component<PlanPageProps> {
     constructor(props) {
@@ -17,6 +19,7 @@ export default class PlanPage extends React.Component<PlanPageProps> {
                 <PlanHeader
                     title={"Header title"}
                     description={"Header description"}
+                    backButtonClicked={this.props.backButtonClicked}
                 />
                 <div className="page-content page-content-top">
                     <ConnectedEpicTimeline />

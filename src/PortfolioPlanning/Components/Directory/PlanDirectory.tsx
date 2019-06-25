@@ -27,7 +27,13 @@ export class PlanDirectory extends React.Component<
 
     public render() {
         if (this.props.selectedPlanId) {
-            return <PlanPage />;
+            return (
+                <PlanPage
+                    backButtonClicked={() =>
+                        this.props.toggleSelectedPlanId(undefined)
+                    }
+                />
+            );
         } else {
             return (
                 <Page className="plan-page">
