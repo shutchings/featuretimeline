@@ -81,8 +81,9 @@ export interface PortfolioPlanningMetadata {
     createdOn: Date;
 }
 
-export interface PortfolioPlanning extends PortfolioPlanningMetadata {
-    projects: ProjectPortfolioPlanning[];
+export interface PortfolioPlanning extends PortfolioPlanningMetadata
+{
+    projects: { [projectId: string] :ProjectPortfolioPlanning }
 }
 
 export interface ProjectPortfolioPlanning {
@@ -124,4 +125,19 @@ export interface TeamsInArea {
 export interface Team {
     teamId: string;
     teamName: string;
+}
+
+export interface PortfolioPlanningFullContentQueryResult 
+{
+    planId?: string;
+    items: PortfolioPlanningQueryResult,
+    projects: PortfolioPlanningProjectQueryResult,
+    teamAreas: PortfolioPlanningTeamsInAreaQueryResult,
+    mergeStrategy?: MergeType
+}
+
+export enum MergeType
+{
+    Add,
+    Replace
 }

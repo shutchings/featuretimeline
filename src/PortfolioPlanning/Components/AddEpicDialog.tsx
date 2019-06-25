@@ -10,13 +10,14 @@ import {
 } from "office-ui-fabric-react/lib/Button";
 import { Dropdown, IDropdownOption } from "office-ui-fabric-react/lib/Dropdown";
 import { Project, WorkItem } from "../Models/PortfolioPlanningQueryModels";
-import { IEpic, IProject } from "../Contracts";
+import { IEpic, IProject, IAddEpics } from "../Contracts";
 import { PortfolioPlanningDataService } from "../../Services/PortfolioPlanningDataService";
 import "./AddEpicDialog.scss";
 
 export interface IAddEpicDialogProps {
+    planId: string;
     onCloseAddEpicDialog: () => void;
-    onAddEpics: (epicsToAdd: IEpic[], projectTitle: string) => void;
+    onAddEpics: (epicsToAdd: IAddEpics) => void;
 }
 
 interface IAddEpicDialogState {
@@ -24,7 +25,7 @@ interface IAddEpicDialogState {
     projects: IDropdownOption[];
     selectedProject: IProject;
     epics: IDropdownOption[];
-    selectedEpics: IEpic[];
+    selectedEpics: number[];
     epicsLoaded: boolean;
 }
 export class AddEpicDialog extends React.Component<
@@ -137,47 +138,36 @@ export class AddEpicDialog extends React.Component<
     };
 
     private _onEpicChange = (item: IDropdownOption): void => {
-        const newSelectedEpics = [...this.state.selectedEpics];
+        let newSelectedEpics = [...this.state.selectedEpics];
 
         const now = new Date();
         const oneMonthFromNow = new Date();
         oneMonthFromNow.setDate(now.getDate() + 30);
 
+        const workItemId = Number(item.key.toString());
+
         if (item.selected) {
-            // add the option if it's checked
-            newSelectedEpics.push({
-                id: Number(item.key.toString()),
-                project: this.state.selectedProject.title,
-                title: item.text,
-                startDate: now,
-                teamId: "",
-                endDate: oneMonthFromNow,
-                completedCount: 0,
-                totalCount: 0,
-                completedStoryPoints: 0,
-                totalStoryPoints: 0,
-                storyPointsProgress: 0,
-                countProgress: 0
-            });
+            // add the work item id, if it's checked
+            newSelectedEpics.push(workItemId);
         } else {
             // remove the option if it's unchecked
-            const currIndex = newSelectedEpics.findIndex(
-                epic => epic.id === item.key
-            );
-            if (currIndex > -1) {
-                newSelectedEpics.splice(currIndex, 1);
-            }
+            newSelectedEpics = newSelectedEpics.filter(currentWorkItemId => workItemId !== currentWorkItemId);
         }
+
         this.setState({
             selectedEpics: newSelectedEpics
         });
     };
 
     private _onAddEpics = (): void => {
-        this.props.onAddEpics(
-            this.state.selectedEpics,
-            this.state.selectedProject.title
-        );
+        this.props.onAddEpics({
+            planId: this.props.planId,
+            projectId: this.state.selectedProject.id,
+            epicsToAdd: this.state.selectedEpics,
+            workItemType: "Epic", // TODO get from state
+            requirementWorkItemType: "User story" // TODO get from state
+        });
+
         this.props.onCloseAddEpicDialog();
     };
 

@@ -32,6 +32,7 @@ const week = day * 7;
 interface IEpicTimelineOwnProps {}
 
 interface IEpicTimelineMappedProps {
+    planId: string;
     groups: ITimelineGroup[];
     items: ITimelineItem[];
     addEpicDialogOpen: boolean;
@@ -273,6 +274,7 @@ export class EpicTimeline extends React.Component<
         if (this.props.addEpicDialogOpen) {
             return (
                 <AddEpicDialog
+                    planId={this.props.planId}
                     onCloseAddEpicDialog={this.props.onCloseAddEpicDialog}
                     onAddEpics={this.props.onAddEpics}
                 />
@@ -321,6 +323,7 @@ function mapStateToProps(
     state: IPortfolioPlanningState
 ): IEpicTimelineMappedProps {
     return {
+        planId: state.planDirectoryState.selectedPlanId,
         groups: getTimelineGroups(state.epicTimelineState),
         items: getTimelineItems(state.epicTimelineState),
         addEpicDialogOpen: getAddEpicDialogOpen(state.epicTimelineState),

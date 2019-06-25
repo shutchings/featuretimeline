@@ -11,6 +11,7 @@ import {
 import { Button } from "azure-devops-ui/Button";
 
 export interface PlanHeaderProps {
+    id: string;
     title: string;
     description: string;
     backButtonClicked: () => void;

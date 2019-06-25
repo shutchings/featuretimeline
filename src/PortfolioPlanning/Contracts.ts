@@ -23,6 +23,15 @@ export interface IEpic {
     countProgress: number;
 }
 
+export interface IAddEpics
+{
+    planId: string;
+    projectId: string;
+    epicsToAdd: number[];
+    workItemType: string;
+    requirementWorkItemType: string;
+}
+
 export interface ITimelineGroup {
     id: string;
     title: string;

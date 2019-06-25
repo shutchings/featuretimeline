@@ -125,103 +125,40 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
     }
 
     public HandleTestExtensionStorage(event) {
-        PortfolioPlanningDataService.getInstance()
-            .GetAllPortfolioPlans()
-            .then(allPlans => {
-                console.log("INITIAL STATE:");
-                console.log(JSON.stringify(allPlans, null, "    "));
+            PortfolioPlanningDataService.getInstance().GetAllPortfolioPlans().then(
+                (allPlans) => {
+                    console.log("INITIAL STATE:");
+                    console.log(JSON.stringify(allPlans, null, '    '))
 
-                PortfolioPlanningDataService.getInstance()
-                    .AddPortfolioPlan("new plan name", "new plan description")
-                    .then(newPlanCreated => {
-                        console.log("Plan created");
-                        console.log(
-                            JSON.stringify(newPlanCreated, null, "    ")
-                        );
+                    PortfolioPlanningDataService.getInstance().AddPortfolioPlan("new plan name", "new plan description").then(
+                        (newPlanCreated)=> {
+                            console.log("Plan created");
+                            console.log(JSON.stringify(newPlanCreated, null, '    '))
 
-                        PortfolioPlanningDataService.getInstance()
-                            .GetAllPortfolioPlans()
-                            .then(allPlans => {
-                                console.log("Second state:");
-                                console.log(
-                                    JSON.stringify(allPlans, null, "    ")
-                                );
+                            PortfolioPlanningDataService.getInstance().GetAllPortfolioPlans().then(
+                                (allPlans) => {
+                                    console.log("Second state:");
+                                    console.log(JSON.stringify(allPlans, null, '    '))
 
-                                PortfolioPlanningDataService.getInstance()
-                                    .GetPortfolioPlanById(newPlanCreated.id)
-                                    .then(planRetrieved => {
-                                        console.log("retrieved plan");
-                                        console.log(
-                                            JSON.stringify(
-                                                planRetrieved,
-                                                null,
-                                                "    "
-                                            )
-                                        );
+                                    PortfolioPlanningDataService.getInstance().GetPortfolioPlanById(newPlanCreated.id).then(
+                                        (planRetrieved) => {
+                                            console.log("retrieved plan");
+                                            console.log(JSON.stringify(planRetrieved, null, '    '))
 
-                                        //  Update plan to include information for two projects.
-                                        planRetrieved.projects.push({
-                                            ProjectId:
-                                                "FBED1309-56DB-44DB-9006-24AD73EEE785",
-                                            PortfolioWorkItemType: "Epic",
-                                            RequirementWorkItemType:
-                                                "User Story",
-                                            WorkItemIds: [5250, 5251]
-                                        });
+                                            //  Update plan to include information for two projects.
+                                            planRetrieved.projects["FBED1309-56DB-44DB-9006-24AD73EEE785"] = {
+                                                ProjectId: "FBED1309-56DB-44DB-9006-24AD73EEE785",
+                                                PortfolioWorkItemType: "Epic",
+                                                RequirementWorkItemType: "User Story",
+                                                WorkItemIds: [5250, 5251]
+                                            };
 
-                                        planRetrieved.projects.push({
-                                            ProjectId:
-                                                "6974D8FE-08C8-4123-AD1D-FB830A098DFB",
-                                            PortfolioWorkItemType: "Epic",
-                                            RequirementWorkItemType:
-                                                "User Story",
-                                            WorkItemIds: [5249]
-                                        });
-
-                                        PortfolioPlanningDataService.getInstance()
-                                            .UpdatePortfolioPlan(planRetrieved)
-                                            .then(updatedPlan => {
-                                                console.log(
-                                                    "plan updated with new project"
-                                                );
-                                                console.log(
-                                                    JSON.stringify(
-                                                        updatedPlan,
-                                                        null,
-                                                        "    "
-                                                    )
-                                                );
-
-                                                PortfolioPlanningDataService.getInstance()
-                                                    .GetPortfolioPlanById(
-                                                        newPlanCreated.id
-                                                    )
-                                                    .then(planRetrieved => {
-                                                        console.log(
-                                                            "retrieving updated plan again by id"
-                                                        );
-                                                        console.log(
-                                                            JSON.stringify(
-                                                                planRetrieved,
-                                                                null,
-                                                                "    "
-                                                            )
-                                                        );
-
-                                                        console.log(
-                                                            "DELETING THE WHOLE COLLECTION!!!!"
-                                                        );
-                                                        PortfolioPlanningDataService.getInstance()
-                                                            .DeleteAllData()
-                                                            .then(
-                                                                totalDeleted => {
-                                                                    console.log(
-                                                                        `all data deleted. Total of ${totalDeleted} documents`
-                                                                    );
-                                                                }
-                                                            );
-                                                    });
-                                            });
+                                            planRetrieved.projects["6974D8FE-08C8-4123-AD1D-FB830A098DFB"] = {
+                                                ProjectId: "6974D8FE-08C8-4123-AD1D-FB830A098DFB",
+                                                PortfolioWorkItemType: "Epic",
+                                                RequirementWorkItemType: "User Story",
+                                                WorkItemIds: [5249]
+                                            };
                                     });
                             });
                     });
