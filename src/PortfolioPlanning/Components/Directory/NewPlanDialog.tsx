@@ -83,7 +83,10 @@ export default class NewPlanDialog extends React.Component<
                                     this.descriptionObservable.value.trim()
                                 );
                             }}
-                            disabled={this.state.errorMessage !== ""}
+                            disabled={
+                                this.nameObservable.value !== "" ||
+                                this.state.errorMessage !== ""
+                            }
                         />
                     </ButtonGroup>
                 </PanelFooter>
