@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as moment from "moment";
 import {
-    IEpic,
     ITimelineGroup,
     ITimelineItem,
     ProgressTrackingCriteria
@@ -14,7 +13,6 @@ import {
 } from "../Redux/Contracts";
 import {
     getAddEpicDialogOpen,
-    getOtherEpics,
     getSetDatesDialogHidden,
     getTimelineGroups,
     getTimelineItems,
@@ -36,7 +34,6 @@ interface IEpicTimelineOwnProps {}
 interface IEpicTimelineMappedProps {
     groups: ITimelineGroup[];
     items: ITimelineItem[];
-    otherEpics: IEpic[];
     addEpicDialogOpen: boolean;
     setDatesDialogHidden: boolean;
     selectedItemId: number;
@@ -277,7 +274,6 @@ export class EpicTimeline extends React.Component<
             return (
                 <AddEpicDialog
                     onCloseAddEpicDialog={this.props.onCloseAddEpicDialog}
-                    otherEpics={this.props.otherEpics}
                     onAddEpics={this.props.onAddEpics}
                 />
             );
@@ -327,7 +323,6 @@ function mapStateToProps(
     return {
         groups: getTimelineGroups(state.epicTimelineState),
         items: getTimelineItems(state.epicTimelineState),
-        otherEpics: getOtherEpics(state.epicTimelineState),
         addEpicDialogOpen: getAddEpicDialogOpen(state.epicTimelineState),
         setDatesDialogHidden: getSetDatesDialogHidden(state.epicTimelineState),
         selectedItemId: state.epicTimelineState.selectedItemId,
