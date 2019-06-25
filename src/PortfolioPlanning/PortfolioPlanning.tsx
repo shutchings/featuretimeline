@@ -5,7 +5,6 @@ import configurePortfolioPlanningStore from "./Redux/PortfolioPlanningStore";
 import { Provider } from "react-redux";
 import * as PlanDirectoryReducer from "./Redux/Reducers/PlanDirectoryReducer";
 import * as EpicTimelineReducer from "./Redux/Reducers/EpicTimelineReducer";
-import PlanPage from "./Components/PlanPage";
 import { ConnectedPlanDirectory } from "./Components/Directory/PlanDirectory";
 
 export function initialize(): void {
@@ -16,10 +15,9 @@ export function initialize(): void {
             epicTimelineState: EpicTimelineReducer.getDefaultState()
         });
 
-        const showDirectory = true;
         ReactDOM.render(
             <Provider store={store}>
-                {showDirectory ? <ConnectedPlanDirectory /> : <PlanPage />}
+                <ConnectedPlanDirectory />
             </Provider>,
             document.getElementById("root")
         );

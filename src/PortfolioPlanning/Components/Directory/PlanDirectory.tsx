@@ -8,6 +8,7 @@ import { PlanDirectoryActions } from "../../Redux/Actions/PlanDirectoryActions";
 import { connect } from "react-redux";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
 import { IPlan } from "../../Contracts";
+import PlanPage from "../PlanPage";
 
 export interface IPlanDirectoryProps {}
 
@@ -25,36 +26,42 @@ export class PlanDirectory extends React.Component<
     }
 
     public render() {
-        return (
-            <Page className="plan-page">
-                <PlanDirectoryHeader
-                    onNewPlanClick={() => {
-                        this.props.toggleNewPlanDialogVisible(true);
-                    }}
-                />
-                <div className="page-content plan-directory-page-content">
-                    {this.props.plans.map(plan => (
-                        <PlanCard
-                            id={plan.id}
-                            title={plan.title}
-                            description={plan.description}
-                            onClick={id => alert(id)}
-                        />
-                    ))}
-                </div>
-                {this.props.newPlanDialogVisible && (
-                    <NewPlanDialog
-                        onDismiss={() =>
-                            this.props.toggleNewPlanDialogVisible(false)
-                        }
-                        onCreate={(name: string, description: string) => {
-                            this.props.createPlan(name, description);
-                            this.props.toggleNewPlanDialogVisible(false);
+        if (this.props.selectedPlanId) {
+            return <PlanPage />;
+        } else {
+            return (
+                <Page className="plan-page">
+                    <PlanDirectoryHeader
+                        onNewPlanClick={() => {
+                            this.props.toggleNewPlanDialogVisible(true);
                         }}
                     />
-                )}
-            </Page>
-        );
+                    <div className="page-content plan-directory-page-content">
+                        {this.props.plans.map(plan => (
+                            <PlanCard
+                                id={plan.id}
+                                title={plan.title}
+                                description={plan.description}
+                                onClick={id =>
+                                    this.props.toggleSelectedPlanId(id)
+                                }
+                            />
+                        ))}
+                    </div>
+                    {this.props.newPlanDialogVisible && (
+                        <NewPlanDialog
+                            onDismiss={() =>
+                                this.props.toggleNewPlanDialogVisible(false)
+                            }
+                            onCreate={(name: string, description: string) => {
+                                this.props.createPlan(name, description);
+                                this.props.toggleNewPlanDialogVisible(false);
+                            }}
+                        />
+                    )}
+                </Page>
+            );
+        }
     }
 }
 
@@ -70,6 +77,7 @@ function mapStateToProps(
 
 const Actions = {
     createPlan: PlanDirectoryActions.createPlan,
+    toggleSelectedPlanId: PlanDirectoryActions.toggleSelectedPlanId,
     toggleNewPlanDialogVisible: PlanDirectoryActions.toggleNewPlanDialogVisible
 };
 
