@@ -36,9 +36,6 @@ export class PlanDirectory extends React.Component<
                         <PlanCard
                             title={plan.title}
                             description={plan.description}
-                            teams={plan.teams}
-                            projects={plan.projects}
-                            tags={plan.tags}
                         />
                     ))}
                 </div>
