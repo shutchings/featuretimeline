@@ -10,8 +10,9 @@ export const enum PlanDirectoryActionTypes {
 }
 
 export const PlanDirectoryActions = {
-    createPlan: (title: string, description: string) =>
+    createPlan: (id: string, title: string, description: string) =>
         createAction(PlanDirectoryActionTypes.CreatePlan, {
+            id,
             title,
             description
         }),

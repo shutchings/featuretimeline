@@ -9,6 +9,7 @@ import { connect } from "react-redux";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
 import { IPlan } from "../../Contracts";
 import PlanPage from "../PlanPage";
+import { PortfolioPlanningDataService } from "../../../Services/PortfolioPlanningDataService";
 
 export interface IPlanDirectoryProps {}
 
@@ -66,8 +67,25 @@ export class PlanDirectory extends React.Component<
                                 this.props.toggleNewPlanDialogVisible(false)
                             }
                             onCreate={(name: string, description: string) => {
-                                this.props.createPlan(name, description);
-                                this.props.toggleNewPlanDialogVisible(false);
+                                PortfolioPlanningDataService.getInstance()
+                                    .AddPortfolioPlan(name, description)
+                                    .then(
+                                        newPlan => {
+                                            this.props.createPlan(
+                                                newPlan.id,
+                                                newPlan.name,
+                                                newPlan.description
+                                            );
+                                            this.props.toggleNewPlanDialogVisible(
+                                                false
+                                            );
+                                        },
+                                        reason => {
+                                            alert(
+                                                `Create new plan failed: ${reason}`
+                                            );
+                                        }
+                                    );
                             }}
                         />
                     )}
