@@ -34,6 +34,8 @@ export interface PortfolioPlanningQueryResultItem
     TargetDate: Date;
 
     ProjectId: string;
+    AreaId: string;
+    TeamId: string;
 
     CompletedCount: number;
     TotalCount: number;
@@ -115,3 +117,29 @@ export interface ExtensionStorageError
     status: number;
     responseText: string;
 }
+
+
+export interface PortfolioPlanningTeamsInAreaQueryInput
+{
+    /**
+     * AreaIds by project id.
+     */
+    [projectId: string] : string[];
+}
+
+export interface PortfolioPlanningTeamsInAreaQueryResult extends IQueryResultError
+{
+    teamsInArea: TeamsInArea;
+}
+
+export interface TeamsInArea
+{
+    [areaId: string] : Team[]
+}
+
+export interface Team
+{
+    teamId: string;
+    teamName: string;
+}
+

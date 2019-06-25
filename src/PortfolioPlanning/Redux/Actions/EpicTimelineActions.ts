@@ -6,7 +6,8 @@ import { IEpic, ProgressTrackingCriteria } from "../../Contracts";
 import moment = require("moment");
 import {
     PortfolioPlanningQueryResult,
-    PortfolioPlanningProjectQueryResult
+    PortfolioPlanningProjectQueryResult,
+    PortfolioPlanningTeamsInAreaQueryResult
 } from "../../Models/PortfolioPlanningQueryModels";
 import { Action } from "redux";
 
@@ -46,12 +47,16 @@ export const EpicTimelineActions = {
         createAction(EpicTimelineActionTypes.SetSelectedItemId, { id }),
     portfolioItemsReceived: (
         portfolioQueryResult: PortfolioPlanningQueryResult,
-        projectsQueryResult: PortfolioPlanningProjectQueryResult
+        projectsQueryResult: PortfolioPlanningProjectQueryResult,
+        teamAreasQueryResult: PortfolioPlanningTeamsInAreaQueryResult
     ) =>
-        createAction(EpicTimelineActionTypes.PortfolioItemsReceived, {
-            portfolioQueryResult,
-            projectsQueryResult
-        }),
+        {
+            return createAction(EpicTimelineActionTypes.PortfolioItemsReceived, {
+                portfolioQueryResult,
+                projectsQueryResult,
+                teamAreasQueryResult
+            });
+        },
     openAddEpicDialog: () =>
         createAction(EpicTimelineActionTypes.OpenAddEpicDialog),
     closeAddEpicDialog: () =>
@@ -73,5 +78,6 @@ export interface PortfolioItemsReceivedAction extends Action {
     payload: {
         portfolioQueryResult: PortfolioPlanningQueryResult;
         projectsQueryResult: PortfolioPlanningProjectQueryResult;
+        teamAreasQueryResult: PortfolioPlanningTeamsInAreaQueryResult;
     };
 }
