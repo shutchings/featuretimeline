@@ -155,6 +155,7 @@ export class AddEpicDialog extends React.Component<
                 project: this.state.selectedProject.title,
                 title: item.text,
                 startDate: now,
+                teamId: "",
                 endDate: fiveDaysFromNow,
                 completedCount: 0,
                 totalCount: 0,
