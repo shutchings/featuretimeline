@@ -83,9 +83,17 @@ export function epicTimelineReducer(
                 break;
             }
             case EpicTimelineActionTypes.AddEpics: {
-                const { epicsToAdd } = action.payload;
+                const { epicsToAdd, projectTitle } = action.payload;
 
-                draft.epics.push(...epicsToAdd);
+                epicsToAdd.map(epic => {
+                    if (
+                        draft.epics.findIndex(
+                            epicInDraft => epicInDraft.id === epic.id
+                        ) === -1
+                    ) {
+                        draft.epics.push(epic);
+                    }
+                });
 
                 for (let epic of epicsToAdd) {
                     if (
@@ -95,7 +103,7 @@ export function epicTimelineReducer(
                     ) {
                         draft.projects.push({
                             id: epic.project,
-                            title: "Newly added project" // TODO: Add real project name once we work the real scenario with Ed
+                            title: projectTitle // TODO: Add real project name once we work the real scenario with Ed
                         });
                     }
                 }

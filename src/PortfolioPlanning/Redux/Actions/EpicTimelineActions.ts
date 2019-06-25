@@ -56,8 +56,8 @@ export const EpicTimelineActions = {
         createAction(EpicTimelineActionTypes.OpenAddEpicDialog),
     closeAddEpicDialog: () =>
         createAction(EpicTimelineActionTypes.CloseAddEpicDialog),
-    addEpics: (epicsToAdd: IEpic[]) =>
-        createAction(EpicTimelineActionTypes.AddEpics, { epicsToAdd }),
+    addEpics: (epicsToAdd: IEpic[], projectTitle: string) =>
+        createAction(EpicTimelineActionTypes.AddEpics, { epicsToAdd, projectTitle }),
     removeEpic: (id: number) =>
         createAction(EpicTimelineActionTypes.RemoveEpic, { id }),
     toggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>
