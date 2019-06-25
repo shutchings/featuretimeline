@@ -1,9 +1,12 @@
 @import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
 
+.plan-card-container {
+    margin: 16px 16px;
+}
+
 .plan-card {
     width: 240px;
     height: 200px;
-    margin: 16px 16px;
     background-color: $white;
 
     .title {

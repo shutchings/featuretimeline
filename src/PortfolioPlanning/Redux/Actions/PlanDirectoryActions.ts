@@ -5,6 +5,7 @@ import {
 
 export const enum PlanDirectoryActionTypes {
     CreatePlan = "PlanDirectory/CreatePlan",
+    ToggleSelectedPlanId = "PlanDirectory/SelectPlan",
     ToggleNewPlanDialogVisible = "PlanDirectory/ToggleNewPlanDialogVisible"
 }
 
@@ -13,6 +14,10 @@ export const PlanDirectoryActions = {
         createAction(PlanDirectoryActionTypes.CreatePlan, {
             title,
             description
+        }),
+    toggleSelectedPlanId: (id: string) =>
+        createAction(PlanDirectoryActionTypes.ToggleSelectedPlanId, {
+            id
         }),
     toggleNewPlanDialogVisible: (visible: boolean) =>
         createAction(PlanDirectoryActionTypes.ToggleNewPlanDialogVisible, {

@@ -1,11 +1,9 @@
 import moment = require("moment");
 
 export interface IPlan {
+    id: string;
     title: string;
     description: string;
-    teams: string[];
-    projects: string[];
-    tags: string[];
 }
 
 export interface IProject {

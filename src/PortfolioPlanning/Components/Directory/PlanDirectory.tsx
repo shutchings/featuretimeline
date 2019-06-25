@@ -12,6 +12,7 @@ import { IPlan } from "../../Contracts";
 export interface IPlanDirectoryProps {}
 
 interface IPlanDirectoryMappedProps {
+    selectedPlanId: string;
     plans: IPlan[];
     newPlanDialogVisible: boolean;
 }
@@ -34,8 +35,10 @@ export class PlanDirectory extends React.Component<
                 <div className="page-content plan-directory-page-content">
                     {this.props.plans.map(plan => (
                         <PlanCard
+                            id={plan.id}
                             title={plan.title}
                             description={plan.description}
+                            onClick={id => alert(id)}
                         />
                     ))}
                 </div>
@@ -59,6 +62,7 @@ function mapStateToProps(
     state: IPortfolioPlanningState
 ): IPlanDirectoryMappedProps {
     return {
+        selectedPlanId: state.planDirectoryState.selectedPlanId,
         plans: state.planDirectoryState.plans,
         newPlanDialogVisible: state.planDirectoryState.newPlanDialogVisible
     };

@@ -17,6 +17,7 @@ export interface IEpicTimelineState {
 }
 
 export interface IPlanDirectoryState {
+    selectedPlanId: string;
     newPlanDialogVisible: boolean;
     plans: IPlan[];
 }
