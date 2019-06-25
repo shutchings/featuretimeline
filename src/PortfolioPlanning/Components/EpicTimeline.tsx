@@ -249,7 +249,10 @@ export class EpicTimeline extends React.Component<
     };
 
     private _onRemoveSelectedEpicClick = (): void => {
-        this.props.onRemoveSelectedEpic(this.props.selectedItemId);
+        this.props.onRemoveSelectedEpic({
+            planId: this.props.planId,
+            epicToRemove: this.props.selectedItemId
+        });
     };
 
     private _onProgressTrackingCriteriaChanged = (item: {

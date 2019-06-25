@@ -132,7 +132,7 @@ export interface PortfolioPlanningFullContentQueryResult
     items: PortfolioPlanningQueryResult,
     projects: PortfolioPlanningProjectQueryResult,
     teamAreas: PortfolioPlanningTeamsInAreaQueryResult,
-    mergeStrategy?: MergeType
+    mergeStrategy: MergeType
 }
 
 export enum MergeType

@@ -32,6 +32,12 @@ export interface IAddEpics
     requirementWorkItemType: string;
 }
 
+export interface IRemoveEpic
+{
+    planId: string;
+    epicToRemove: number;
+}
+
 export interface ITimelineGroup {
     id: string;
     title: string;

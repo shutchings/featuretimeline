@@ -7,7 +7,6 @@ export interface IPortfolioPlanningState {
 }
 
 export interface IEpicTimelineState {
-    planId: string;
     projects: IProject[];
     epics: IEpic[];
     message: string;
