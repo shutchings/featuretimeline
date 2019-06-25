@@ -8,6 +8,7 @@ export interface IProject {
 export interface IEpic {
     id: number;
     project: string;
+    teamId: string;
     title: string;
     startDate?: Date;
     endDate?: Date;
@@ -30,6 +31,7 @@ export interface ITimelineGroup {
 export interface ITimelineItem {
     id: number;
     group: string;
+    teamId: string;
     title: string;
     start_time: moment.Moment;
     end_time: moment.Moment;

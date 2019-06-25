@@ -47,6 +47,7 @@ export function getTimelineItems(state: IEpicTimelineState): ITimelineItem[] {
         return {
             id: epic.id,
             group: epic.project,
+            teamId: epic.teamId,
             title: epic.title,
             start_time: moment(epic.startDate),
             end_time: moment(epic.endDate),

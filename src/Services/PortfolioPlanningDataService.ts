@@ -11,10 +11,13 @@ import
     PortfolioPlanningWorkItemQueryResult,
     PortfolioPlanningDirectory,
     PortfolioPlanning,
-    ExtensionStorageError
+    ExtensionStorageError,
+    PortfolioPlanningTeamsInAreaQueryInput,
+    PortfolioPlanningTeamsInAreaQueryResult,
+    TeamsInArea
 } from "../PortfolioPlanning/Models/PortfolioPlanningQueryModels";
 import { ODataClient } from "../Common/OData/ODataClient";
-import { ODataWorkItemQueryResult } from "../PortfolioPlanning/Models/ODataQueryModels";
+import { ODataWorkItemQueryResult, ODataAreaQueryResult } from "../PortfolioPlanning/Models/ODataQueryModels";
 import { GUIDUtil } from "../Common/GUIDUtil";
 
 export class PortfolioPlanningDataService {
@@ -52,6 +55,19 @@ export class PortfolioPlanningDataService {
 
         return client.runGetQuery(fullQueryUrl).then(
             (results: any) => this.ParseODataProjectQueryResultResponse(results),
+            (error) => this.ParseODataErrorResponse(error));
+    }
+
+    public async runTeamsInAreasQuery(
+        queryInput: PortfolioPlanningTeamsInAreaQueryInput) : Promise<PortfolioPlanningTeamsInAreaQueryResult>
+    {
+        const odataQueryString = ODataQueryBuilder.TeamsInAreaQueryString(queryInput);
+
+        const client = await ODataClient.getInstance();
+        const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
+
+        return client.runGetQuery(fullQueryUrl).then(
+            (results: any) => this.ParseODataTeamsInAreaQueryResultResponse(results),
             (error) => this.ParseODataErrorResponse(error));
     }
 
@@ -246,6 +262,19 @@ export class PortfolioPlanningDataService {
         }
     }
 
+    private ParseODataTeamsInAreaQueryResultResponse(results: any) : PortfolioPlanningTeamsInAreaQueryResult {
+        if(!results || !results["value"]) {
+            return null;
+        }
+
+        const rawResult : ODataAreaQueryResult[] = results.value;
+
+        return {
+            exceptionMessage: null,
+            teamsInArea: this.PortfolioPlanningAreaQueryResultItems(rawResult)
+        }
+    }
+
     private ParseODataWorkItemQueryResultResponse(results : any) : PortfolioPlanningWorkItemQueryResult {
         if(!results || !results["value"]) {
             return null;
@@ -280,6 +309,8 @@ export class PortfolioPlanningDataService {
 
         return  rawItems.map(
             (rawItem) => {
+                const areaIdValue : string = (rawItem.AreaSK) ? rawItem.AreaSK.toLowerCase() : null;
+
                 const result: PortfolioPlanningQueryResultItem = {
                     WorkItemId: rawItem.WorkItemId,
                     WorkItemType: rawItem.WorkItemType,
@@ -288,6 +319,8 @@ export class PortfolioPlanningDataService {
                     StartDate: rawItem.StartDate,
                     TargetDate: rawItem.TargetDate,
                     ProjectId: rawItem.ProjectSK,
+                    AreaId: areaIdValue,
+                    TeamId: null,   //  Will be assigned when teams in areas data is retrieved.
                     CompletedCount: 0,
                     TotalCount: 0,
                     CompletedStoryPoints: 0,
@@ -311,6 +344,23 @@ export class PortfolioPlanningDataService {
             });
     }
 
+    private PortfolioPlanningAreaQueryResultItems(rawItems: ODataAreaQueryResult[]) : TeamsInArea
+    {
+        const result : TeamsInArea = {};
+
+        rawItems.forEach((areaQueryResult) => {
+            const areaIdKey = areaQueryResult.AreaSK.toLowerCase();
+            result[areaIdKey] = areaQueryResult.Teams.map((odataTeam) => {
+                return {
+                    teamId: odataTeam.TeamSK.toLowerCase(),
+                    teamName: odataTeam.TeamName
+                };
+            })
+        });
+
+        return result;
+    }
+
     private ParseODataErrorResponse(results : any) : IQueryResultError {
         return {
             exceptionMessage: results.responseJSON.error.message
@@ -325,7 +375,7 @@ export class ODataQueryBuilder {
     public static WorkItemsQueryString(input: PortfolioPlanningQueryInput) : string {
         return "WorkItems" +
         "?" +
-            "$select=WorkItemId,WorkItemType,Title,State,StartDate,TargetDate,ProjectSK" +
+            "$select=WorkItemId,WorkItemType,Title,State,StartDate,TargetDate,ProjectSK,AreaSK" +
         "&" +
             `$filter=${this.BuildODataQueryFilter(input)}` +
         "&" +
@@ -352,6 +402,36 @@ export class ODataQueryBuilder {
             "$select=WorkItemId,WorkItemType,Title,State" +
         "&" +
             `$filter=WorkItemType eq '${workItemType}'`;
+    }
+
+    public static TeamsInAreaQueryString(input: PortfolioPlanningTeamsInAreaQueryInput) : string {
+        return "Areas" +
+        "?" +
+            "$select=ProjectSK,AreaSK" +
+        "&" +
+            `$filter=${this.ProjectAreasFilter(input)}` +
+        "&" +
+            "$expand=Teams($select=TeamSK,TeamName)";
+    }
+
+    /**
+     *  (
+                ProjectSK eq FBED1309-56DB-44DB-9006-24AD73EEE785
+            and (
+                    AreaSK eq aaf9cd34-350e-45da-8600-a39bbfe14cb8
+                or  AreaSK eq 549aa146-cad9-48ba-86da-09f0bdee4a03
+            )
+        ) or (
+                ProjectId eq 6974D8FE-08C8-4123-AD1D-FB830A098DFB
+            and (
+                    AreaSK eq fa64fee6-434f-4405-94e3-10c1694d5d26
+            )
+        )
+     */
+    private static ProjectAreasFilter(input: PortfolioPlanningTeamsInAreaQueryInput) : string {
+        return Object.keys(input)
+            .map((projectId) => `(ProjectSK eq ${projectId} and (${input[projectId].map((areaId) => `AreaSK eq ${areaId}`).join(" or ")}))`)
+            .join(" or ");
     }
 
     /**
