@@ -115,6 +115,7 @@ export function epicTimelineReducer(
 
 export function getDefaultState(): IEpicTimelineState {
     return {
+        planId: null,
         projects: [],
         epics: [],
         message: "Initial message",
@@ -131,11 +132,14 @@ function handlePortfolioItemsReceived(
 ): IEpicTimelineState {
     return produce(state, draft => {
         const { 
+            planId,
             items, 
             projects,
             teamAreas,
             mergeStrategy
          } = action.payload;
+
+         draft.planId = planId;
 
         //  TODO    Handle exception message from OData query results.
 

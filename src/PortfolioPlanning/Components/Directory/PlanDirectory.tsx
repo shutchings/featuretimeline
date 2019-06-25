@@ -34,6 +34,7 @@ export class PlanDirectory extends React.Component<
 
             return (
                 <PlanPage
+                    id={selectedPlan.id}
                     title={selectedPlan.name}
                     description={selectedPlan.description}
                     backButtonClicked={() =>

@@ -17,7 +17,6 @@ import "./AddEpicDialog.scss";
 export interface IAddEpicDialogProps {
     planId: string;
     onCloseAddEpicDialog: () => void;
-    otherEpics: IEpic[];
     onAddEpics: (epicsToAdd: IAddEpics) => void;
 }
 

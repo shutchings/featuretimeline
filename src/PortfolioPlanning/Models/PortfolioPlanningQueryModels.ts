@@ -129,6 +129,7 @@ export interface Team {
 
 export interface PortfolioPlanningFullContentQueryResult 
 {
+    planId?: string;
     items: PortfolioPlanningQueryResult,
     projects: PortfolioPlanningProjectQueryResult,
     teamAreas: PortfolioPlanningTeamsInAreaQueryResult,

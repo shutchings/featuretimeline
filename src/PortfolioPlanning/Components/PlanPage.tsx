@@ -5,6 +5,7 @@ import PlanHeader from "./PlanHeader";
 import { ConnectedEpicTimeline } from "./EpicTimeline";
 
 export interface PlanPageProps {
+    id: string;
     title: string;
     description: string;
     backButtonClicked: () => void;
@@ -19,6 +20,7 @@ export default class PlanPage extends React.Component<PlanPageProps> {
         return (
             <Page className="plan-page">
                 <PlanHeader
+                    id={this.props.id}
                     title={this.props.title}
                     description={this.props.description}
                     backButtonClicked={this.props.backButtonClicked}

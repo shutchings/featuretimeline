@@ -162,7 +162,11 @@ function* onToggleSelectedPlanId(
 ): SagaIterator {
     const selectedPlanId = action.payload.id;
 
-    yield effects.call(LoadPortfolio, selectedPlanId);
+    if(selectedPlanId)
+    {
+        //  Only load portfolio when a valid plan id was provided.
+        yield effects.call(LoadPortfolio, selectedPlanId);
+    }
 }
 
 // Helpers

@@ -11,10 +11,6 @@ import {
 import { EpicTimelineActions } from "../Actions/EpicTimelineActions";
 
 export function* LoadPortfolio(planId: string) {
-    //  TODO    User Story 1559920: Load epics and project information from extension storage
-    //  These values are only for testing wiring of OData service to UI.
-    //const workItemId = 5250;
-    //const projectId = "FBED1309-56DB-44DB-9006-24AD73EEE785";
 
     const portfolioService = PortfolioPlanningDataService.getInstance();
     const planInfo: PortfolioPlanning = yield call(
@@ -25,6 +21,7 @@ export function* LoadPortfolio(planId: string) {
     // No data for this plan, just return empty info
     if (!planInfo.projects || Object.keys(planInfo.projects).length === 0) {
         yield put(EpicTimelineActions.portfolioItemsReceived({
+            planId,
             items: { 
                 exceptionMessage: null,
                 items: [] 
@@ -42,13 +39,18 @@ export function* LoadPortfolio(planId: string) {
         return;
     }
 
+    const allProjectKeys = Object.keys(planInfo.projects);
+    const firstProject = (allProjectKeys.length > 0) ?
+        planInfo.projects[allProjectKeys[0]] :
+        null;
+
     const portfolioQueryInput: PortfolioPlanningQueryInput = {
         //  TODO    Only supporting one work item type per plan for now. Work item type should be per project.
-        PortfolioWorkItemType: planInfo.projects[0].PortfolioWorkItemType,
+        PortfolioWorkItemType: (firstProject) ? firstProject.PortfolioWorkItemType : "Epic",
 
         //  TODO    Only supporting one work item type per plan for now. Work item type should be per project.
         RequirementWorkItemTypes: [
-            planInfo.projects[0].RequirementWorkItemType
+            (firstProject) ? firstProject.RequirementWorkItemType : "User story"
         ],
 
         WorkItems: Object.keys(planInfo.projects).map((projectKey) => 
@@ -68,6 +70,7 @@ export function* LoadPortfolio(planId: string) {
 
     //  Replace all values when merging. We are loading the full state of the portfolio here.
     queryResult.mergeStrategy = MergeType.Replace;
+    queryResult.planId = planId;
 
     yield put(EpicTimelineActions.portfolioItemsReceived(queryResult));
 }
