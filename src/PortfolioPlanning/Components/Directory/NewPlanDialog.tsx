@@ -30,14 +30,14 @@ export default class NewPlanDialog extends React.Component<NewPlanDialogProps> {
                     </HeaderTitleArea>
                 </CustomHeader>
                 <PanelContent>
-                    <div className="flex-column">
+                    <div className="text-field-container">
                         <TextField
                             className="text-field"
                             value={this.nameObservable}
                             onChange={(e, newValue) =>
                                 (this.nameObservable.value = newValue)
                             }
-                            width={TextFieldWidth.standard}
+                            width={TextFieldWidth.auto}
                             placeholder="Add your plan name"
                         />
                         <TextField
@@ -48,13 +48,13 @@ export default class NewPlanDialog extends React.Component<NewPlanDialogProps> {
                             }
                             multiline
                             rows={4}
-                            width={TextFieldWidth.standard}
+                            width={TextFieldWidth.auto}
                             placeholder="Add your plan description..."
                         />
                     </div>
                 </PanelContent>
-                <PanelFooter className="flex-end">
-                    <ButtonGroup className="flex-row">
+                <PanelFooter>
+                    <ButtonGroup className="buttons">
                         <Button text="Cancel" onClick={this.props.onDismiss} />
                         <Button
                             text="Create"
