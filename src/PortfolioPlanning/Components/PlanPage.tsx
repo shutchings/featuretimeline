@@ -5,6 +5,8 @@ import PlanHeader from "./PlanHeader";
 import { ConnectedEpicTimeline } from "./EpicTimeline";
 
 export interface PlanPageProps {
+    title: string;
+    description: string;
     backButtonClicked: () => void;
 }
 
