@@ -64,6 +64,9 @@ export class PlanDirectory extends React.Component<
                     </div>
                     {this.props.newPlanDialogVisible && (
                         <NewPlanDialog
+                            existingPlanNames={this.props.plans.map(
+                                plan => plan.name
+                            )}
                             onDismiss={() =>
                                 this.props.toggleNewPlanDialogVisible(false)
                             }

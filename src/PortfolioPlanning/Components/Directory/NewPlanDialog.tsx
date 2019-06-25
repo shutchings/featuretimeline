@@ -7,15 +7,30 @@ import { TextField, TextFieldWidth } from "azure-devops-ui/TextField";
 import { ObservableValue } from "azure-devops-ui/Core/Observable";
 import { Button } from "azure-devops-ui/Button";
 import { ButtonGroup } from "azure-devops-ui/ButtonGroup";
+import { FormItem } from "azure-devops-ui/FormItem";
 
 export interface NewPlanDialogProps {
+    existingPlanNames: string[];
     onDismiss: () => void;
     onCreate: (name: string, description: string) => void;
 }
 
-export default class NewPlanDialog extends React.Component<NewPlanDialogProps> {
+interface NewPlanDialogState {
+    errorMessage: string;
+}
+
+export default class NewPlanDialog extends React.Component<
+    NewPlanDialogProps,
+    NewPlanDialogState
+> {
     private nameObservable = new ObservableValue<string>("");
     private descriptionObservable = new ObservableValue<string>("");
+
+    constructor(props) {
+        super(props);
+
+        this.state = { errorMessage: "" };
+    }
 
     public render() {
         return (
@@ -31,15 +46,18 @@ export default class NewPlanDialog extends React.Component<NewPlanDialogProps> {
                 </CustomHeader>
                 <PanelContent>
                     <div className="text-field-container">
-                        <TextField
-                            className="text-field"
-                            value={this.nameObservable}
-                            onChange={(e, newValue) =>
-                                (this.nameObservable.value = newValue)
-                            }
-                            width={TextFieldWidth.auto}
-                            placeholder="Add your plan name"
-                        />
+                        <FormItem
+                            message={this.state.errorMessage}
+                            error={this.state.errorMessage !== ""}
+                        >
+                            <TextField
+                                className="text-field"
+                                value={this.nameObservable}
+                                onChange={this._onNameChange}
+                                width={TextFieldWidth.auto}
+                                placeholder="Add your plan name"
+                            />
+                        </FormItem>
                         <TextField
                             className="text-field"
                             value={this.descriptionObservable}
@@ -61,15 +79,36 @@ export default class NewPlanDialog extends React.Component<NewPlanDialogProps> {
                             primary={true}
                             onClick={() => {
                                 this.props.onCreate(
-                                    this.nameObservable.value,
-                                    this.descriptionObservable.value
+                                    this.nameObservable.value.trim(),
+                                    this.descriptionObservable.value.trim()
                                 );
                             }}
-                            disabled={false} // TODO: Add disabled logic
+                            disabled={
+                                this.nameObservable.value !== "" ||
+                                this.state.errorMessage !== ""
+                            }
                         />
                     </ButtonGroup>
                 </PanelFooter>
             </CustomDialog>
         );
     }
+
+    private _onNameChange = (e, newValue: string): void => {
+        const trimmedName = newValue.trim().toLowerCase();
+
+        if (
+            this.props.existingPlanNames.some(
+                name => name.toLowerCase() === trimmedName
+            )
+        ) {
+            this.setState({
+                errorMessage: `The plan "${newValue}" already exists.`
+            });
+        } else {
+            this.setState({ errorMessage: "" });
+        }
+
+        this.nameObservable.value = newValue;
+    };
 }
