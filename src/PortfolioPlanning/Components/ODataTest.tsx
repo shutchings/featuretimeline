@@ -130,19 +130,19 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
                                             console.log(JSON.stringify(planRetrieved, null, '    '))
 
                                             //  Update plan to include information for two projects.
-                                            planRetrieved.projects.push({
+                                            planRetrieved.projects["FBED1309-56DB-44DB-9006-24AD73EEE785"] = {
                                                 ProjectId: "FBED1309-56DB-44DB-9006-24AD73EEE785",
                                                 PortfolioWorkItemType: "Epic",
                                                 RequirementWorkItemType: "User Story",
                                                 WorkItemIds: [5250, 5251]
-                                            });
+                                            };
 
-                                            planRetrieved.projects.push({
+                                            planRetrieved.projects["6974D8FE-08C8-4123-AD1D-FB830A098DFB"] = {
                                                 ProjectId: "6974D8FE-08C8-4123-AD1D-FB830A098DFB",
                                                 PortfolioWorkItemType: "Epic",
                                                 RequirementWorkItemType: "User Story",
                                                 WorkItemIds: [5249]
-                                            });
+                                            };
 
                                             PortfolioPlanningDataService.getInstance().UpdatePortfolioPlan(planRetrieved).then(
                                                 (updatedPlan) => {

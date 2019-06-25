@@ -14,7 +14,8 @@ import
     ExtensionStorageError,
     PortfolioPlanningTeamsInAreaQueryInput,
     PortfolioPlanningTeamsInAreaQueryResult,
-    TeamsInArea
+    TeamsInArea,
+    PortfolioPlanningFullContentQueryResult
 } from "../PortfolioPlanning/Models/PortfolioPlanningQueryModels";
 import { ODataClient } from "../Common/OData/ODataClient";
 import { ODataWorkItemQueryResult, ODataAreaQueryResult } from "../PortfolioPlanning/Models/ODataQueryModels";
@@ -70,6 +71,45 @@ export class PortfolioPlanningDataService {
             (results: any) => this.ParseODataTeamsInAreaQueryResultResponse(results),
             (error) => this.ParseODataErrorResponse(error));
     }
+
+    public async loadPortfolioContent(portfolioQueryInput: PortfolioPlanningQueryInput) : Promise<PortfolioPlanningFullContentQueryResult>
+    {
+        const projectsQueryInput: PortfolioPlanningProjectQueryInput = {
+            projectIds: portfolioQueryInput.WorkItems.map((workItems) => workItems.projectId)
+        };
+    
+        const [portfolioQueryResult, projectQueryResult] = await Promise.all(
+            [
+                this.runPortfolioItemsQuery(portfolioQueryInput),
+                this.runProjectQuery(projectsQueryInput)
+            ]);
+    
+        const teamsInAreaQueryInput : PortfolioPlanningTeamsInAreaQueryInput = {};
+
+        for(let entry of (portfolioQueryResult as PortfolioPlanningQueryResult).items) {
+            const projectIdKey = entry.ProjectId.toLowerCase();
+            const areaIdKey = entry.AreaId.toLowerCase();
+    
+            if(!teamsInAreaQueryInput[projectIdKey])
+            {
+                teamsInAreaQueryInput[projectIdKey] = [];
+            }
+    
+            if(teamsInAreaQueryInput[projectIdKey].indexOf(areaIdKey) === -1)
+            {
+                teamsInAreaQueryInput[projectIdKey].push(areaIdKey);
+            }
+        }
+    
+        const teamAreasQueryResult = await this.runTeamsInAreasQuery(teamsInAreaQueryInput);
+    
+        return {
+            items: portfolioQueryResult,
+            projects: projectQueryResult,
+            teamAreas: teamAreasQueryResult,
+            mergeStrategy: null
+        };
+    }    
 
     public async getAllProjects() : Promise<PortfolioPlanningProjectQueryResult> {
 
@@ -139,11 +179,13 @@ export class PortfolioPlanningDataService {
     public async AddPortfolioPlan(newPlanName: string) : Promise<PortfolioPlanning> 
     {
         const client = await this.GetStorageClient();
+        const newPlanId = GUIDUtil.newGuid().toLowerCase();
+
         const newPlan : PortfolioPlanning = {
-            id: GUIDUtil.newGuid(),
+            id: newPlanId,
             name: newPlanName,
             createdOn: new Date(),
-            projects: []
+            projects: {}
         };
 
         const savedPlan = await client.setDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, newPlan);
@@ -167,12 +209,16 @@ export class PortfolioPlanningDataService {
 
     public async GetPortfolioPlanById(portfolioPlanId: string) : Promise<PortfolioPlanning> {
         const client = await this.GetStorageClient();
+        const planIdLowercase = portfolioPlanId.toLowerCase();
 
-        return client.getDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, portfolioPlanId);
+        return client.getDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, planIdLowercase);
     }
 
     public async UpdatePortfolioPlan(newPlan: PortfolioPlanning) : Promise<PortfolioPlanning> {
         const client = await this.GetStorageClient();
+        
+        //  TODO    sanitize other properties (e.g. unique set of work item ids, all strings lower case)
+        newPlan.id = newPlan.id.toLowerCase();
 
         return client.updateDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, newPlan).then(
             (doc) => doc
@@ -181,8 +227,9 @@ export class PortfolioPlanningDataService {
 
     public async DeletePortfolioPlan(newPlan: PortfolioPlanning) : Promise<void> {
         const client = await this.GetStorageClient();
+        const planIdToDelete = newPlan.id.toLowerCase();
 
-        return client.deleteDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, newPlan.id);
+        return client.deleteDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, planIdToDelete);
     }
 
     public async DeleteAllData() : Promise<number> {

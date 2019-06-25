@@ -7,6 +7,7 @@ import {
 } from "../Actions/EpicTimelineActions";
 import produce from "immer";
 import { ProgressTrackingCriteria } from "../../Contracts";
+import { MergeType } from "../../Models/PortfolioPlanningQueryModels";
 
 export function epicTimelineReducer(
     state: IEpicTimelineState,
@@ -82,34 +83,6 @@ export function epicTimelineReducer(
                 draft.addEpicDialogOpen = false;
                 break;
             }
-            case EpicTimelineActionTypes.AddEpics: {
-                const { epicsToAdd, projectTitle } = action.payload;
-
-                epicsToAdd.map(epic => {
-                    if (
-                        draft.epics.findIndex(
-                            epicInDraft => epicInDraft.id === epic.id
-                        ) === -1
-                    ) {
-                        draft.epics.push(epic);
-                    }
-                });
-
-                for (let epic of epicsToAdd) {
-                    if (
-                        !draft.projects.find(
-                            project => project.id === epic.project
-                        )
-                    ) {
-                        draft.projects.push({
-                            id: epic.project,
-                            title: projectTitle // TODO: Add real project name once we work the real scenario with Ed
-                        });
-                    }
-                }
-
-                break;
-            }
             case EpicTimelineActionTypes.RemoveEpic: {
                 const { id } = action.payload;
                 const indexToRemoveEpic = state.epics.findIndex(
@@ -160,41 +133,87 @@ function handlePortfolioItemsReceived(
 ): IEpicTimelineState {
     return produce(state, draft => {
         const { 
-            portfolioQueryResult, 
-            projectsQueryResult,
-            teamAreasQueryResult
+            items, 
+            projects,
+            teamAreas,
+            mergeStrategy
          } = action.payload;
 
         //  TODO    Handle exception message from OData query results.
 
-        draft.projects = projectsQueryResult.projects.map(project => {
-            return {
-                id: project.ProjectSK,
-                title: project.ProjectName
-            };
-        });
+         if(!mergeStrategy || mergeStrategy === MergeType.Replace){
 
-        draft.epics = portfolioQueryResult.items.map(
-            item => {
-                //  Using the first team found for the area, if available.
-                const teamIdValue: string = (teamAreasQueryResult.teamsInArea[item.AreaId] && teamAreasQueryResult.teamsInArea[item.AreaId][0]) ?
-                    teamAreasQueryResult.teamsInArea[item.AreaId][0].teamId :
-                    null;
-
+            draft.projects = projects.projects.map(project => {
                 return {
-                    id: item.WorkItemId,
-                    project: item.ProjectId,
-                    teamId: teamIdValue,
-                    title: item.Title,
-                    startDate: item.StartDate,
-                    endDate: item.TargetDate,
-                    completedCount: item.CompletedCount,
-                    totalCount: item.TotalCount,
-                    completedStoryPoints: item.CompletedStoryPoints,
-                    totalStoryPoints: item.TotalStoryPoints,
-                    storyPointsProgress: item.StoryPointsProgress,
-                    countProgress: item.CountProgress
+                    id: project.ProjectSK,
+                    title: project.ProjectName
                 };
-        });
+            });
+
+            draft.epics = items.items.map(
+                item => {
+                    //  Using the first team found for the area, if available.
+                    const teamIdValue: string = (teamAreas.teamsInArea[item.AreaId] && teamAreas.teamsInArea[item.AreaId][0]) ?
+                        teamAreas.teamsInArea[item.AreaId][0].teamId :
+                        null;
+
+                    return {
+                        id: item.WorkItemId,
+                        project: item.ProjectId,
+                        teamId: teamIdValue,
+                        title: item.Title,
+                        startDate: item.StartDate,
+                        endDate: item.TargetDate,
+                        completedCount: item.CompletedCount,
+                        totalCount: item.TotalCount,
+                        completedStoryPoints: item.CompletedStoryPoints,
+                        totalStoryPoints: item.TotalStoryPoints,
+                        storyPointsProgress: item.StoryPointsProgress,
+                        countProgress: item.CountProgress
+                    };
+            });
+        }
+        else if (mergeStrategy && mergeStrategy === MergeType.Add)
+        {
+            projects.projects.forEach(newProjectInfo => {
+                const filteredProjects = draft.projects.filter(p => p.id === newProjectInfo.ProjectSK);
+
+                if(filteredProjects.length === 0)
+                {
+                    draft.projects.push({
+                        id: newProjectInfo.ProjectSK,
+                        title: newProjectInfo.ProjectName
+                    });
+                }
+            });
+
+            //  TODO    change draft.projects and draft.epics to maps
+            items.items.forEach(newItemInfo => {
+                const filteredItems = draft.epics.filter(p => p.id === newItemInfo.WorkItemId);
+
+                if(filteredItems.length === 0)
+                {
+                    //  Using the first team found for the area, if available.
+                    const teamIdValue: string = (teamAreas.teamsInArea[newItemInfo.AreaId] && teamAreas.teamsInArea[newItemInfo.AreaId][0]) ?
+                        teamAreas.teamsInArea[newItemInfo.AreaId][0].teamId :
+                        null;
+
+                    draft.epics.push({
+                        id: newItemInfo.WorkItemId,
+                        project: newItemInfo.ProjectId,
+                        teamId: teamIdValue,
+                        title: newItemInfo.Title,
+                        startDate: newItemInfo.StartDate,
+                        endDate: newItemInfo.TargetDate,
+                        completedCount: newItemInfo.CompletedCount,
+                        totalCount: newItemInfo.TotalCount,
+                        completedStoryPoints: newItemInfo.CompletedStoryPoints,
+                        totalStoryPoints: newItemInfo.TotalStoryPoints,
+                        storyPointsProgress: newItemInfo.StoryPointsProgress,
+                        countProgress: newItemInfo.CountProgress
+                    });
+                }
+            });
+        }
     });
 }

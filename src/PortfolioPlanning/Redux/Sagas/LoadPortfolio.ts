@@ -1,14 +1,13 @@
-import { all, put, call } from "redux-saga/effects";
+import { put, call } from "redux-saga/effects";
 import { 
     PortfolioPlanningDataService 
 } from "../../../Services/PortfolioPlanningDataService";
 import { 
     PortfolioPlanningQueryInput, 
-    PortfolioPlanningProjectQueryInput, 
     PortfolioPlanningDirectory,
     PortfolioPlanning,
-    PortfolioPlanningQueryResult,
-    PortfolioPlanningTeamsInAreaQueryInput
+    PortfolioPlanningFullContentQueryResult,
+    MergeType,
 } from "../../Models/PortfolioPlanningQueryModels";
 import { 
     EpicTimelineActions 
@@ -35,8 +34,10 @@ export function* LoadPortfolio() {
         //  TODO    Only supporting one work item type per plan for now. Work item type should be per project.
         RequirementWorkItemTypes: [planInfo.projects[0].RequirementWorkItemType],
 
-        WorkItems: planInfo.projects.map((projectInfo) => 
+        WorkItems: Object.keys(planInfo.projects).map((projectKey) => 
         {
+            const projectInfo = planInfo.projects[projectKey];
+
             return {
                 projectId: projectInfo.ProjectId,
                 workItemIds: projectInfo.WorkItemIds
@@ -44,37 +45,12 @@ export function* LoadPortfolio() {
         })
     };
 
-    //  TODO    Move this logic to a separate service in PortfolioPlanningDataService, so it can also be used when
-    //          loading data for a single Epic.
-    const projectsQueryInput: PortfolioPlanningProjectQueryInput = {
-        projectIds: planInfo.projects.map((projectInfo) => projectInfo.ProjectId)
-    };
+    const queryResult: PortfolioPlanningFullContentQueryResult = yield call(
+        [portfolioService, portfolioService.loadPortfolioContent], 
+        portfolioQueryInput);
 
-    const [portfolioQueryResult, projectQueryResult] = yield all(
-        [
-            call([portfolioService, portfolioService.runPortfolioItemsQuery], portfolioQueryInput),
-            call([portfolioService, portfolioService.runProjectQuery], projectsQueryInput)
-        ]);
+    //  Replace all values when merging. We are loading the full state of the portfolio here.
+    queryResult.mergeStrategy = MergeType.Replace;
 
-    const teamsInAreaQueryInput : PortfolioPlanningTeamsInAreaQueryInput = {};
-    for(let entry of (portfolioQueryResult as PortfolioPlanningQueryResult).items) {
-        const projectIdKey = entry.ProjectId.toLowerCase();
-        const areaIdKey = entry.AreaId.toLowerCase();
-
-        if(!teamsInAreaQueryInput[projectIdKey])
-        {
-            teamsInAreaQueryInput[projectIdKey] = [];
-        }
-
-        if(teamsInAreaQueryInput[projectIdKey].indexOf(areaIdKey) === -1)
-        {
-            teamsInAreaQueryInput[projectIdKey].push(areaIdKey);
-        }
-    }
-
-    const teamAreasQueryResult = yield call(
-        [portfolioService, portfolioService.runTeamsInAreasQuery],
-        teamsInAreaQueryInput);
-
-    yield put(EpicTimelineActions.portfolioItemsReceived(portfolioQueryResult, projectQueryResult, teamAreasQueryResult));
+    yield put(EpicTimelineActions.portfolioItemsReceived(queryResult));
 }

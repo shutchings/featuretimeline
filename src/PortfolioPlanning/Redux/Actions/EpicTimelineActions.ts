@@ -2,12 +2,10 @@ import {
     createAction,
     ActionsUnion
 } from "../../../Common/redux/Helpers/ActionHelper";
-import { IEpic, ProgressTrackingCriteria } from "../../Contracts";
+import { ProgressTrackingCriteria, IAddEpics } from "../../Contracts";
 import moment = require("moment");
 import {
-    PortfolioPlanningQueryResult,
-    PortfolioPlanningProjectQueryResult,
-    PortfolioPlanningTeamsInAreaQueryResult
+    PortfolioPlanningFullContentQueryResult
 } from "../../Models/PortfolioPlanningQueryModels";
 import { Action } from "redux";
 
@@ -45,24 +43,14 @@ export const EpicTimelineActions = {
         }),
     setSelectedItemId: (id: number) =>
         createAction(EpicTimelineActionTypes.SetSelectedItemId, { id }),
-    portfolioItemsReceived: (
-        portfolioQueryResult: PortfolioPlanningQueryResult,
-        projectsQueryResult: PortfolioPlanningProjectQueryResult,
-        teamAreasQueryResult: PortfolioPlanningTeamsInAreaQueryResult
-    ) =>
-        {
-            return createAction(EpicTimelineActionTypes.PortfolioItemsReceived, {
-                portfolioQueryResult,
-                projectsQueryResult,
-                teamAreasQueryResult
-            });
-        },
+    portfolioItemsReceived: (result: PortfolioPlanningFullContentQueryResult) =>
+        createAction(EpicTimelineActionTypes.PortfolioItemsReceived, result),
     openAddEpicDialog: () =>
         createAction(EpicTimelineActionTypes.OpenAddEpicDialog),
     closeAddEpicDialog: () =>
         createAction(EpicTimelineActionTypes.CloseAddEpicDialog),
-    addEpics: (epicsToAdd: IEpic[], projectTitle: string) =>
-        createAction(EpicTimelineActionTypes.AddEpics, { epicsToAdd, projectTitle }),
+    addEpics: (epicsToAdd: IAddEpics) =>
+        createAction(EpicTimelineActionTypes.AddEpics, { epicsToAdd }),
     removeEpic: (id: number) =>
         createAction(EpicTimelineActionTypes.RemoveEpic, { id }),
     toggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>
@@ -75,9 +63,5 @@ export type EpicTimelineActions = ActionsUnion<typeof EpicTimelineActions>;
 
 export interface PortfolioItemsReceivedAction extends Action {
     type: EpicTimelineActionTypes.PortfolioItemsReceived;
-    payload: {
-        portfolioQueryResult: PortfolioPlanningQueryResult;
-        projectsQueryResult: PortfolioPlanningProjectQueryResult;
-        teamAreasQueryResult: PortfolioPlanningTeamsInAreaQueryResult;
-    };
+    payload: PortfolioPlanningFullContentQueryResult;
 }

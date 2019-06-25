@@ -276,6 +276,7 @@ export class EpicTimeline extends React.Component<
         if (this.props.addEpicDialogOpen) {
             return (
                 <AddEpicDialog
+                    planId={"I dont know"} // TODO
                     onCloseAddEpicDialog={this.props.onCloseAddEpicDialog}
                     otherEpics={this.props.otherEpics}
                     onAddEpics={this.props.onAddEpics}

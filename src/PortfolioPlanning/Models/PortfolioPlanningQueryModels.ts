@@ -92,7 +92,7 @@ export interface PortfolioPlanningMetadata
 
 export interface PortfolioPlanning extends PortfolioPlanningMetadata
 {
-    projects: ProjectPortfolioPlanning[]
+    projects: { [projectId: string] :ProjectPortfolioPlanning }
 }
 
 export interface ProjectPortfolioPlanning
@@ -143,3 +143,16 @@ export interface Team
     teamName: string;
 }
 
+export interface PortfolioPlanningFullContentQueryResult 
+{
+    items: PortfolioPlanningQueryResult,
+    projects: PortfolioPlanningProjectQueryResult,
+    teamAreas: PortfolioPlanningTeamsInAreaQueryResult,
+    mergeStrategy?: MergeType
+}
+
+export enum MergeType
+{
+    Add,
+    Replace
+}
