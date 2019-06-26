@@ -57,7 +57,9 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 break;
             }
             case EpicTimelineActionTypes.PortfolioItemsReceived:
-                return handlePortfolioItemsReceived(state, action as PortfolioItemsReceivedAction);
+                draft.planLoadingStatus = LoadingStatus.Loaded;
+
+                return handlePortfolioItemsReceived(draft, action as PortfolioItemsReceivedAction);
 
             case EpicTimelineActionTypes.OpenAddEpicDialog: {
                 draft.addEpicDialogOpen = true;
@@ -74,6 +76,11 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 draft.progressTrackingCriteria = action.payload.criteria;
                 break;
             }
+            case EpicTimelineActionTypes.ToggleLoadingStatus: {
+                const { status } = action.payload;
+
+                draft.planLoadingStatus = status;
+            }
         }
     });
 }
@@ -88,7 +95,7 @@ export function getDefaultState(): IEpicTimelineState {
         setDatesDialogHidden: false,
         selectedItemId: null,
         progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount,
-        planLoadingStatus: LoadingStatus.Loading
+        planLoadingStatus: LoadingStatus.NotLoaded
     };
 }
 

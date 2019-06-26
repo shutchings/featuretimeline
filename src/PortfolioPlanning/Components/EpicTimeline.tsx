@@ -45,7 +45,7 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
     }
 
     public render(): JSX.Element {
-        if (this.props.planLoadingStatus === LoadingStatus.Loading) {
+        if (this.props.planLoadingStatus === LoadingStatus.NotLoaded) {
             return <Spinner label="Loading..." size={SpinnerSize.large} />;
         } else {
             const selectedItem = this.props.items.find(item => item.id === this.props.selectedItemId);
