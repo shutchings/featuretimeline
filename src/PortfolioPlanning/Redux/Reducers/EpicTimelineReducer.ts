@@ -100,6 +100,7 @@ export function epicTimelineReducer(
 export function getDefaultState(): IEpicTimelineState {
     return {
         projects: [],
+        teams: {},
         epics: [],
         message: "Initial message",
         addEpicDialogOpen: false,
@@ -154,6 +155,25 @@ function handlePortfolioItemsReceived(
                         countProgress: item.CountProgress
                     };
             });
+
+            draft.teams = {};
+
+            if(teamAreas.teamsInArea) {
+                Object.keys(teamAreas.teamsInArea).forEach(
+                    areaId => {
+                        const teams = teamAreas.teamsInArea[areaId];
+
+                        teams.forEach(team => {
+                            if(!draft.teams[team.teamId])
+                            {
+                                draft.teams[team.teamId] = {
+                                    teamId: team.teamId,
+                                    teamName: team.teamName
+                                };
+                            }
+                        });
+                });
+            }
         }
         else if (mergeStrategy === MergeType.Add)
         {
@@ -196,6 +216,23 @@ function handlePortfolioItemsReceived(
                     });
                 }
             });
+
+            if(teamAreas.teamsInArea && draft.teams) {
+                Object.keys(teamAreas.teamsInArea).forEach(
+                    areaId => {
+                        const teams = teamAreas.teamsInArea[areaId];
+
+                        teams.forEach(team => {
+                            if(!draft.teams[team.teamId])
+                            {
+                                draft.teams[team.teamId] = {
+                                    teamId: team.teamId,
+                                    teamName: team.teamName
+                                };
+                            }
+                        });
+                });
+            }
         }
     });
 }
@@ -227,5 +264,12 @@ function handlePortfolioItemDeleted(
              );
              draft.projects.splice(indexToRemoveProject, 1);
          }
+
+         // Remove team if all team items have been removed.
+         Object.keys(draft.teams).forEach(teamId => {
+            if(!draft.epics.some(epic => epic.teamId === teamId)) {
+                delete draft.teams[teamId];
+            }
+         });
     });
 }

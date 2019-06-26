@@ -5,6 +5,11 @@ export interface IProject {
     title: string;
 }
 
+export interface ITeam {
+    teamId: string;
+    teamName: string;
+}
+
 export interface IEpic {
     id: number;
     project: string;
