@@ -6,7 +6,6 @@ export class WorkItemMetadataService {
     private static _instance: WorkItemMetadataService;
     public static getInstance(): WorkItemMetadataService {
         if (!WorkItemMetadataService._instance) {
-
             WorkItemMetadataService._instance = new WorkItemMetadataService();
         }
         return WorkItemMetadataService._instance;
@@ -47,9 +46,8 @@ export class WorkItemMetadataService {
 
     private async getStatusForWit(projectId, wit, map) {
         const witHttpClient = getClient(WorkItemTrackingHttpClient);
-        return witHttpClient.getWorkItemTypeStates(projectId, wit)
-            .then((states) => {
-                map[wit] = states;
-            });
+        return witHttpClient.getWorkItemTypeStates(projectId, wit).then(states => {
+            map[wit] = states;
+        });
     }
 }

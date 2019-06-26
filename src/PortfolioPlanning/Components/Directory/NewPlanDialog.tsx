@@ -19,10 +19,7 @@ interface NewPlanDialogState {
     errorMessage: string;
 }
 
-export default class NewPlanDialog extends React.Component<
-    NewPlanDialogProps,
-    NewPlanDialogState
-> {
+export default class NewPlanDialog extends React.Component<NewPlanDialogProps, NewPlanDialogState> {
     private nameObservable = new ObservableValue<string>("");
     private descriptionObservable = new ObservableValue<string>("");
 
@@ -34,22 +31,13 @@ export default class NewPlanDialog extends React.Component<
 
     public render() {
         return (
-            <CustomDialog
-                className="new-plan-dialog"
-                onDismiss={this.props.onDismiss}
-                modal={true}
-            >
+            <CustomDialog className="new-plan-dialog" onDismiss={this.props.onDismiss} modal={true}>
                 <CustomHeader>
-                    <HeaderTitleArea className="title-m">
-                        Create a new plan
-                    </HeaderTitleArea>
+                    <HeaderTitleArea className="title-m">Create a new plan</HeaderTitleArea>
                 </CustomHeader>
                 <PanelContent>
                     <div className="text-field-container">
-                        <FormItem
-                            message={this.state.errorMessage}
-                            error={this.state.errorMessage !== ""}
-                        >
+                        <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
                             <TextField
                                 className="text-field"
                                 value={this.nameObservable}
@@ -61,9 +49,7 @@ export default class NewPlanDialog extends React.Component<
                         <TextField
                             className="text-field"
                             value={this.descriptionObservable}
-                            onChange={(e, newValue) =>
-                                (this.descriptionObservable.value = newValue)
-                            }
+                            onChange={(e, newValue) => (this.descriptionObservable.value = newValue)}
                             multiline
                             rows={4}
                             width={TextFieldWidth.auto}
@@ -83,10 +69,7 @@ export default class NewPlanDialog extends React.Component<
                                     this.descriptionObservable.value.trim()
                                 );
                             }}
-                            disabled={
-                                this.nameObservable.value === "" ||
-                                this.state.errorMessage !== ""
-                            }
+                            disabled={this.nameObservable.value === "" || this.state.errorMessage !== ""}
                         />
                     </ButtonGroup>
                 </PanelFooter>
@@ -97,11 +80,7 @@ export default class NewPlanDialog extends React.Component<
     private _onNameChange = (e, newValue: string): void => {
         const trimmedName = newValue.trim().toLowerCase();
 
-        if (
-            this.props.existingPlanNames.some(
-                name => name.toLowerCase() === trimmedName
-            )
-        ) {
+        if (this.props.existingPlanNames.some(name => name.toLowerCase() === trimmedName)) {
             this.setState({
                 errorMessage: `The plan "${newValue}" already exists.`
             });

@@ -1,13 +1,4 @@
-import {
-    createStore,
-    Store,
-    combineReducers,
-    Action,
-    Reducer,
-    applyMiddleware,
-    compose,
-    Middleware
-} from "redux";
+import { createStore, Store, combineReducers, Action, Reducer, applyMiddleware, compose, Middleware } from "redux";
 import createSagaMiddleware from "redux-saga";
 import { IPortfolioPlanningState } from "./Contracts";
 import { epicTimelineReducer } from "./Reducers/EpicTimelineReducer";
@@ -21,10 +12,7 @@ const combinedReducers = combineReducers<IPortfolioPlanningState>({
     epicTimelineState: epicTimelineReducer
 });
 
-const reducers: Reducer<IPortfolioPlanningState> = (
-    state: IPortfolioPlanningState,
-    action: Action
-) => {
+const reducers: Reducer<IPortfolioPlanningState> = (state: IPortfolioPlanningState, action: Action) => {
     return combinedReducers(state, action);
 };
 
@@ -46,14 +34,9 @@ export default function configurePortfolioPlanningStore(
 
     // Setup for using the redux dev tools in chrome
     // https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd
-    const composeEnhancers =
-        window["__REDUX_DEVTOOLS_EXTENSION_COMPOSE__"] || compose;
+    const composeEnhancers = window["__REDUX_DEVTOOLS_EXTENSION_COMPOSE__"] || compose;
 
-    const store = createStore(
-        reducers,
-        initialState,
-        composeEnhancers(middleware)
-    );
+    const store = createStore(reducers, initialState, composeEnhancers(middleware));
 
     sagaMiddleWare.run(epicTimelineSaga);
     sagaMiddleWare.run(planDirectorySaga);

@@ -1,5 +1,4 @@
-export interface ODataWorkItemQueryResult
-{
+export interface ODataWorkItemQueryResult {
     WorkItemId: number;
     WorkItemType: string;
     Title: string;
@@ -8,11 +7,10 @@ export interface ODataWorkItemQueryResult
     TargetDate: Date;
     ProjectSK: string;
     AreaSK: string;
-    Descendants: ODataWorkItemDescendants[]
+    Descendants: ODataWorkItemDescendants[];
 }
 
-export interface ODataWorkItemDescendants
-{
+export interface ODataWorkItemDescendants {
     StoryPointsProgress: number;
     CountProgress: number;
     CompletedStoryPoints: number;
@@ -21,21 +19,18 @@ export interface ODataWorkItemDescendants
     TotalCount: number;
 }
 
-export interface ODataQueryProjectInput
-{
+export interface ODataQueryProjectInput {
     projectId: string;
     workItemIds: number[];
 }
 
-export interface ODataAreaQueryResult
-{
+export interface ODataAreaQueryResult {
     ProjectSK: string;
     AreaSK: string;
-    Teams : ODataTeamResult[];
+    Teams: ODataTeamResult[];
 }
 
-export interface ODataTeamResult
-{
+export interface ODataTeamResult {
     TeamSK: string;
     TeamName: string;
 }

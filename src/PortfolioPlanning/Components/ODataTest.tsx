@@ -37,9 +37,7 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
 
         this.HandleSubmit = this.HandleSubmit.bind(this);
         this.HandleInputChange = this.HandleInputChange.bind(this);
-        this.HandleTestExtensionStorage = this.HandleTestExtensionStorage.bind(
-            this
-        );
+        this.HandleTestExtensionStorage = this.HandleTestExtensionStorage.bind(this);
 
         //  Run initial query.
         this.HandleSubmit(null);
@@ -55,34 +53,20 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
                 <form onSubmit={this.HandleSubmit}>
                     <label>
                         OData Query Input (json):
-                        <textarea
-                            style={inputStyle}
-                            value={this.state.input}
-                            onChange={this.HandleInputChange}
-                        />
+                        <textarea style={inputStyle} value={this.state.input} onChange={this.HandleInputChange} />
                     </label>
                     <label>
                         All projects
-                        <textarea
-                            style={inputStyle}
-                            value={this.state.allProjects}
-                        />
+                        <textarea style={inputStyle} value={this.state.allProjects} />
                     </label>
                     <label>
                         Work Items of Type in Project
-                        <textarea
-                            style={inputStyle}
-                            value={this.state.workItemsOfTypeInProject}
-                        />
+                        <textarea style={inputStyle} value={this.state.workItemsOfTypeInProject} />
                     </label>
 
                     <input type="submit" value="Submit" />
                 </form>
-                <input
-                    type="button"
-                    value="Test extension storage"
-                    onClick={this.HandleTestExtensionStorage}
-                />
+                <input type="button" value="Test extension storage" onClick={this.HandleTestExtensionStorage} />
             </div>
         );
 
@@ -93,10 +77,7 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
         return (
             <div>
                 {input}
-                <textarea
-                    style={inputStyle}
-                    value={JSON.stringify(this.state.results, null, "    ")}
-                />
+                <textarea style={inputStyle} value={JSON.stringify(this.state.results, null, "    ")} />
             </div>
         );
     }
@@ -125,40 +106,44 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
     }
 
     public HandleTestExtensionStorage(event) {
-            PortfolioPlanningDataService.getInstance().GetAllPortfolioPlans().then(
-                (allPlans) => {
-                    console.log("INITIAL STATE:");
-                    console.log(JSON.stringify(allPlans, null, '    '))
+        PortfolioPlanningDataService.getInstance()
+            .GetAllPortfolioPlans()
+            .then(allPlans => {
+                console.log("INITIAL STATE:");
+                console.log(JSON.stringify(allPlans, null, "    "));
 
-                    PortfolioPlanningDataService.getInstance().AddPortfolioPlan("new plan name", "new plan description").then(
-                        (newPlanCreated)=> {
-                            console.log("Plan created");
-                            console.log(JSON.stringify(newPlanCreated, null, '    '))
+                PortfolioPlanningDataService.getInstance()
+                    .AddPortfolioPlan("new plan name", "new plan description")
+                    .then(newPlanCreated => {
+                        console.log("Plan created");
+                        console.log(JSON.stringify(newPlanCreated, null, "    "));
 
-                            PortfolioPlanningDataService.getInstance().GetAllPortfolioPlans().then(
-                                (allPlans) => {
-                                    console.log("Second state:");
-                                    console.log(JSON.stringify(allPlans, null, '    '))
+                        PortfolioPlanningDataService.getInstance()
+                            .GetAllPortfolioPlans()
+                            .then(allPlans => {
+                                console.log("Second state:");
+                                console.log(JSON.stringify(allPlans, null, "    "));
 
-                                    PortfolioPlanningDataService.getInstance().GetPortfolioPlanById(newPlanCreated.id).then(
-                                        (planRetrieved) => {
-                                            console.log("retrieved plan");
-                                            console.log(JSON.stringify(planRetrieved, null, '    '))
+                                PortfolioPlanningDataService.getInstance()
+                                    .GetPortfolioPlanById(newPlanCreated.id)
+                                    .then(planRetrieved => {
+                                        console.log("retrieved plan");
+                                        console.log(JSON.stringify(planRetrieved, null, "    "));
 
-                                            //  Update plan to include information for two projects.
-                                            planRetrieved.projects["FBED1309-56DB-44DB-9006-24AD73EEE785"] = {
-                                                ProjectId: "FBED1309-56DB-44DB-9006-24AD73EEE785",
-                                                PortfolioWorkItemType: "Epic",
-                                                RequirementWorkItemType: "User Story",
-                                                WorkItemIds: [5250, 5251]
-                                            };
+                                        //  Update plan to include information for two projects.
+                                        planRetrieved.projects["FBED1309-56DB-44DB-9006-24AD73EEE785"] = {
+                                            ProjectId: "FBED1309-56DB-44DB-9006-24AD73EEE785",
+                                            PortfolioWorkItemType: "Epic",
+                                            RequirementWorkItemType: "User Story",
+                                            WorkItemIds: [5250, 5251]
+                                        };
 
-                                            planRetrieved.projects["6974D8FE-08C8-4123-AD1D-FB830A098DFB"] = {
-                                                ProjectId: "6974D8FE-08C8-4123-AD1D-FB830A098DFB",
-                                                PortfolioWorkItemType: "Epic",
-                                                RequirementWorkItemType: "User Story",
-                                                WorkItemIds: [5249]
-                                            };
+                                        planRetrieved.projects["6974D8FE-08C8-4123-AD1D-FB830A098DFB"] = {
+                                            ProjectId: "6974D8FE-08C8-4123-AD1D-FB830A098DFB",
+                                            PortfolioWorkItemType: "Epic",
+                                            RequirementWorkItemType: "User Story",
+                                            WorkItemIds: [5249]
+                                        };
                                     });
                             });
                     });
@@ -171,26 +156,16 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
         });
     }
 
-    public RunQuery(
-        inputString: string
-    ): IPromise<PortfolioModels.PortfolioPlanningQueryResult> {
-        const input: PortfolioModels.PortfolioPlanningQueryInput = JSON.parse(
-            inputString
-        );
-        return PortfolioPlanningDataService.getInstance().runPortfolioItemsQuery(
-            input
-        );
+    public RunQuery(inputString: string): IPromise<PortfolioModels.PortfolioPlanningQueryResult> {
+        const input: PortfolioModels.PortfolioPlanningQueryInput = JSON.parse(inputString);
+        return PortfolioPlanningDataService.getInstance().runPortfolioItemsQuery(input);
     }
 
-    public GetAllProjects(): IPromise<
-        PortfolioModels.PortfolioPlanningProjectQueryResult
-    > {
+    public GetAllProjects(): IPromise<PortfolioModels.PortfolioPlanningProjectQueryResult> {
         return PortfolioPlanningDataService.getInstance().getAllProjects();
     }
 
-    public GetWorkItemsOfTypeInProject(): IPromise<
-        PortfolioModels.PortfolioPlanningWorkItemQueryResult
-    > {
+    public GetWorkItemsOfTypeInProject(): IPromise<PortfolioModels.PortfolioPlanningWorkItemQueryResult> {
         return PortfolioPlanningDataService.getInstance().getAllWorkItemsOfTypeInProject(
             "fbed1309-56db-44db-9006-24ad73eee785",
             "Epic"

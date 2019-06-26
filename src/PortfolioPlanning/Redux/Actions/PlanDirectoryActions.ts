@@ -1,7 +1,4 @@
-import {
-    createAction,
-    ActionsUnion
-} from "../../../Common/redux/Helpers/ActionHelper";
+import { createAction, ActionsUnion } from "../../../Common/redux/Helpers/ActionHelper";
 import { PortfolioPlanningDirectory } from "../../Models/PortfolioPlanningQueryModels";
 
 export const enum PlanDirectoryActionTypes {
@@ -21,8 +18,7 @@ export const PlanDirectoryActions = {
             name,
             description
         }),
-    deletePlan: (id: string) =>
-        createAction(PlanDirectoryActionTypes.DeletePlan, { id }),
+    deletePlan: (id: string) => createAction(PlanDirectoryActionTypes.DeletePlan, { id }),
     toggleSelectedPlanId: (id: string) =>
         createAction(PlanDirectoryActionTypes.ToggleSelectedPlanId, {
             id

@@ -8,7 +8,7 @@ export interface IPortfolioPlanningState {
 
 export interface IEpicTimelineState {
     projects: IProject[];
-    teams: { [ teamId: string ] : ITeam };
+    teams: { [teamId: string]: ITeam };
     epics: IEpic[];
     message: string;
     addEpicDialogOpen: boolean;
