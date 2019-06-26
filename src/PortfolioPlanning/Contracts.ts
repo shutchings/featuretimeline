@@ -59,3 +59,8 @@ export enum ProgressTrackingCriteria {
     CompletedCount = "Completed Count",
     StoryPoints = "Story Points"
 }
+
+export enum LoadingStatus {
+    NotLoaded,
+    Loaded
+}

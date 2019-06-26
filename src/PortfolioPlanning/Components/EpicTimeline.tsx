@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as moment from "moment";
-import { ITimelineGroup, ITimelineItem, ProgressTrackingCriteria, ITeam } from "../Contracts";
+import { ITimelineGroup, ITimelineItem, ProgressTrackingCriteria, ITeam, LoadingStatus } from "../Contracts";
 import Timeline from "react-calendar-timeline";
 import "./EpicTimeline.scss";
 import { IEpicTimelineState, IPortfolioPlanningState } from "../Redux/Contracts";
@@ -18,6 +18,7 @@ import { AddEpicDialog } from "./AddEpicDialog";
 import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
 import { ProgressDetails } from "../../Common/react/Components/ProgressDetails/ProgressDetails";
 import { InfoIcon } from "../../Common/react/Components/InfoIcon/InfoIcon";
+import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -33,6 +34,7 @@ interface IEpicTimelineMappedProps {
     setDatesDialogHidden: boolean;
     selectedItemId: number;
     progressTrackingCriteria: ProgressTrackingCriteria;
+    planLoadingStatus: LoadingStatus;
 }
 
 export type IEpicTimelineProps = IEpicTimelineOwnProps & IEpicTimelineMappedProps & typeof Actions;
@@ -43,132 +45,136 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
     }
 
     public render(): JSX.Element {
-        const selectedItem = this.props.items.find(item => item.id === this.props.selectedItemId);
+        if (this.props.planLoadingStatus === LoadingStatus.NotLoaded) {
+            return <Spinner label="Loading..." size={SpinnerSize.large} />;
+        } else {
+            const selectedItem = this.props.items.find(item => item.id === this.props.selectedItemId);
 
-        const selectedProgressCriteriaKey =
-            this.props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount
-                ? "completedCount"
-                : "storyPoints";
+            const selectedProgressCriteriaKey =
+                this.props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount
+                    ? "completedCount"
+                    : "storyPoints";
 
-        const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(this.props.items);
+            const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(this.props.items);
 
-        const forwardCircleStyle = {
-            padding: "0px 0px 0px 10px"
-        };
+            const forwardCircleStyle = {
+                padding: "0px 0px 0px 10px"
+            };
 
-        return (
-            <div>
-                <div className="configuration-container">
-                    <div className="progress-options">
-                        <div className="progress-options-label">Track Progress Using: </div>
-                        <ComboBox
-                            className="progress-options-dropdown"
-                            selectedKey={selectedProgressCriteriaKey}
-                            allowFreeform={false}
-                            autoComplete="off"
-                            options={[
-                                {
-                                    key: "completedCount",
-                                    text: ProgressTrackingCriteria.CompletedCount
-                                },
-                                {
-                                    key: "storyPoints",
-                                    text: ProgressTrackingCriteria.StoryPoints
-                                }
-                            ]}
-                            onChanged={this._onProgressTrackingCriteriaChanged}
-                        />
+            return (
+                <div>
+                    <div className="configuration-container">
+                        <div className="progress-options">
+                            <div className="progress-options-label">Track Progress Using: </div>
+                            <ComboBox
+                                className="progress-options-dropdown"
+                                selectedKey={selectedProgressCriteriaKey}
+                                allowFreeform={false}
+                                autoComplete="off"
+                                options={[
+                                    {
+                                        key: "completedCount",
+                                        text: ProgressTrackingCriteria.CompletedCount
+                                    },
+                                    {
+                                        key: "storyPoints",
+                                        text: ProgressTrackingCriteria.StoryPoints
+                                    }
+                                ]}
+                                onChanged={this._onProgressTrackingCriteriaChanged}
+                            />
+                        </div>
+                        <button className="epictimeline-add-epic-button" onClick={this._onAddEpicClick}>
+                            Add Epic
+                        </button>
+                        <button
+                            className="epictimeline-add-epic-button"
+                            disabled={!this.props.selectedItemId}
+                            onClick={this._onRemoveSelectedEpicClick}
+                        >
+                            Remove selected epic from plan
+                        </button>
                     </div>
-                    <button className="epictimeline-add-epic-button" onClick={this._onAddEpicClick}>
-                        Add Epic
-                    </button>
-                    <button
-                        className="epictimeline-add-epic-button"
-                        disabled={!this.props.selectedItemId}
-                        onClick={this._onRemoveSelectedEpicClick}
-                    >
-                        Remove selected epic from plan
-                    </button>
-                </div>
-                <Timeline
-                    groups={this.props.groups}
-                    items={this.props.items}
-                    defaultTimeStart={defaultTimeStart}
-                    defaultTimeEnd={defaultTimeEnd}
-                    canChangeGroup={false}
-                    stackItems={true}
-                    dragSnap={day}
-                    minZoom={week}
-                    canResize={"both"}
-                    minResizeWidth={50}
-                    onItemResize={this._onItemResize}
-                    onItemMove={this._onItemMove}
-                    moveResizeValidator={this._validateResize}
-                    selecte={[this.props.selectedItemId]}
-                    onItemSelect={itemId => this.props.onSetSelectedItemId(itemId)}
-                    onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
-                    itemRenderer={({ item, itemContext, getItemProps }) => {
-                        return (
-                            <div {...getItemProps(item.itemProps)}>
-                                <div
-                                    style={{
-                                        maxHeight: `${itemContext.dimensions.height}`,
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        overflow: "hidden",
-                                        marginRight: "5px",
-                                        alignItems: "baseline"
-                                    }}
-                                >
-                                    {itemContext.title}
+                    <Timeline
+                        groups={this.props.groups}
+                        items={this.props.items}
+                        defaultTimeStart={defaultTimeStart}
+                        defaultTimeEnd={defaultTimeEnd}
+                        canChangeGroup={false}
+                        stackItems={true}
+                        dragSnap={day}
+                        minZoom={week}
+                        canResize={"both"}
+                        minResizeWidth={50}
+                        onItemResize={this._onItemResize}
+                        onItemMove={this._onItemMove}
+                        moveResizeValidator={this._validateResize}
+                        selecte={[this.props.selectedItemId]}
+                        onItemSelect={itemId => this.props.onSetSelectedItemId(itemId)}
+                        onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
+                        itemRenderer={({ item, itemContext, getItemProps }) => {
+                            return (
+                                <div {...getItemProps(item.itemProps)}>
                                     <div
                                         style={{
+                                            maxHeight: `${itemContext.dimensions.height}`,
                                             display: "flex",
-                                            justifyContent: "flex-end"
+                                            justifyContent: "space-between",
+                                            overflow: "hidden",
+                                            marginRight: "5px",
+                                            alignItems: "baseline"
                                         }}
                                     >
-                                        <InfoIcon
-                                            id={item.id}
-                                            onClick={() => this.props.onToggleSetDatesDialogHidden(false)}
-                                        />
-                                        <ProgressDetails
-                                            completed={item.itemProps.completed}
-                                            total={item.itemProps.total}
-                                            onClick={() => {}}
-                                        />
+                                        {itemContext.title}
                                         <div
-                                            className="bowtie-icon bowtie-navigate-forward-circle"
-                                            style={forwardCircleStyle}
-                                            onClick={() => this.navigateToEpicRoadmap(item)}
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "flex-end"
+                                            }}
                                         >
-                                            &nbsp;
+                                            <InfoIcon
+                                                id={item.id}
+                                                onClick={() => this.props.onToggleSetDatesDialogHidden(false)}
+                                            />
+                                            <ProgressDetails
+                                                completed={item.itemProps.completed}
+                                                total={item.itemProps.total}
+                                                onClick={() => {}}
+                                            />
+                                            <div
+                                                className="bowtie-icon bowtie-navigate-forward-circle"
+                                                style={forwardCircleStyle}
+                                                onClick={() => this.navigateToEpicRoadmap(item)}
+                                            >
+                                                &nbsp;
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        );
-                    }}
-                />
-                {this._renderAddEpicDialog()}
-                {this.props.selectedItemId && (
-                    <DetailsDialog
-                        key={Date.now()} // TODO: Is there a better way to reset the state?
-                        id={this.props.selectedItemId}
-                        title={selectedItem.title}
-                        startDate={selectedItem.start_time}
-                        endDate={selectedItem.end_time}
-                        hidden={this.props.setDatesDialogHidden}
-                        save={(id, startDate, endDate) => {
-                            this.props.onUpdateStartDate(id, startDate);
-                            this.props.onUpdateEndDate(id, endDate);
-                        }}
-                        close={() => {
-                            this.props.onToggleSetDatesDialogHidden(true);
+                            );
                         }}
                     />
-                )}
-            </div>
-        );
+                    {this._renderAddEpicDialog()}
+                    {this.props.selectedItemId && (
+                        <DetailsDialog
+                            key={Date.now()} // TODO: Is there a better way to reset the state?
+                            id={this.props.selectedItemId}
+                            title={selectedItem.title}
+                            startDate={selectedItem.start_time}
+                            endDate={selectedItem.end_time}
+                            hidden={this.props.setDatesDialogHidden}
+                            save={(id, startDate, endDate) => {
+                                this.props.onUpdateStartDate(id, startDate);
+                                this.props.onUpdateEndDate(id, endDate);
+                            }}
+                            close={() => {
+                                this.props.onToggleSetDatesDialogHidden(true);
+                            }}
+                        />
+                    )}
+                </div>
+            );
+        }
     }
 
     private _validateResize(action: string, item: ITimelineItem, time: number, resizeEdge: string) {
@@ -281,7 +287,8 @@ function mapStateToProps(state: IPortfolioPlanningState): IEpicTimelineMappedPro
         addEpicDialogOpen: getAddEpicDialogOpen(state.epicTimelineState),
         setDatesDialogHidden: getSetDatesDialogHidden(state.epicTimelineState),
         selectedItemId: state.epicTimelineState.selectedItemId,
-        progressTrackingCriteria: getProgressTrackingCriteria(state.epicTimelineState)
+        progressTrackingCriteria: getProgressTrackingCriteria(state.epicTimelineState),
+        planLoadingStatus: state.epicTimelineState.planLoadingStatus
     };
 }
 

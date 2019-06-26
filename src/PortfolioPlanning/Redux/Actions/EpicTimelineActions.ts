@@ -1,5 +1,5 @@
 import { createAction, ActionsUnion } from "../../../Common/redux/Helpers/ActionHelper";
-import { ProgressTrackingCriteria, IAddEpics, IRemoveEpic } from "../../Contracts";
+import { ProgressTrackingCriteria, IAddEpics, IRemoveEpic, LoadingStatus } from "../../Contracts";
 import moment = require("moment");
 import { PortfolioPlanningFullContentQueryResult } from "../../Models/PortfolioPlanningQueryModels";
 import { Action } from "redux";
@@ -17,7 +17,9 @@ export const enum EpicTimelineActionTypes {
     CloseAddEpicDialog = "EpicTimeline/CloseAddEpicDialog",
     AddEpics = "EpicTimeline/AddEpics",
     RemoveEpic = "EpicTimeline/RemoveEpic",
-    ToggleProgressTrackingCriteria = "EpicTimeline/ToggleProgressTrackingCriteria"
+    ToggleProgressTrackingCriteria = "EpicTimeline/ToggleProgressTrackingCriteria",
+    ToggleLoadingStatus = "EpicTimeline/ToggleLoadingStatus",
+    ResetPlanState = "EpicTimeline/ResetPlanState"
 }
 
 export const EpicTimelineActions = {
@@ -49,7 +51,10 @@ export const EpicTimelineActions = {
     toggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>
         createAction(EpicTimelineActionTypes.ToggleProgressTrackingCriteria, {
             criteria
-        })
+        }),
+    toggleLoadingStatus: (status: LoadingStatus) =>
+        createAction(EpicTimelineActionTypes.ToggleLoadingStatus, { status }),
+    resetPlanState: () => createAction(EpicTimelineActionTypes.ResetPlanState)
 };
 
 export type EpicTimelineActions = ActionsUnion<typeof EpicTimelineActions>;

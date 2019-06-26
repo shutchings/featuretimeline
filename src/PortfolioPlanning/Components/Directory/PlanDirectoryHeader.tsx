@@ -2,11 +2,12 @@ import * as React from "react";
 import { TitleSize, Header } from "azure-devops-ui/Header";
 import "./PlanDirectoryHeader.scss";
 
-export interface PlanDirectoryProps {
+export interface IPlanDirectoryHeaderProps {
+    newPlanButtonDisabled: boolean;
     onNewPlanClick: () => void;
 }
 
-export default class PlanDirectoryHeader extends React.Component<PlanDirectoryProps> {
+export default class PlanDirectoryHeader extends React.Component<IPlanDirectoryHeaderProps> {
     constructor(props) {
         super(props);
     }
@@ -20,7 +21,8 @@ export default class PlanDirectoryHeader extends React.Component<PlanDirectoryPr
                     {
                         id: "new-plan",
                         text: "New plan",
-                        onActivate: this.props.onNewPlanClick
+                        onActivate: this.props.onNewPlanClick,
+                        disabled: this.props.newPlanButtonDisabled
                     }
                 ]}
             />
