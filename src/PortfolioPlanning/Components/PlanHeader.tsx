@@ -1,14 +1,6 @@
 import * as React from "react";
-import {
-    TitleSize,
-    CustomHeader,
-    HeaderTitleArea,
-    HeaderTitle,
-    HeaderTitleRow,
-    HeaderDescription
-} from "azure-devops-ui/Header";
-
-import { Button } from "azure-devops-ui/Button";
+import { TitleSize, Header } from "azure-devops-ui/Header";
+import { IHeaderCommandBarItem } from "azure-devops-ui/HeaderCommandBar";
 
 export interface PlanHeaderProps {
     id: string;
@@ -17,27 +9,55 @@ export interface PlanHeaderProps {
     backButtonClicked: () => void;
 }
 
+const commandBarItemsSimple: IHeaderCommandBarItem[] = [
+    {
+        iconProps: {
+            iconName: "Add"
+        },
+        id: "testCreate",
+        important: true,
+        onActivate: () => {
+            alert("This would normally trigger a modal popup");
+        },
+        text: "Action",
+        tooltipProps: {
+            text: "Custom tooltip for create"
+        }
+    },
+    {
+        iconProps: {
+            iconName: "Delete"
+        },
+        id: "testDelete",
+        important: false,
+        onActivate: () => {
+            alert("submenu clicked");
+        },
+        text: "Menu row with delete icon"
+    },
+    {
+        iconProps: {
+            iconName: "Share"
+        },
+        id: "testShare",
+        important: false,
+        onActivate: () => {
+            alert("submenu clicked");
+        },
+        text: "Menu row with share icon"
+    }
+];
+
 export default class PlanHeader extends React.Component<PlanHeaderProps> {
     public render() {
         return (
-            <CustomHeader className="bolt-header-with-back-button">
-                <Button
-                    className="bolt-header-back-button"
-                    iconProps={{ iconName: "Back" }}
-                    subtle={true}
-                    onClick={this.props.backButtonClicked}
-                />
-                <HeaderTitleArea>
-                    <HeaderTitleRow>
-                        <HeaderTitle titleSize={TitleSize.Large}>
-                            {this.props.title}
-                        </HeaderTitle>
-                    </HeaderTitleRow>
-                    <HeaderDescription>
-                        {this.props.description}
-                    </HeaderDescription>
-                </HeaderTitleArea>
-            </CustomHeader>
+            <Header
+                title={this.props.title}
+                titleSize={TitleSize.Large}
+                description={this.props.description}
+                backButtonProps={{ onClick: this.props.backButtonClicked }}
+                commandBarItems={commandBarItemsSimple}
+            />
         );
     }
 }
