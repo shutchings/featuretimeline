@@ -19,6 +19,7 @@ export interface IEpicTimelineState {
 }
 
 export interface IPlanDirectoryState {
+    directoryLoadingStatus: LoadingStatus;
     selectedPlanId: string;
     newPlanDialogVisible: boolean;
     plans: PortfolioPlanningMetadata[];
