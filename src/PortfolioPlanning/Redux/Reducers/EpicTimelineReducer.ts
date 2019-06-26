@@ -105,7 +105,7 @@ export function getDefaultState(): IEpicTimelineState {
         addEpicDialogOpen: false,
         setDatesDialogHidden: false,
         selectedItemId: null,
-        progressTrackingCriteria: ProgressTrackingCriteria.StoryPoints
+        progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount
     };
 }
 
@@ -114,17 +114,11 @@ function handlePortfolioItemsReceived(
     action: PortfolioItemsReceivedAction
 ): IEpicTimelineState {
     return produce(state, draft => {
-        const { 
-            items,
-            projects,
-            teamAreas,
-            mergeStrategy
-         } = action.payload;
+        const { items, projects, teamAreas, mergeStrategy } = action.payload;
 
         //  TODO    Handle exception message from OData query results.
 
-         if(mergeStrategy === MergeType.Replace){
-
+        if (mergeStrategy === MergeType.Replace) {
             draft.projects = projects.projects.map(project => {
                 return {
                     id: project.ProjectSK,
@@ -132,36 +126,36 @@ function handlePortfolioItemsReceived(
                 };
             });
 
-            draft.epics = items.items.map(
-                item => {
-                    //  Using the first team found for the area, if available.
-                    const teamIdValue: string = (teamAreas.teamsInArea[item.AreaId] && teamAreas.teamsInArea[item.AreaId][0]) ?
-                        teamAreas.teamsInArea[item.AreaId][0].teamId :
-                        null;
+            draft.epics = items.items.map(item => {
+                //  Using the first team found for the area, if available.
+                const teamIdValue: string =
+                    teamAreas.teamsInArea[item.AreaId] &&
+                    teamAreas.teamsInArea[item.AreaId][0]
+                        ? teamAreas.teamsInArea[item.AreaId][0].teamId
+                        : null;
 
-                    return {
-                        id: item.WorkItemId,
-                        project: item.ProjectId,
-                        teamId: teamIdValue,
-                        title: item.Title,
-                        startDate: item.StartDate,
-                        endDate: item.TargetDate,
-                        completedCount: item.CompletedCount,
-                        totalCount: item.TotalCount,
-                        completedStoryPoints: item.CompletedStoryPoints,
-                        totalStoryPoints: item.TotalStoryPoints,
-                        storyPointsProgress: item.StoryPointsProgress,
-                        countProgress: item.CountProgress
-                    };
+                return {
+                    id: item.WorkItemId,
+                    project: item.ProjectId,
+                    teamId: teamIdValue,
+                    title: item.Title,
+                    startDate: item.StartDate,
+                    endDate: item.TargetDate,
+                    completedCount: item.CompletedCount,
+                    totalCount: item.TotalCount,
+                    completedStoryPoints: item.CompletedStoryPoints,
+                    totalStoryPoints: item.TotalStoryPoints,
+                    storyPointsProgress: item.StoryPointsProgress,
+                    countProgress: item.CountProgress
+                };
             });
-        }
-        else if (mergeStrategy === MergeType.Add)
-        {
+        } else if (mergeStrategy === MergeType.Add) {
             projects.projects.forEach(newProjectInfo => {
-                const filteredProjects = draft.projects.filter(p => p.id === newProjectInfo.ProjectSK);
+                const filteredProjects = draft.projects.filter(
+                    p => p.id === newProjectInfo.ProjectSK
+                );
 
-                if(filteredProjects.length === 0)
-                {
+                if (filteredProjects.length === 0) {
                     draft.projects.push({
                         id: newProjectInfo.ProjectSK,
                         title: newProjectInfo.ProjectName
@@ -171,14 +165,18 @@ function handlePortfolioItemsReceived(
 
             //  TODO    change draft.projects and draft.epics to maps
             items.items.forEach(newItemInfo => {
-                const filteredItems = draft.epics.filter(p => p.id === newItemInfo.WorkItemId);
+                const filteredItems = draft.epics.filter(
+                    p => p.id === newItemInfo.WorkItemId
+                );
 
-                if(filteredItems.length === 0)
-                {
+                if (filteredItems.length === 0) {
                     //  Using the first team found for the area, if available.
-                    const teamIdValue: string = (teamAreas.teamsInArea[newItemInfo.AreaId] && teamAreas.teamsInArea[newItemInfo.AreaId][0]) ?
-                        teamAreas.teamsInArea[newItemInfo.AreaId][0].teamId :
-                        null;
+                    const teamIdValue: string =
+                        teamAreas.teamsInArea[newItemInfo.AreaId] &&
+                        teamAreas.teamsInArea[newItemInfo.AreaId][0]
+                            ? teamAreas.teamsInArea[newItemInfo.AreaId][0]
+                                  .teamId
+                            : null;
 
                     draft.epics.push({
                         id: newItemInfo.WorkItemId,
@@ -205,27 +203,21 @@ function handlePortfolioItemDeleted(
     action: PortfolioItemDeletedAction
 ): IEpicTimelineState {
     return produce(state, draft => {
-        const { 
-            epicToRemove
-         } = action.payload;
+        const { epicToRemove } = action.payload;
 
-         const indexToRemoveEpic = state.epics.findIndex(
-             epic => epic.id === epicToRemove
-         );
+        const indexToRemoveEpic = state.epics.findIndex(
+            epic => epic.id === epicToRemove
+        );
 
-         const removedEpic = draft.epics.splice(indexToRemoveEpic, 1)[0];
-         draft.selectedItemId = undefined;
+        const removedEpic = draft.epics.splice(indexToRemoveEpic, 1)[0];
+        draft.selectedItemId = undefined;
 
-         // Remove the project if it's the last epic in the project
-         if (
-             !draft.epics.some(
-                 epic => epic.project === removedEpic.project
-             )
-         ) {
-             const indexToRemoveProject = state.projects.findIndex(
-                 project => project.id === removedEpic.project
-             );
-             draft.projects.splice(indexToRemoveProject, 1);
-         }
+        // Remove the project if it's the last epic in the project
+        if (!draft.epics.some(epic => epic.project === removedEpic.project)) {
+            const indexToRemoveProject = state.projects.findIndex(
+                project => project.id === removedEpic.project
+            );
+            draft.projects.splice(indexToRemoveProject, 1);
+        }
     });
 }
