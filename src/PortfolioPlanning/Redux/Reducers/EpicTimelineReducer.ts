@@ -80,6 +80,19 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 const { status } = action.payload;
 
                 draft.planLoadingStatus = status;
+
+                break;
+            }
+            case EpicTimelineActionTypes.ResetPlanState: {
+                draft.planLoadingStatus = LoadingStatus.NotLoaded;
+                draft.selectedItemId = undefined;
+                draft.setDatesDialogHidden = true;
+                draft.addEpicDialogOpen = false;
+                draft.epics = [];
+                draft.projects = [];
+                draft.teams = {};
+
+                break;
             }
         }
     });
@@ -92,7 +105,7 @@ export function getDefaultState(): IEpicTimelineState {
         epics: [],
         message: "Initial message",
         addEpicDialogOpen: false,
-        setDatesDialogHidden: false,
+        setDatesDialogHidden: true,
         selectedItemId: null,
         progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount,
         planLoadingStatus: LoadingStatus.NotLoaded

@@ -11,7 +11,6 @@ import PlanPage from "../PlanPage";
 import { PortfolioPlanningDataService } from "../../../Services/PortfolioPlanningDataService";
 import { PortfolioPlanningMetadata } from "../../Models/PortfolioPlanningQueryModels";
 import { EpicTimelineActions } from "../../Redux/Actions/EpicTimelineActions";
-import { LoadingStatus } from "../../Contracts";
 
 export interface IPlanDirectoryProps {}
 
@@ -37,11 +36,11 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
                     description={selectedPlan.description}
                     backButtonClicked={() => {
                         this.props.toggleSelectedPlanId(undefined);
-                        this.props.togglePlanLoadingStatus(LoadingStatus.NotLoaded);
+                        this.props.resetPlanState();
                     }}
                     deleteButtonClicked={(id: string) => {
                         this.props.deletePlan(id);
-                        this.props.togglePlanLoadingStatus(LoadingStatus.NotLoaded);
+                        this.props.resetPlanState();
                     }}
                 />
             );
@@ -101,7 +100,8 @@ const Actions = {
     deletePlan: PlanDirectoryActions.deletePlan,
     toggleSelectedPlanId: PlanDirectoryActions.toggleSelectedPlanId,
     toggleNewPlanDialogVisible: PlanDirectoryActions.toggleNewPlanDialogVisible,
-    togglePlanLoadingStatus: EpicTimelineActions.toggleLoadingStatus
+    togglePlanLoadingStatus: EpicTimelineActions.toggleLoadingStatus,
+    resetPlanState: EpicTimelineActions.resetPlanState
 };
 
 export const ConnectedPlanDirectory = connect(
