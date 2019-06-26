@@ -1,17 +1,9 @@
 import * as React from "react";
 import * as moment from "moment";
-import {
-    ITimelineGroup,
-    ITimelineItem,
-    ProgressTrackingCriteria,
-    ITeam
-} from "../Contracts";
+import { ITimelineGroup, ITimelineItem, ProgressTrackingCriteria, ITeam } from "../Contracts";
 import Timeline from "react-calendar-timeline";
 import "./EpicTimeline.scss";
-import {
-    IEpicTimelineState,
-    IPortfolioPlanningState
-} from "../Redux/Contracts";
+import { IEpicTimelineState, IPortfolioPlanningState } from "../Redux/Contracts";
 import {
     getAddEpicDialogOpen,
     getSetDatesDialogHidden,
@@ -35,7 +27,7 @@ interface IEpicTimelineOwnProps {}
 interface IEpicTimelineMappedProps {
     planId: string;
     groups: ITimelineGroup[];
-    teams: { [teamId: string] : ITeam };
+    teams: { [teamId: string]: ITeam };
     items: ITimelineItem[];
     addEpicDialogOpen: boolean;
     setDatesDialogHidden: boolean;
@@ -43,44 +35,32 @@ interface IEpicTimelineMappedProps {
     progressTrackingCriteria: ProgressTrackingCriteria;
 }
 
-export type IEpicTimelineProps = IEpicTimelineOwnProps &
-    IEpicTimelineMappedProps &
-    typeof Actions;
+export type IEpicTimelineProps = IEpicTimelineOwnProps & IEpicTimelineMappedProps & typeof Actions;
 
-export class EpicTimeline extends React.Component<
-    IEpicTimelineProps,
-    IEpicTimelineState
-> {
+export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimelineState> {
     constructor() {
         super();
     }
 
     public render(): JSX.Element {
-        const selectedItem = this.props.items.find(
-            item => item.id === this.props.selectedItemId
-        );
+        const selectedItem = this.props.items.find(item => item.id === this.props.selectedItemId);
 
         const selectedProgressCriteriaKey =
-            this.props.progressTrackingCriteria ===
-            ProgressTrackingCriteria.CompletedCount
+            this.props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount
                 ? "completedCount"
                 : "storyPoints";
 
-        const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(
-            this.props.items
-        );
+        const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(this.props.items);
 
-        const forwardCircleStyle ={
-            padding: '0px 0px 0px 10px',
+        const forwardCircleStyle = {
+            padding: "0px 0px 0px 10px"
         };
 
         return (
             <div>
                 <div className="configuration-container">
                     <div className="progress-options">
-                        <div className="progress-options-label">
-                            Track Progress Using:{" "}
-                        </div>
+                        <div className="progress-options-label">Track Progress Using: </div>
                         <ComboBox
                             className="progress-options-dropdown"
                             selectedKey={selectedProgressCriteriaKey}
@@ -89,8 +69,7 @@ export class EpicTimeline extends React.Component<
                             options={[
                                 {
                                     key: "completedCount",
-                                    text:
-                                        ProgressTrackingCriteria.CompletedCount
+                                    text: ProgressTrackingCriteria.CompletedCount
                                 },
                                 {
                                     key: "storyPoints",
@@ -100,10 +79,7 @@ export class EpicTimeline extends React.Component<
                             onChanged={this._onProgressTrackingCriteriaChanged}
                         />
                     </div>
-                    <button
-                        className="epictimeline-add-epic-button"
-                        onClick={this._onAddEpicClick}
-                    >
+                    <button className="epictimeline-add-epic-button" onClick={this._onAddEpicClick}>
                         Add Epic
                     </button>
                     <button
@@ -129,20 +105,14 @@ export class EpicTimeline extends React.Component<
                     onItemMove={this._onItemMove}
                     moveResizeValidator={this._validateResize}
                     selecte={[this.props.selectedItemId]}
-                    onItemSelect={itemId =>
-                        this.props.onSetSelectedItemId(itemId)
-                    }
-                    onCanvasClick={() =>
-                        this.props.onSetSelectedItemId(undefined)
-                    }
+                    onItemSelect={itemId => this.props.onSetSelectedItemId(itemId)}
+                    onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
                     itemRenderer={({ item, itemContext, getItemProps }) => {
                         return (
                             <div {...getItemProps(item.itemProps)}>
                                 <div
                                     style={{
-                                        maxHeight: `${
-                                            itemContext.dimensions.height
-                                        }`,
+                                        maxHeight: `${itemContext.dimensions.height}`,
                                         display: "flex",
                                         justifyContent: "space-between",
                                         overflow: "hidden",
@@ -159,11 +129,7 @@ export class EpicTimeline extends React.Component<
                                     >
                                         <InfoIcon
                                             id={item.id}
-                                            onClick={() =>
-                                                this.props.onToggleSetDatesDialogHidden(
-                                                    false
-                                                )
-                                            }
+                                            onClick={() => this.props.onToggleSetDatesDialogHidden(false)}
                                         />
                                         <ProgressDetails
                                             completed={item.itemProps.completed}
@@ -173,7 +139,8 @@ export class EpicTimeline extends React.Component<
                                         <div
                                             className="bowtie-icon bowtie-navigate-forward-circle"
                                             style={forwardCircleStyle}
-                                            onClick={() => this.navigateToEpicRoadmap(item)}>
+                                            onClick={() => this.navigateToEpicRoadmap(item)}
+                                        >
                                             &nbsp;
                                         </div>
                                     </div>
@@ -204,12 +171,7 @@ export class EpicTimeline extends React.Component<
         );
     }
 
-    private _validateResize(
-        action: string,
-        item: ITimelineItem,
-        time: number,
-        resizeEdge: string
-    ) {
+    private _validateResize(action: string, item: ITimelineItem, time: number, resizeEdge: string) {
         if (action === "resize") {
             if (resizeEdge === "right") {
                 const difference = time - item.start_time.valueOf();
@@ -229,11 +191,7 @@ export class EpicTimeline extends React.Component<
         return time;
     }
 
-    private _onItemResize = (
-        itemId: number,
-        time: number,
-        edge: string
-    ): void => {
+    private _onItemResize = (itemId: number, time: number, edge: string): void => {
         if (edge == "left") {
             this.props.onUpdateStartDate(itemId, moment(time));
         } else {
@@ -257,20 +215,13 @@ export class EpicTimeline extends React.Component<
         });
     };
 
-    private _onProgressTrackingCriteriaChanged = (item: {
-        key: string;
-        text: string;
-    }) => {
+    private _onProgressTrackingCriteriaChanged = (item: { key: string; text: string }) => {
         switch (item.key) {
             case "completedCount":
-                this.props.onToggleProgressTrackingCriteria(
-                    ProgressTrackingCriteria.CompletedCount
-                );
+                this.props.onToggleProgressTrackingCriteria(ProgressTrackingCriteria.CompletedCount);
                 break;
             case "storyPoints":
-                this.props.onToggleProgressTrackingCriteria(
-                    ProgressTrackingCriteria.StoryPoints
-                );
+                this.props.onToggleProgressTrackingCriteria(ProgressTrackingCriteria.StoryPoints);
                 break;
         }
     };
@@ -288,9 +239,7 @@ export class EpicTimeline extends React.Component<
     }
 
     // TODO: We only need this on first render
-    private _getDefaultTimes(
-        items: ITimelineItem[]
-    ): [moment.Moment, moment.Moment] {
+    private _getDefaultTimes(items: ITimelineItem[]): [moment.Moment, moment.Moment] {
         let startTime = moment().add(-1, "months");
         let endTime = moment().add(1, "months");
 
@@ -306,8 +255,7 @@ export class EpicTimeline extends React.Component<
         return [startTime, endTime];
     }
 
-    private navigateToEpicRoadmap(item: ITimelineItem)
-    {
+    private navigateToEpicRoadmap(item: ITimelineItem) {
         const collectionUri = VSS.getWebContext().collection.uri;
         const projectName = item.group;
         const teamId = item.teamId;
@@ -318,15 +266,13 @@ export class EpicTimeline extends React.Component<
         const targerUrl = `${collectionUri}${projectName}/_backlogs/ms-devlabs.workitem-feature-timeline-extension-dev.workitem-epic-roadmap/${teamId}/${backlogLevel}#${workItemId}`;
 
         VSS.getService<IHostNavigationService>(VSS.ServiceIds.Navigation).then(
-            (client) => client.navigate(targerUrl),
-            (error) => alert(error)
+            client => client.navigate(targerUrl),
+            error => alert(error)
         );
     }
 }
 
-function mapStateToProps(
-    state: IPortfolioPlanningState
-): IEpicTimelineMappedProps {
+function mapStateToProps(state: IPortfolioPlanningState): IEpicTimelineMappedProps {
     return {
         planId: state.planDirectoryState.selectedPlanId,
         groups: getTimelineGroups(state.epicTimelineState),
@@ -335,9 +281,7 @@ function mapStateToProps(
         addEpicDialogOpen: getAddEpicDialogOpen(state.epicTimelineState),
         setDatesDialogHidden: getSetDatesDialogHidden(state.epicTimelineState),
         selectedItemId: state.epicTimelineState.selectedItemId,
-        progressTrackingCriteria: getProgressTrackingCriteria(
-            state.epicTimelineState
-        )
+        progressTrackingCriteria: getProgressTrackingCriteria(state.epicTimelineState)
     };
 }
 
@@ -348,11 +292,9 @@ const Actions = {
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
     onUpdateEndDate: EpicTimelineActions.updateEndDate,
     onShiftEpic: EpicTimelineActions.shiftEpic,
-    onToggleSetDatesDialogHidden:
-        EpicTimelineActions.toggleSetDatesDialogHidden,
+    onToggleSetDatesDialogHidden: EpicTimelineActions.toggleSetDatesDialogHidden,
     onSetSelectedItemId: EpicTimelineActions.setSelectedItemId,
-    onToggleProgressTrackingCriteria:
-        EpicTimelineActions.toggleProgressTrackingCriteria,
+    onToggleProgressTrackingCriteria: EpicTimelineActions.toggleProgressTrackingCriteria,
     onRemoveSelectedEpic: EpicTimelineActions.removeEpic
 };
 

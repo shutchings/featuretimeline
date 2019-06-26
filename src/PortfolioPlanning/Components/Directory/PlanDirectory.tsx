@@ -19,30 +19,22 @@ interface IPlanDirectoryMappedProps {
     newPlanDialogVisible: boolean;
 }
 
-export class PlanDirectory extends React.Component<
-    IPlanDirectoryProps & IPlanDirectoryMappedProps & typeof Actions
-> {
+export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDirectoryMappedProps & typeof Actions> {
     constructor(props) {
         super(props);
     }
 
     public render() {
         if (this.props.selectedPlanId) {
-            const selectedPlan = this.props.plans.find(
-                plan => plan.id === this.props.selectedPlanId
-            );
+            const selectedPlan = this.props.plans.find(plan => plan.id === this.props.selectedPlanId);
 
             return (
                 <PlanPage
                     id={selectedPlan.id}
                     title={selectedPlan.name}
                     description={selectedPlan.description}
-                    backButtonClicked={() =>
-                        this.props.toggleSelectedPlanId(undefined)
-                    }
-                    deleteButtonClicked={(id: string) =>
-                        this.props.deletePlan(id)
-                    }
+                    backButtonClicked={() => this.props.toggleSelectedPlanId(undefined)}
+                    deleteButtonClicked={(id: string) => this.props.deletePlan(id)}
                 />
             );
         } else {
@@ -59,38 +51,24 @@ export class PlanDirectory extends React.Component<
                                 id={plan.id}
                                 name={plan.name}
                                 description={plan.description}
-                                onClick={id =>
-                                    this.props.toggleSelectedPlanId(id)
-                                }
+                                onClick={id => this.props.toggleSelectedPlanId(id)}
                             />
                         ))}
                     </div>
                     {this.props.newPlanDialogVisible && (
                         <NewPlanDialog
-                            existingPlanNames={this.props.plans.map(
-                                plan => plan.name
-                            )}
-                            onDismiss={() =>
-                                this.props.toggleNewPlanDialogVisible(false)
-                            }
+                            existingPlanNames={this.props.plans.map(plan => plan.name)}
+                            onDismiss={() => this.props.toggleNewPlanDialogVisible(false)}
                             onCreate={(name: string, description: string) => {
                                 PortfolioPlanningDataService.getInstance()
                                     .AddPortfolioPlan(name, description)
                                     .then(
                                         newPlan => {
-                                            this.props.createPlan(
-                                                newPlan.id,
-                                                newPlan.name,
-                                                newPlan.description
-                                            );
-                                            this.props.toggleNewPlanDialogVisible(
-                                                false
-                                            );
+                                            this.props.createPlan(newPlan.id, newPlan.name, newPlan.description);
+                                            this.props.toggleNewPlanDialogVisible(false);
                                         },
                                         reason => {
-                                            alert(
-                                                `Create new plan failed: ${reason}`
-                                            );
+                                            alert(`Create new plan failed: ${reason}`);
                                         }
                                     );
                             }}
@@ -102,9 +80,7 @@ export class PlanDirectory extends React.Component<
     }
 }
 
-function mapStateToProps(
-    state: IPortfolioPlanningState
-): IPlanDirectoryMappedProps {
+function mapStateToProps(state: IPortfolioPlanningState): IPlanDirectoryMappedProps {
     return {
         selectedPlanId: state.planDirectoryState.selectedPlanId,
         plans: state.planDirectoryState.plans,
