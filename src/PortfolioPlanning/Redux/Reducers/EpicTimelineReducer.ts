@@ -8,19 +8,17 @@ import {
 import produce from "immer";
 import { ProgressTrackingCriteria } from "../../Contracts";
 import { MergeType } from "../../Models/PortfolioPlanningQueryModels";
+import { WorkItemTrackingHttpClient } from "TFS/WorkItemTracking/RestClient";
+import { JsonPatchDocument } from "VSS/WebApi/Contracts";
+import * as VSS_Service from "VSS/Service";
 
-export function epicTimelineReducer(
-    state: IEpicTimelineState,
-    action: EpicTimelineActions
-): IEpicTimelineState {
+export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimelineActions): IEpicTimelineState {
     return produce(state || getDefaultState(), (draft: IEpicTimelineState) => {
         switch (action.type) {
             case EpicTimelineActionTypes.UpdateStartDate: {
                 const { epicId, startDate } = action.payload;
 
-                const epicToUpdate = draft.epics.find(
-                    epic => epic.id === epicId
-                );
+                const epicToUpdate = draft.epics.find(epic => epic.id === epicId);
 
                 epicToUpdate.startDate = startDate.toDate();
 
@@ -29,9 +27,7 @@ export function epicTimelineReducer(
             case EpicTimelineActionTypes.UpdateEndDate: {
                 const { epicId, endDate } = action.payload;
 
-                const epicToUpdate = draft.epics.find(
-                    epic => epic.id === epicId
-                );
+                const epicToUpdate = draft.epics.find(epic => epic.id === epicId);
 
                 epicToUpdate.endDate = endDate.toDate();
 
@@ -40,18 +36,12 @@ export function epicTimelineReducer(
             case EpicTimelineActionTypes.ShiftEpic: {
                 const { epicId, startDate } = action.payload;
 
-                const epicToUpdate = draft.epics.find(
-                    epic => epic.id === epicId
-                );
+                const epicToUpdate = draft.epics.find(epic => epic.id === epicId);
 
-                const epicDuration =
-                    epicToUpdate.endDate.getTime() -
-                    epicToUpdate.startDate.getTime();
+                const epicDuration = epicToUpdate.endDate.getTime() - epicToUpdate.startDate.getTime();
 
                 epicToUpdate.startDate = startDate.toDate();
-                epicToUpdate.endDate = startDate
-                    .add(epicDuration, "milliseconds")
-                    .toDate();
+                epicToUpdate.endDate = startDate.add(epicDuration, "milliseconds").toDate();
 
                 break;
             }
@@ -70,10 +60,7 @@ export function epicTimelineReducer(
                 break;
             }
             case EpicTimelineActionTypes.PortfolioItemsReceived:
-                return handlePortfolioItemsReceived(
-                    state,
-                    action as PortfolioItemsReceivedAction
-                );
+                return handlePortfolioItemsReceived(state, action as PortfolioItemsReceivedAction);
 
             case EpicTimelineActionTypes.OpenAddEpicDialog: {
                 draft.addEpicDialogOpen = true;
@@ -84,10 +71,7 @@ export function epicTimelineReducer(
                 break;
             }
             case EpicTimelineActionTypes.PortfolioItemDeleted: {
-                return handlePortfolioItemDeleted(
-                    state,
-                    action as PortfolioItemDeletedAction
-                );
+                return handlePortfolioItemDeleted(state, action as PortfolioItemDeletedAction);
             }
             case EpicTimelineActionTypes.ToggleProgressTrackingCriteria: {
                 draft.progressTrackingCriteria = action.payload.criteria;
@@ -114,17 +98,11 @@ function handlePortfolioItemsReceived(
     action: PortfolioItemsReceivedAction
 ): IEpicTimelineState {
     return produce(state, draft => {
-        const { 
-            items,
-            projects,
-            teamAreas,
-            mergeStrategy
-         } = action.payload;
+        const { items, projects, teamAreas, mergeStrategy } = action.payload;
 
         //  TODO    Handle exception message from OData query results.
 
-         if(mergeStrategy === MergeType.Replace){
-
+        if (mergeStrategy === MergeType.Replace) {
             draft.projects = projects.projects.map(project => {
                 return {
                     id: project.ProjectSK,
@@ -132,36 +110,33 @@ function handlePortfolioItemsReceived(
                 };
             });
 
-            draft.epics = items.items.map(
-                item => {
-                    //  Using the first team found for the area, if available.
-                    const teamIdValue: string = (teamAreas.teamsInArea[item.AreaId] && teamAreas.teamsInArea[item.AreaId][0]) ?
-                        teamAreas.teamsInArea[item.AreaId][0].teamId :
-                        null;
+            draft.epics = items.items.map(item => {
+                //  Using the first team found for the area, if available.
+                const teamIdValue: string =
+                    teamAreas.teamsInArea[item.AreaId] && teamAreas.teamsInArea[item.AreaId][0]
+                        ? teamAreas.teamsInArea[item.AreaId][0].teamId
+                        : null;
 
-                    return {
-                        id: item.WorkItemId,
-                        project: item.ProjectId,
-                        teamId: teamIdValue,
-                        title: item.Title,
-                        startDate: item.StartDate,
-                        endDate: item.TargetDate,
-                        completedCount: item.CompletedCount,
-                        totalCount: item.TotalCount,
-                        completedStoryPoints: item.CompletedStoryPoints,
-                        totalStoryPoints: item.TotalStoryPoints,
-                        storyPointsProgress: item.StoryPointsProgress,
-                        countProgress: item.CountProgress
-                    };
+                return {
+                    id: item.WorkItemId,
+                    project: item.ProjectId,
+                    teamId: teamIdValue,
+                    title: item.Title,
+                    startDate: item.StartDate,
+                    endDate: item.TargetDate,
+                    completedCount: item.CompletedCount,
+                    totalCount: item.TotalCount,
+                    completedStoryPoints: item.CompletedStoryPoints,
+                    totalStoryPoints: item.TotalStoryPoints,
+                    storyPointsProgress: item.StoryPointsProgress,
+                    countProgress: item.CountProgress
+                };
             });
-        }
-        else if (mergeStrategy === MergeType.Add)
-        {
+        } else if (mergeStrategy === MergeType.Add) {
             projects.projects.forEach(newProjectInfo => {
                 const filteredProjects = draft.projects.filter(p => p.id === newProjectInfo.ProjectSK);
 
-                if(filteredProjects.length === 0)
-                {
+                if (filteredProjects.length === 0) {
                     draft.projects.push({
                         id: newProjectInfo.ProjectSK,
                         title: newProjectInfo.ProjectName
@@ -173,20 +148,29 @@ function handlePortfolioItemsReceived(
             items.items.forEach(newItemInfo => {
                 const filteredItems = draft.epics.filter(p => p.id === newItemInfo.WorkItemId);
 
-                if(filteredItems.length === 0)
-                {
+                const noDatesFound = newItemInfo.StartDate === undefined || newItemInfo.TargetDate === undefined;
+                let now, oneMonthFromNow;
+
+                if (noDatesFound) {
+                    now = new Date();
+                    oneMonthFromNow = new Date();
+                    oneMonthFromNow.setDate(now.getDate() + 30);
+                }
+
+                if (filteredItems.length === 0) {
                     //  Using the first team found for the area, if available.
-                    const teamIdValue: string = (teamAreas.teamsInArea[newItemInfo.AreaId] && teamAreas.teamsInArea[newItemInfo.AreaId][0]) ?
-                        teamAreas.teamsInArea[newItemInfo.AreaId][0].teamId :
-                        null;
+                    const teamIdValue: string =
+                        teamAreas.teamsInArea[newItemInfo.AreaId] && teamAreas.teamsInArea[newItemInfo.AreaId][0]
+                            ? teamAreas.teamsInArea[newItemInfo.AreaId][0].teamId
+                            : null;
 
                     draft.epics.push({
                         id: newItemInfo.WorkItemId,
                         project: newItemInfo.ProjectId,
                         teamId: teamIdValue,
                         title: newItemInfo.Title,
-                        startDate: newItemInfo.StartDate,
-                        endDate: newItemInfo.TargetDate,
+                        startDate: newItemInfo.StartDate || now,
+                        endDate: newItemInfo.TargetDate || oneMonthFromNow,
                         completedCount: newItemInfo.CompletedCount,
                         totalCount: newItemInfo.TotalCount,
                         completedStoryPoints: newItemInfo.CompletedStoryPoints,
@@ -195,37 +179,42 @@ function handlePortfolioItemsReceived(
                         countProgress: newItemInfo.CountProgress
                     });
                 }
+
+                if (noDatesFound) {
+                    const doc: JsonPatchDocument = [
+                        {
+                            op: "add",
+                            path: "/fields/Microsoft.VSTS.Scheduling.StartDate",
+                            value: now
+                        },
+                        {
+                            op: "add",
+                            path: "/fields/Microsoft.VSTS.Scheduling.TargetDate",
+                            value: oneMonthFromNow
+                        }
+                    ];
+
+                    const witHttpClient: WorkItemTrackingHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
+                    witHttpClient.updateWorkItem(doc, newItemInfo.WorkItemId);
+                }
             });
         }
     });
 }
 
-function handlePortfolioItemDeleted(
-    state: IEpicTimelineState,
-    action: PortfolioItemDeletedAction
-): IEpicTimelineState {
+function handlePortfolioItemDeleted(state: IEpicTimelineState, action: PortfolioItemDeletedAction): IEpicTimelineState {
     return produce(state, draft => {
-        const { 
-            epicToRemove
-         } = action.payload;
+        const { epicToRemove } = action.payload;
 
-         const indexToRemoveEpic = state.epics.findIndex(
-             epic => epic.id === epicToRemove
-         );
+        const indexToRemoveEpic = state.epics.findIndex(epic => epic.id === epicToRemove);
 
-         const removedEpic = draft.epics.splice(indexToRemoveEpic, 1)[0];
-         draft.selectedItemId = undefined;
+        const removedEpic = draft.epics.splice(indexToRemoveEpic, 1)[0];
+        draft.selectedItemId = undefined;
 
-         // Remove the project if it's the last epic in the project
-         if (
-             !draft.epics.some(
-                 epic => epic.project === removedEpic.project
-             )
-         ) {
-             const indexToRemoveProject = state.projects.findIndex(
-                 project => project.id === removedEpic.project
-             );
-             draft.projects.splice(indexToRemoveProject, 1);
-         }
+        // Remove the project if it's the last epic in the project
+        if (!draft.epics.some(epic => epic.project === removedEpic.project)) {
+            const indexToRemoveProject = state.projects.findIndex(project => project.id === removedEpic.project);
+            draft.projects.splice(indexToRemoveProject, 1);
+        }
     });
 }

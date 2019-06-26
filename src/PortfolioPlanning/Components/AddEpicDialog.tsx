@@ -1,13 +1,6 @@
 import * as React from "react";
-import {
-    Dialog,
-    DialogType,
-    DialogFooter
-} from "office-ui-fabric-react/lib/Dialog";
-import {
-    PrimaryButton,
-    DefaultButton
-} from "office-ui-fabric-react/lib/Button";
+import { Dialog, DialogType, DialogFooter } from "office-ui-fabric-react/lib/Dialog";
+import { PrimaryButton, DefaultButton } from "office-ui-fabric-react/lib/Button";
 import { Dropdown, IDropdownOption } from "office-ui-fabric-react/lib/Dropdown";
 import { Project, WorkItem } from "../Models/PortfolioPlanningQueryModels";
 import { IEpic, IProject, IAddEpics } from "../Contracts";
@@ -28,10 +21,7 @@ interface IAddEpicDialogState {
     selectedEpics: number[];
     epicsLoaded: boolean;
 }
-export class AddEpicDialog extends React.Component<
-    IAddEpicDialogProps,
-    IAddEpicDialogState
-> {
+export class AddEpicDialog extends React.Component<IAddEpicDialogProps, IAddEpicDialogState> {
     constructor(props) {
         super(props);
         this.state = {
@@ -71,14 +61,8 @@ export class AddEpicDialog extends React.Component<
                 {this._renderProjectPicker()}
                 {this._renderEpicsPicker()}
                 <DialogFooter>
-                    <PrimaryButton
-                        onClick={() => this._onAddEpics()}
-                        text="Add"
-                    />
-                    <DefaultButton
-                        onClick={() => this.props.onCloseAddEpicDialog()}
-                        text="Cancel"
-                    />
+                    <PrimaryButton onClick={() => this._onAddEpics()} text="Add" />
+                    <DefaultButton onClick={() => this.props.onCloseAddEpicDialog()} text="Cancel" />
                 </DialogFooter>
             </Dialog>
         );
@@ -130,8 +114,7 @@ export class AddEpicDialog extends React.Component<
             }
             return (
                 <div className="errorMessage">
-                    The project {this.state.selectedProject.title} doesn't have
-                    any epic.
+                    The project {this.state.selectedProject.title} doesn't have any epic.
                 </div>
             );
         }
@@ -139,10 +122,6 @@ export class AddEpicDialog extends React.Component<
 
     private _onEpicChange = (item: IDropdownOption): void => {
         let newSelectedEpics = [...this.state.selectedEpics];
-
-        const now = new Date();
-        const oneMonthFromNow = new Date();
-        oneMonthFromNow.setDate(now.getDate() + 30);
 
         const workItemId = Number(item.key.toString());
 
@@ -176,10 +155,7 @@ export class AddEpicDialog extends React.Component<
         return projects.projects;
     };
 
-    private _getEpicsInProject = async (
-        projectId: string,
-        workItemType?: string
-    ): Promise<WorkItem[]> => {
+    private _getEpicsInProject = async (projectId: string, workItemType?: string): Promise<WorkItem[]> => {
         const epics = await PortfolioPlanningDataService.getInstance().getAllWorkItemsOfTypeInProject(
             projectId,
             workItemType || "Epic"
