@@ -3,7 +3,8 @@ import * as moment from "moment";
 import {
     ITimelineGroup,
     ITimelineItem,
-    ProgressTrackingCriteria
+    ProgressTrackingCriteria,
+    ITeam
 } from "../Contracts";
 import Timeline from "react-calendar-timeline";
 import "./EpicTimeline.scss";
@@ -34,6 +35,7 @@ interface IEpicTimelineOwnProps {}
 interface IEpicTimelineMappedProps {
     planId: string;
     groups: ITimelineGroup[];
+    teams: { [teamId: string] : ITeam };
     items: ITimelineItem[];
     addEpicDialogOpen: boolean;
     setDatesDialogHidden: boolean;
@@ -328,6 +330,7 @@ function mapStateToProps(
     return {
         planId: state.planDirectoryState.selectedPlanId,
         groups: getTimelineGroups(state.epicTimelineState),
+        teams: state.epicTimelineState.teams,
         items: getTimelineItems(state.epicTimelineState),
         addEpicDialogOpen: getAddEpicDialogOpen(state.epicTimelineState),
         setDatesDialogHidden: getSetDatesDialogHidden(state.epicTimelineState),
