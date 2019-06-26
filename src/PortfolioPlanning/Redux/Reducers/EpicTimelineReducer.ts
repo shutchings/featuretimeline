@@ -2,7 +2,8 @@ import { IEpicTimelineState } from "../Contracts";
 import {
     EpicTimelineActions,
     EpicTimelineActionTypes,
-    PortfolioItemsReceivedAction
+    PortfolioItemsReceivedAction,
+    PortfolioItemDeletedAction
 } from "../Actions/EpicTimelineActions";
 import produce from "immer";
 import { ProgressTrackingCriteria } from "../../Contracts";
@@ -82,28 +83,11 @@ export function epicTimelineReducer(
                 draft.addEpicDialogOpen = false;
                 break;
             }
-            case EpicTimelineActionTypes.RemoveEpic: {
-                const { id } = action.payload;
-                const indexToRemoveEpic = state.epics.findIndex(
-                    epic => epic.id === id
+            case EpicTimelineActionTypes.PortfolioItemDeleted: {
+                return handlePortfolioItemDeleted(
+                    state,
+                    action as PortfolioItemDeletedAction
                 );
-
-                const removedEpic = draft.epics.splice(indexToRemoveEpic, 1)[0];
-                draft.selectedItemId = undefined;
-
-                // Remove the project if it's the last epic in the project
-                if (
-                    !draft.epics.some(
-                        epic => epic.project === removedEpic.project
-                    )
-                ) {
-                    const indexToRemoveProject = state.projects.findIndex(
-                        project => project.id === removedEpic.project
-                    );
-                    draft.projects.splice(indexToRemoveProject, 1);
-                }
-
-                break;
             }
             case EpicTimelineActionTypes.ToggleProgressTrackingCriteria: {
                 draft.progressTrackingCriteria = action.payload.criteria;
@@ -115,7 +99,6 @@ export function epicTimelineReducer(
 
 export function getDefaultState(): IEpicTimelineState {
     return {
-        planId: null,
         projects: [],
         epics: [],
         message: "Initial message",
@@ -132,18 +115,15 @@ function handlePortfolioItemsReceived(
 ): IEpicTimelineState {
     return produce(state, draft => {
         const {
-            planId,
             items,
             projects,
             teamAreas,
             mergeStrategy
         } = action.payload;
 
-        draft.planId = planId;
-
         //  TODO    Handle exception message from OData query results.
 
-        if (!mergeStrategy || mergeStrategy === MergeType.Replace) {
+         if(mergeStrategy === MergeType.Replace){
             draft.projects = projects.projects.map(project => {
                 return {
                     id: project.ProjectSK,
@@ -175,6 +155,7 @@ function handlePortfolioItemsReceived(
                 };
             });
         } else if (mergeStrategy && mergeStrategy === MergeType.Add) {
+        else if (mergeStrategy === MergeType.Add)
             projects.projects.forEach(newProjectInfo => {
                 const filteredProjects = draft.projects.filter(
                     p => p.id === newProjectInfo.ProjectSK
@@ -220,5 +201,35 @@ function handlePortfolioItemsReceived(
                 }
             });
         }
+    });
+}
+
+function handlePortfolioItemDeleted(
+    state: IEpicTimelineState,
+    action: PortfolioItemDeletedAction
+): IEpicTimelineState {
+    return produce(state, draft => {
+        const { 
+            epicToRemove
+         } = action.payload;
+
+         const indexToRemoveEpic = state.epics.findIndex(
+             epic => epic.id === epicToRemove
+         );
+
+         const removedEpic = draft.epics.splice(indexToRemoveEpic, 1)[0];
+         draft.selectedItemId = undefined;
+
+         // Remove the project if it's the last epic in the project
+         if (
+             !draft.epics.some(
+                 epic => epic.project === removedEpic.project
+             )
+         ) {
+             const indexToRemoveProject = state.projects.findIndex(
+                 project => project.id === removedEpic.project
+             );
+             draft.projects.splice(indexToRemoveProject, 1);
+         }
     });
 }

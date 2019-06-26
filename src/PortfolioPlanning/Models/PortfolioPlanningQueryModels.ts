@@ -129,11 +129,10 @@ export interface Team {
 
 export interface PortfolioPlanningFullContentQueryResult 
 {
-    planId?: string;
     items: PortfolioPlanningQueryResult,
     projects: PortfolioPlanningProjectQueryResult,
     teamAreas: PortfolioPlanningTeamsInAreaQueryResult,
-    mergeStrategy?: MergeType
+    mergeStrategy: MergeType
 }
 
 export enum MergeType
