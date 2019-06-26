@@ -237,6 +237,13 @@ export class PortfolioPlanningDataService {
         const client = await this.GetStorageClient();
         const planIdToDelete = planId.toLowerCase();
 
+        let allPlans = await this.GetAllPortfolioPlans();
+
+        const indexToDelete = allPlans.entries.findIndex(plan => plan.id == planIdToDelete);
+        allPlans.entries.splice(indexToDelete, 1);
+
+        await client.updateDocument(PortfolioPlanningDataService.DirectoryCollectionName, allPlans);
+
         return client.deleteDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, planIdToDelete);
     }
 

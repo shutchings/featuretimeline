@@ -4,7 +4,6 @@ import {
     EpicTimelineActionTypes,
     EpicTimelineActions
 } from "../Actions/EpicTimelineActions";
-import { Action } from "redux";
 import { getEpicById } from "../Selectors/EpicTimelineSelectors";
 import { IEpic } from "../../Contracts";
 import * as VSS_Service from "VSS/Service";
@@ -17,6 +16,7 @@ import {
     PlanDirectoryActions
 } from "../Actions/PlanDirectoryActions";
 import { LoadPortfolio } from "./LoadPortfolio";
+import { ActionsOfType } from "../Helpers";
 
 export function* epicTimelineSaga(): SagaIterator {
     yield takeEvery(EpicTimelineActionTypes.UpdateStartDate, onUpdateStartDate);
@@ -213,15 +213,3 @@ function* onToggleSelectedPlanId(
         yield effects.call(LoadPortfolio, selectedPlanId);
     }
 }
-
-// Helpers
-type ActionsCreatorsMapObject = {
-    [actionCreator: string]: (...args: any[]) => any;
-};
-export type ActionsUnion<A extends ActionsCreatorsMapObject> = ReturnType<
-    A[keyof A]
->;
-export type ActionsOfType<
-    ActionUnion,
-    ActionType extends string
-> = ActionUnion extends Action<ActionType> ? ActionUnion : never;
