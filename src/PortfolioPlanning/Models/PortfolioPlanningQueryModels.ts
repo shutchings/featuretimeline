@@ -52,8 +52,7 @@ export interface PortfolioPlanningProjectQueryResult extends IQueryResultError {
     projects: Project[];
 }
 
-export interface PortfolioPlanningWorkItemQueryResult
-    extends IQueryResultError {
+export interface PortfolioPlanningWorkItemQueryResult extends IQueryResultError {
     workItems: WorkItem[];
 }
 
@@ -81,9 +80,8 @@ export interface PortfolioPlanningMetadata {
     createdOn: Date;
 }
 
-export interface PortfolioPlanning extends PortfolioPlanningMetadata
-{
-    projects: { [projectId: string] :ProjectPortfolioPlanning }
+export interface PortfolioPlanning extends PortfolioPlanningMetadata {
+    projects: { [projectId: string]: ProjectPortfolioPlanning };
 }
 
 export interface ProjectPortfolioPlanning {
@@ -113,8 +111,7 @@ export interface PortfolioPlanningTeamsInAreaQueryInput {
     [projectId: string]: string[];
 }
 
-export interface PortfolioPlanningTeamsInAreaQueryResult
-    extends IQueryResultError {
+export interface PortfolioPlanningTeamsInAreaQueryResult extends IQueryResultError {
     teamsInArea: TeamsInArea;
 }
 
@@ -127,16 +124,14 @@ export interface Team {
     teamName: string;
 }
 
-export interface PortfolioPlanningFullContentQueryResult 
-{
-    items: PortfolioPlanningQueryResult,
-    projects: PortfolioPlanningProjectQueryResult,
-    teamAreas: PortfolioPlanningTeamsInAreaQueryResult,
-    mergeStrategy: MergeType
+export interface PortfolioPlanningFullContentQueryResult {
+    items: PortfolioPlanningQueryResult;
+    projects: PortfolioPlanningProjectQueryResult;
+    teamAreas: PortfolioPlanningTeamsInAreaQueryResult;
+    mergeStrategy: MergeType;
 }
 
-export enum MergeType
-{
+export enum MergeType {
     Add,
     Replace
 }
