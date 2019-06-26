@@ -40,6 +40,7 @@ export class PlanDirectory extends React.Component<
                     backButtonClicked={() =>
                         this.props.toggleSelectedPlanId(undefined)
                     }
+                    deleteButtonClicked={(id: string) => alert(id)}
                 />
             );
         } else {

@@ -7,6 +7,7 @@ import { PortfolioPlanningDirectory } from "../../Models/PortfolioPlanningQueryM
 export const enum PlanDirectoryActionTypes {
     Initialize = "PlanDirectory/Initialize",
     CreatePlan = "PlanDirectory/CreatePlan",
+    DeletePlan = "PlanDirectory/DeletePlan",
     ToggleSelectedPlanId = "PlanDirectory/SelectPlan",
     ToggleNewPlanDialogVisible = "PlanDirectory/ToggleNewPlanDialogVisible"
 }
@@ -20,6 +21,8 @@ export const PlanDirectoryActions = {
             name,
             description
         }),
+    deletePlan: (id: string) =>
+        createAction(PlanDirectoryActionTypes.DeletePlan, { id }),
     toggleSelectedPlanId: (id: string) =>
         createAction(PlanDirectoryActionTypes.ToggleSelectedPlanId, {
             id
