@@ -100,6 +100,8 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
 
 export function getDefaultState(): IEpicTimelineState {
     return {
+        planLoadingStatus: LoadingStatus.NotLoaded,
+        exceptionMessage: "",
         projects: [],
         teams: {},
         epics: [],
@@ -107,8 +109,7 @@ export function getDefaultState(): IEpicTimelineState {
         addEpicDialogOpen: false,
         setDatesDialogHidden: true,
         selectedItemId: null,
-        progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount,
-        planLoadingStatus: LoadingStatus.NotLoaded
+        progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount
     };
 }
 

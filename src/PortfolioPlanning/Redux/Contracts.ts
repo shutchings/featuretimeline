@@ -7,6 +7,8 @@ export interface IPortfolioPlanningState {
 }
 
 export interface IEpicTimelineState {
+    planLoadingStatus: LoadingStatus;
+    exceptionMessage: string;
     projects: IProject[];
     teams: { [teamId: string]: ITeam };
     epics: IEpic[];
@@ -15,11 +17,11 @@ export interface IEpicTimelineState {
     setDatesDialogHidden: boolean;
     selectedItemId: number;
     progressTrackingCriteria: ProgressTrackingCriteria;
-    planLoadingStatus: LoadingStatus;
 }
 
 export interface IPlanDirectoryState {
     directoryLoadingStatus: LoadingStatus;
+    exceptionMessage: string;
     selectedPlanId: string;
     newPlanDialogVisible: boolean;
     plans: PortfolioPlanningMetadata[];

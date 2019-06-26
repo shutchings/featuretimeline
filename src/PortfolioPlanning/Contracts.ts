@@ -62,6 +62,5 @@ export enum ProgressTrackingCriteria {
 
 export enum LoadingStatus {
     NotLoaded,
-    Loaded,
-    LoadedWithErrors
+    Loaded
 }

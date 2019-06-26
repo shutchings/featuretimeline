@@ -9,8 +9,9 @@ export function planDirectoryReducer(state: IPlanDirectoryState, action: PlanDir
             case PlanDirectoryActionTypes.Initialize: {
                 const { directoryData } = action.payload;
 
-                draft.plans = directoryData.entries;
                 draft.directoryLoadingStatus = LoadingStatus.Loaded;
+                draft.exceptionMessage = directoryData.exceptionMessage;
+                draft.plans = directoryData.entries;
 
                 break;
             }
@@ -57,9 +58,10 @@ export function planDirectoryReducer(state: IPlanDirectoryState, action: PlanDir
 
 export function getDefaultState(): IPlanDirectoryState {
     return {
+        directoryLoadingStatus: LoadingStatus.NotLoaded,
+        exceptionMessage: "",
         selectedPlanId: undefined,
         plans: [],
-        newPlanDialogVisible: false,
-        directoryLoadingStatus: LoadingStatus.NotLoaded
+        newPlanDialogVisible: false
     };
 }

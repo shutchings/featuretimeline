@@ -13,14 +13,16 @@ import { PortfolioPlanningMetadata } from "../../Models/PortfolioPlanningQueryMo
 import { EpicTimelineActions } from "../../Redux/Actions/EpicTimelineActions";
 import { LoadingStatus } from "../../Contracts";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
+import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
 
 export interface IPlanDirectoryProps {}
 
 interface IPlanDirectoryMappedProps {
+    directoryLoadingStatus: LoadingStatus;
+    exceptionMessage: string;
     selectedPlanId: string;
     plans: PortfolioPlanningMetadata[];
     newPlanDialogVisible: boolean;
-    directoryLoadingStatus: LoadingStatus;
 }
 
 export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDirectoryMappedProps & typeof Actions> {
@@ -64,22 +66,37 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
     }
 
     private _renderDirectoryContent = (): JSX.Element => {
-        return (
-            <div className="page-content plan-directory-page-content">
-                {this.props.directoryLoadingStatus === LoadingStatus.NotLoaded ? (
-                    <Spinner className="directory-loading-spinner" label="Loading..." size={SpinnerSize.large} />
-                ) : (
-                    this.props.plans.map(plan => (
-                        <PlanCard
-                            id={plan.id}
-                            name={plan.name}
-                            description={plan.description}
-                            onClick={id => this.props.toggleSelectedPlanId(id)}
-                        />
-                    ))
-                )}
-            </div>
-        );
+        if (this.props.directoryLoadingStatus === LoadingStatus.NotLoaded) {
+            return (
+                <Spinner
+                    className="page-content directory-loading-spinner"
+                    label="Loading..."
+                    size={SpinnerSize.large}
+                />
+            );
+        } else {
+            const exceptionMessageCard = (
+                <MessageCard className="flex-self-stretch exception-message-card" severity={MessageCardSeverity.Error}>
+                    {this.props.exceptionMessage}
+                </MessageCard>
+            );
+
+            const plans = this.props.plans.map(plan => (
+                <PlanCard
+                    id={plan.id}
+                    name={plan.name}
+                    description={plan.description}
+                    onClick={id => this.props.toggleSelectedPlanId(id)}
+                />
+            ));
+
+            return (
+                <div className="page-content plan-directory-page-content">
+                    {this.props.exceptionMessage && exceptionMessageCard}
+                    <div className="plan-cards-container">{plans}</div>
+                </div>
+            );
+        }
     };
 
     private _renderNewPlanDialog = (): JSX.Element => {
@@ -109,10 +126,11 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
 
 function mapStateToProps(state: IPortfolioPlanningState): IPlanDirectoryMappedProps {
     return {
+        directoryLoadingStatus: state.planDirectoryState.directoryLoadingStatus,
+        exceptionMessage: state.planDirectoryState.exceptionMessage,
         selectedPlanId: state.planDirectoryState.selectedPlanId,
         plans: state.planDirectoryState.plans,
-        newPlanDialogVisible: state.planDirectoryState.newPlanDialogVisible,
-        directoryLoadingStatus: state.planDirectoryState.directoryLoadingStatus
+        newPlanDialogVisible: state.planDirectoryState.newPlanDialogVisible
     };
 }
 
