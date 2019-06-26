@@ -45,19 +45,32 @@ function* onShiftEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineAct
     yield effects.call(saveDatesToServer, epicId);
 }
 
+/*
+This method is called from two places:
+1. setting dates for a selected epic from UI
+2. set default dates for newly added epic.
+In second case, epic is not saved into state yet.
+*/
 function* saveDatesToServer(epicId: number, defaultStartDate?: Date, defaultEndDate?: Date): SagaIterator {
     const epic: IEpic = yield effects.select(getEpicById, epicId);
+    let startDate: Date = defaultStartDate;
+    let endDate: Date = defaultEndDate;
+
+    if (epic && epic.startDate && epic.endDate) {
+        startDate = epic.startDate;
+        endDate = epic.endDate;
+    }
 
     const doc: JsonPatchDocument = [
         {
             op: "add",
             path: "/fields/Microsoft.VSTS.Scheduling.StartDate",
-            value: defaultStartDate || epic.startDate
+            value: startDate
         },
         {
             op: "add",
             path: "/fields/Microsoft.VSTS.Scheduling.TargetDate",
-            value: defaultEndDate || epic.endDate
+            value: endDate
         }
     ];
 
@@ -116,21 +129,23 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
         portfolioQueryInput
     );
 
-    let epicsWithoutDates:number[] = [];
+    let epicsWithoutDates: number[] = [];
+    let now, oneMonthFromNow;
 
     queryResult.items.items.map(item => {
-      if(item.StartDate === undefined || item.TargetDate === undefined) {
-          epicsWithoutDates.push(item.WorkItemId);
-      }  
-    })
+        if (item.StartDate === undefined || item.TargetDate === undefined) {
+            now = new Date();
+            oneMonthFromNow = new Date();
+            oneMonthFromNow.setDate(now.getDate() + 30);
+            epicsWithoutDates.push(item.WorkItemId);
+            item.StartDate = now;
+            item.TargetDate = oneMonthFromNow;
+        }
+    });
 
-    for(let index=0; index<epicsWithoutDates.length; index++) {
-        const now = new Date();	
-        const oneMonthFromNow = new Date();	
-        oneMonthFromNow.setDate(now.getDate() + 30);
+    for (let index = 0; index < epicsWithoutDates.length; index++) {
         yield effects.call(saveDatesToServer, epicsWithoutDates[index], now, oneMonthFromNow);
     }
-    
 
     //  Add new epics selected by customer to existing ones in the plan.
     queryResult.mergeStrategy = MergeType.Add;
