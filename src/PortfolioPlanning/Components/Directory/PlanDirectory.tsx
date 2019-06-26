@@ -48,50 +48,63 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
                 />
             );
         } else {
-            if (this.props.directoryLoadingStatus === LoadingStatus.NotLoaded) {
-                return <Spinner label="Loading..." size={SpinnerSize.large} />;
-            } else {
-                return (
-                    <Page className="plan-page">
-                        <PlanDirectoryHeader
-                            onNewPlanClick={() => {
-                                this.props.toggleNewPlanDialogVisible(true);
-                            }}
-                        />
-                        <div className="page-content plan-directory-page-content">
-                            {this.props.plans.map(plan => (
-                                <PlanCard
-                                    id={plan.id}
-                                    name={plan.name}
-                                    description={plan.description}
-                                    onClick={id => this.props.toggleSelectedPlanId(id)}
-                                />
-                            ))}
-                        </div>
-                        {this.props.newPlanDialogVisible && (
-                            <NewPlanDialog
-                                existingPlanNames={this.props.plans.map(plan => plan.name)}
-                                onDismiss={() => this.props.toggleNewPlanDialogVisible(false)}
-                                onCreate={(name: string, description: string) => {
-                                    PortfolioPlanningDataService.getInstance()
-                                        .AddPortfolioPlan(name, description)
-                                        .then(
-                                            newPlan => {
-                                                this.props.createPlan(newPlan.id, newPlan.name, newPlan.description);
-                                                this.props.toggleNewPlanDialogVisible(false);
-                                            },
-                                            reason => {
-                                                alert(`Create new plan failed: ${reason}`);
-                                            }
-                                        );
-                                }}
-                            />
-                        )}
-                    </Page>
-                );
-            }
+            return (
+                <Page className="plan-page">
+                    <PlanDirectoryHeader
+                        newPlanButtonDisabled={this.props.directoryLoadingStatus !== LoadingStatus.Loaded}
+                        onNewPlanClick={() => {
+                            this.props.toggleNewPlanDialogVisible(true);
+                        }}
+                    />
+                    {this._renderDirectoryContent()}
+                    {this._renderNewPlanDialog()}
+                </Page>
+            );
         }
     }
+
+    private _renderDirectoryContent = (): JSX.Element => {
+        return (
+            <div className="page-content plan-directory-page-content">
+                {this.props.directoryLoadingStatus === LoadingStatus.NotLoaded ? (
+                    <Spinner className="directory-loading-spinner" label="Loading..." size={SpinnerSize.large} />
+                ) : (
+                    this.props.plans.map(plan => (
+                        <PlanCard
+                            id={plan.id}
+                            name={plan.name}
+                            description={plan.description}
+                            onClick={id => this.props.toggleSelectedPlanId(id)}
+                        />
+                    ))
+                )}
+            </div>
+        );
+    };
+
+    private _renderNewPlanDialog = (): JSX.Element => {
+        return (
+            this.props.newPlanDialogVisible && (
+                <NewPlanDialog
+                    existingPlanNames={this.props.plans.map(plan => plan.name)}
+                    onDismiss={() => this.props.toggleNewPlanDialogVisible(false)}
+                    onCreate={(name: string, description: string) => {
+                        PortfolioPlanningDataService.getInstance()
+                            .AddPortfolioPlan(name, description)
+                            .then(
+                                newPlan => {
+                                    this.props.createPlan(newPlan.id, newPlan.name, newPlan.description);
+                                    this.props.toggleNewPlanDialogVisible(false);
+                                },
+                                reason => {
+                                    alert(`Create new plan failed: ${reason}`);
+                                }
+                            );
+                    }}
+                />
+            )
+        );
+    };
 }
 
 function mapStateToProps(state: IPortfolioPlanningState): IPlanDirectoryMappedProps {
