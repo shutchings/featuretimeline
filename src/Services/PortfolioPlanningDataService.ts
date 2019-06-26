@@ -238,9 +238,7 @@ export class PortfolioPlanningDataService {
         const planIdToDelete = planId.toLowerCase();
 
         let allPlans = await this.GetAllPortfolioPlans();
-
-        const indexToDelete = allPlans.entries.findIndex(plan => plan.id == planIdToDelete);
-        allPlans.entries.splice(indexToDelete, 1);
+        allPlans.entries.filter(plan => plan.id !== planIdToDelete);
 
         await client.updateDocument(PortfolioPlanningDataService.DirectoryCollectionName, allPlans);
 
