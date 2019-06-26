@@ -123,10 +123,6 @@ export class AddEpicDialog extends React.Component<IAddEpicDialogProps, IAddEpic
     private _onEpicChange = (item: IDropdownOption): void => {
         let newSelectedEpics = [...this.state.selectedEpics];
 
-        const now = new Date();
-        const oneMonthFromNow = new Date();
-        oneMonthFromNow.setDate(now.getDate() + 30);
-
         const workItemId = Number(item.key.toString());
 
         if (item.selected) {
