@@ -17,10 +17,7 @@ import {
     PortfolioPlanningFullContentQueryResult
 } from "../PortfolioPlanning/Models/PortfolioPlanningQueryModels";
 import { ODataClient } from "../Common/OData/ODataClient";
-import {
-    ODataWorkItemQueryResult,
-    ODataAreaQueryResult
-} from "../PortfolioPlanning/Models/ODataQueryModels";
+import { ODataWorkItemQueryResult, ODataAreaQueryResult } from "../PortfolioPlanning/Models/ODataQueryModels";
 import { GUIDUtil } from "../Common/GUIDUtil";
 
 export class PortfolioPlanningDataService {
@@ -36,23 +33,15 @@ export class PortfolioPlanningDataService {
     public async runPortfolioItemsQuery(
         queryInput: PortfolioPlanningQueryInput
     ): Promise<PortfolioPlanningQueryResult> {
-        const odataQueryString = ODataQueryBuilder.WorkItemsQueryString(
-            queryInput
-        );
+        const odataQueryString = ODataQueryBuilder.WorkItemsQueryString(queryInput);
 
         const client = await ODataClient.getInstance();
-        const fullQueryUrl = client.generateProjectLink(
-            undefined,
-            odataQueryString
-        );
+        const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
 
         return client
             .runGetQuery(fullQueryUrl)
             .then(
-                (results: any) =>
-                    this.ParseODataPortfolioPlanningQueryResultResponse(
-                        results
-                    ),
+                (results: any) => this.ParseODataPortfolioPlanningQueryResultResponse(results),
                 error => this.ParseODataErrorResponse(error)
             );
     }
@@ -60,21 +49,15 @@ export class PortfolioPlanningDataService {
     public async runProjectQuery(
         queryInput: PortfolioPlanningProjectQueryInput
     ): Promise<PortfolioPlanningProjectQueryResult> {
-        const odataQueryString = ODataQueryBuilder.ProjectsQueryString(
-            queryInput
-        );
+        const odataQueryString = ODataQueryBuilder.ProjectsQueryString(queryInput);
 
         const client = await ODataClient.getInstance();
-        const fullQueryUrl = client.generateProjectLink(
-            undefined,
-            odataQueryString
-        );
+        const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
 
         return client
             .runGetQuery(fullQueryUrl)
             .then(
-                (results: any) =>
-                    this.ParseODataProjectQueryResultResponse(results),
+                (results: any) => this.ParseODataProjectQueryResultResponse(results),
                 error => this.ParseODataErrorResponse(error)
             );
     }
@@ -82,56 +65,48 @@ export class PortfolioPlanningDataService {
     public async runTeamsInAreasQuery(
         queryInput: PortfolioPlanningTeamsInAreaQueryInput
     ): Promise<PortfolioPlanningTeamsInAreaQueryResult> {
-        const odataQueryString = ODataQueryBuilder.TeamsInAreaQueryString(
-            queryInput
-        );
+        const odataQueryString = ODataQueryBuilder.TeamsInAreaQueryString(queryInput);
 
         const client = await ODataClient.getInstance();
-        const fullQueryUrl = client.generateProjectLink(
-            undefined,
-            odataQueryString
-        );
+        const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
 
         return client
             .runGetQuery(fullQueryUrl)
             .then(
-                (results: any) =>
-                    this.ParseODataTeamsInAreaQueryResultResponse(results),
+                (results: any) => this.ParseODataTeamsInAreaQueryResultResponse(results),
                 error => this.ParseODataErrorResponse(error)
             );
     }
 
-    public async loadPortfolioContent(portfolioQueryInput: PortfolioPlanningQueryInput) : Promise<PortfolioPlanningFullContentQueryResult>
-    {
+    public async loadPortfolioContent(
+        portfolioQueryInput: PortfolioPlanningQueryInput
+    ): Promise<PortfolioPlanningFullContentQueryResult> {
         const projectsQueryInput: PortfolioPlanningProjectQueryInput = {
-            projectIds: portfolioQueryInput.WorkItems.map((workItems) => workItems.projectId)
+            projectIds: portfolioQueryInput.WorkItems.map(workItems => workItems.projectId)
         };
-    
-        const [portfolioQueryResult, projectQueryResult] = await Promise.all(
-            [
-                this.runPortfolioItemsQuery(portfolioQueryInput),
-                this.runProjectQuery(projectsQueryInput)
-            ]);
-    
-        const teamsInAreaQueryInput : PortfolioPlanningTeamsInAreaQueryInput = {};
 
-        for(let entry of (portfolioQueryResult as PortfolioPlanningQueryResult).items) {
+        const [portfolioQueryResult, projectQueryResult] = await Promise.all([
+            this.runPortfolioItemsQuery(portfolioQueryInput),
+            this.runProjectQuery(projectsQueryInput)
+        ]);
+
+        const teamsInAreaQueryInput: PortfolioPlanningTeamsInAreaQueryInput = {};
+
+        for (let entry of (portfolioQueryResult as PortfolioPlanningQueryResult).items) {
             const projectIdKey = entry.ProjectId.toLowerCase();
             const areaIdKey = entry.AreaId.toLowerCase();
-    
-            if(!teamsInAreaQueryInput[projectIdKey])
-            {
+
+            if (!teamsInAreaQueryInput[projectIdKey]) {
                 teamsInAreaQueryInput[projectIdKey] = [];
             }
-    
-            if(teamsInAreaQueryInput[projectIdKey].indexOf(areaIdKey) === -1)
-            {
+
+            if (teamsInAreaQueryInput[projectIdKey].indexOf(areaIdKey) === -1) {
                 teamsInAreaQueryInput[projectIdKey].push(areaIdKey);
             }
         }
-    
+
         const teamAreasQueryResult = await this.runTeamsInAreasQuery(teamsInAreaQueryInput);
-    
+
         return {
             items: portfolioQueryResult,
             projects: projectQueryResult,
@@ -140,20 +115,16 @@ export class PortfolioPlanningDataService {
         };
     }
 
-    public async getAllProjects() : Promise<PortfolioPlanningProjectQueryResult> {
+    public async getAllProjects(): Promise<PortfolioPlanningProjectQueryResult> {
         const odataQueryString = ODataQueryBuilder.AllProjectsQueryString();
 
         const client = await ODataClient.getInstance();
-        const fullQueryUrl = client.generateProjectLink(
-            undefined,
-            odataQueryString
-        );
+        const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
 
         return client
             .runGetQuery(fullQueryUrl)
             .then(
-                (results: any) =>
-                    this.ParseODataProjectQueryResultResponse(results),
+                (results: any) => this.ParseODataProjectQueryResultResponse(results),
                 error => this.ParseODataErrorResponse(error)
             );
     }
@@ -162,21 +133,15 @@ export class PortfolioPlanningDataService {
         projectGuid: string,
         workItemType: string
     ): Promise<PortfolioPlanningWorkItemQueryResult> {
-        const odataQueryString = ODataQueryBuilder.WorkItemsOfTypeQueryString(
-            workItemType
-        );
+        const odataQueryString = ODataQueryBuilder.WorkItemsOfTypeQueryString(workItemType);
 
         const client = await ODataClient.getInstance();
-        const fullQueryUrl = client.generateProjectLink(
-            projectGuid,
-            odataQueryString
-        );
+        const fullQueryUrl = client.generateProjectLink(projectGuid, odataQueryString);
 
         return client
             .runGetQuery(fullQueryUrl)
             .then(
-                (results: any) =>
-                    this.ParseODataWorkItemQueryResultResponse(results),
+                (results: any) => this.ParseODataWorkItemQueryResultResponse(results),
                 error => this.ParseODataErrorResponse(error)
             );
     }
@@ -198,16 +163,12 @@ export class PortfolioPlanningDataService {
                         //  Collection has not been created, initialize it.
                         const newDirectory: PortfolioPlanningDirectory = {
                             exceptionMessage: null,
-                            id:
-                                PortfolioPlanningDataService.DirectoryDocumentId,
+                            id: PortfolioPlanningDataService.DirectoryDocumentId,
                             entries: []
                         };
 
                         return client
-                            .createDocument(
-                                PortfolioPlanningDataService.DirectoryCollectionName,
-                                newDirectory
-                            )
+                            .createDocument(PortfolioPlanningDataService.DirectoryCollectionName, newDirectory)
                             .then(
                                 newDirectory => newDirectory,
                                 //  We failed while creating the collection for the first time.
@@ -222,13 +183,9 @@ export class PortfolioPlanningDataService {
 
     private static readonly DirectoryDocumentId: string = "Default";
     private static readonly DirectoryCollectionName: string = "Directory";
-    private static readonly PortfolioPlansCollectionName: string =
-        "PortfolioPlans";
+    private static readonly PortfolioPlansCollectionName: string = "PortfolioPlans";
 
-    public async AddPortfolioPlan(
-        newPlanName: string,
-        newPlanDescription: string
-    ): Promise<PortfolioPlanning> {
+    public async AddPortfolioPlan(newPlanName: string, newPlanDescription: string): Promise<PortfolioPlanning> {
         const client = await this.GetStorageClient();
         const newPlanId = GUIDUtil.newGuid().toLowerCase();
 
@@ -240,10 +197,7 @@ export class PortfolioPlanningDataService {
             projects: {}
         };
 
-        const savedPlan = await client.setDocument(
-            PortfolioPlanningDataService.PortfolioPlansCollectionName,
-            newPlan
-        );
+        const savedPlan = await client.setDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, newPlan);
         let allPlans = await this.GetAllPortfolioPlans();
 
         if (!allPlans) {
@@ -256,44 +210,37 @@ export class PortfolioPlanningDataService {
 
         allPlans.entries.push(savedPlan);
 
-        await client.updateDocument(
-            PortfolioPlanningDataService.DirectoryCollectionName,
-            allPlans
-        );
+        await client.updateDocument(PortfolioPlanningDataService.DirectoryCollectionName, allPlans);
 
         return newPlan;
     }
 
-    public async GetPortfolioPlanById(
-        portfolioPlanId: string
-    ): Promise<PortfolioPlanning> {
+    public async GetPortfolioPlanById(portfolioPlanId: string): Promise<PortfolioPlanning> {
         const client = await this.GetStorageClient();
         const planIdLowercase = portfolioPlanId.toLowerCase();
 
         return client.getDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, planIdLowercase);
     }
 
-    public async UpdatePortfolioPlan(
-        newPlan: PortfolioPlanning
-    ): Promise<PortfolioPlanning> {
+    public async UpdatePortfolioPlan(newPlan: PortfolioPlanning): Promise<PortfolioPlanning> {
         const client = await this.GetStorageClient();
-        
+
         //  TODO    sanitize other properties (e.g. unique set of work item ids, all strings lower case)
         newPlan.id = newPlan.id.toLowerCase();
 
         return client
-            .updateDocument(
-                PortfolioPlanningDataService.PortfolioPlansCollectionName,
-                newPlan
-            )
+            .updateDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, newPlan)
             .then(doc => doc);
     }
 
-    public async DeletePortfolioPlan(
-        newPlan: PortfolioPlanning
-    ): Promise<void> {
+    public async DeletePortfolioPlan(planId: string): Promise<void> {
         const client = await this.GetStorageClient();
-        const planIdToDelete = newPlan.id.toLowerCase();
+        const planIdToDelete = planId.toLowerCase();
+
+        let allPlans = await this.GetAllPortfolioPlans();
+        allPlans.entries = allPlans.entries.filter(plan => plan.id !== planIdToDelete);
+
+        await client.updateDocument(PortfolioPlanningDataService.DirectoryCollectionName, allPlans);
 
         return client.deleteDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, planIdToDelete);
     }
@@ -303,48 +250,30 @@ export class PortfolioPlanningDataService {
         let totalThatWillBeDeleted = 0;
 
         //  Delete documents in Directory collection.
-        const allEntriesInDirectory = await client.getDocuments(
-            PortfolioPlanningDataService.DirectoryCollectionName
-        );
+        const allEntriesInDirectory = await client.getDocuments(PortfolioPlanningDataService.DirectoryCollectionName);
         totalThatWillBeDeleted += allEntriesInDirectory.length;
 
         allEntriesInDirectory.forEach(doc => {
             client
-                .deleteDocument(
-                    PortfolioPlanningDataService.DirectoryCollectionName,
-                    doc.id
-                )
-                .then(deletedDoc =>
-                    console.log(
-                        `Deleted Directory collection document: ${doc.id}`
-                    )
-                );
+                .deleteDocument(PortfolioPlanningDataService.DirectoryCollectionName, doc.id)
+                .then(deletedDoc => console.log(`Deleted Directory collection document: ${doc.id}`));
         });
 
         //  Delete documents in Portfolio plans collection.
-        const allEntriesInPlans = await client.getDocuments(
-            PortfolioPlanningDataService.PortfolioPlansCollectionName
-        );
+        const allEntriesInPlans = await client.getDocuments(PortfolioPlanningDataService.PortfolioPlansCollectionName);
         totalThatWillBeDeleted += allEntriesInPlans.length;
 
         allEntriesInPlans.forEach(doc => {
             client
-                .deleteDocument(
-                    PortfolioPlanningDataService.PortfolioPlansCollectionName,
-                    doc.id
-                )
-                .then(deletedDoc =>
-                    console.log(`Deleted Plans collection document: ${doc.id}`)
-                );
+                .deleteDocument(PortfolioPlanningDataService.PortfolioPlansCollectionName, doc.id)
+                .then(deletedDoc => console.log(`Deleted Plans collection document: ${doc.id}`));
         });
 
         return totalThatWillBeDeleted;
     }
 
     private async GetStorageClient(): Promise<IExtensionDataService> {
-        return VSS.getService<IExtensionDataService>(
-            VSS.ServiceIds.ExtensionData
-        );
+        return VSS.getService<IExtensionDataService>(VSS.ServiceIds.ExtensionData);
     }
 
     private ParsePortfolioDirectory(doc: any): PortfolioPlanningDirectory {
@@ -375,9 +304,7 @@ export class PortfolioPlanningDataService {
         };
     }
 
-    private ParseODataPortfolioPlanningQueryResultResponse(
-        results: any
-    ): PortfolioPlanningQueryResult {
+    private ParseODataPortfolioPlanningQueryResultResponse(results: any): PortfolioPlanningQueryResult {
         if (!results || !results["value"]) {
             return null;
         }
@@ -390,9 +317,7 @@ export class PortfolioPlanningDataService {
         };
     }
 
-    private ParseODataTeamsInAreaQueryResultResponse(
-        results: any
-    ): PortfolioPlanningTeamsInAreaQueryResult {
+    private ParseODataTeamsInAreaQueryResultResponse(results: any): PortfolioPlanningTeamsInAreaQueryResult {
         if (!results || !results["value"]) {
             return null;
         }
@@ -405,9 +330,7 @@ export class PortfolioPlanningDataService {
         };
     }
 
-    private ParseODataWorkItemQueryResultResponse(
-        results: any
-    ): PortfolioPlanningWorkItemQueryResult {
+    private ParseODataWorkItemQueryResultResponse(results: any): PortfolioPlanningWorkItemQueryResult {
         if (!results || !results["value"]) {
             return null;
         }
@@ -420,9 +343,7 @@ export class PortfolioPlanningDataService {
         };
     }
 
-    private ParseODataProjectQueryResultResponse(
-        results: any
-    ): PortfolioPlanningProjectQueryResult {
+    private ParseODataProjectQueryResultResponse(results: any): PortfolioPlanningProjectQueryResult {
         if (!results || !results["value"]) {
             return null;
         }
@@ -443,9 +364,7 @@ export class PortfolioPlanningDataService {
         }
 
         return rawItems.map(rawItem => {
-            const areaIdValue: string = rawItem.AreaSK
-                ? rawItem.AreaSK.toLowerCase()
-                : null;
+            const areaIdValue: string = rawItem.AreaSK ? rawItem.AreaSK.toLowerCase() : null;
 
             const result: PortfolioPlanningQueryResultItem = {
                 WorkItemId: rawItem.WorkItemId,
@@ -469,13 +388,10 @@ export class PortfolioPlanningDataService {
                 result.CompletedCount = rawItem.Descendants[0].CompletedCount;
                 result.TotalCount = rawItem.Descendants[0].TotalCount;
 
-                result.CompletedStoryPoints =
-                    rawItem.Descendants[0].CompletedStoryPoints;
-                result.TotalStoryPoints =
-                    rawItem.Descendants[0].TotalStoryPoints;
+                result.CompletedStoryPoints = rawItem.Descendants[0].CompletedStoryPoints;
+                result.TotalStoryPoints = rawItem.Descendants[0].TotalStoryPoints;
 
-                result.StoryPointsProgress =
-                    rawItem.Descendants[0].StoryPointsProgress;
+                result.StoryPointsProgress = rawItem.Descendants[0].StoryPointsProgress;
                 result.CountProgress = rawItem.Descendants[0].CountProgress;
             }
 
@@ -483,9 +399,7 @@ export class PortfolioPlanningDataService {
         });
     }
 
-    private PortfolioPlanningAreaQueryResultItems(
-        rawItems: ODataAreaQueryResult[]
-    ): TeamsInArea {
+    private PortfolioPlanningAreaQueryResultItems(rawItems: ODataAreaQueryResult[]): TeamsInArea {
         const result: TeamsInArea = {};
 
         rawItems.forEach(areaQueryResult => {
@@ -509,12 +423,9 @@ export class PortfolioPlanningDataService {
 }
 
 export class ODataQueryBuilder {
-    private static readonly ProjectEntitySelect: string =
-        "ProjectSK,ProjectName";
+    private static readonly ProjectEntitySelect: string = "ProjectSK,ProjectName";
 
-    public static WorkItemsQueryString(
-        input: PortfolioPlanningQueryInput
-    ): string {
+    public static WorkItemsQueryString(input: PortfolioPlanningQueryInput): string {
         return (
             "WorkItems" +
             "?" +
@@ -526,9 +437,7 @@ export class ODataQueryBuilder {
         );
     }
 
-    public static ProjectsQueryString(
-        input: PortfolioPlanningProjectQueryInput
-    ): string {
+    public static ProjectsQueryString(input: PortfolioPlanningProjectQueryInput): string {
         return (
             "Projects" +
             "?" +
@@ -539,11 +448,7 @@ export class ODataQueryBuilder {
     }
 
     public static AllProjectsQueryString(): string {
-        return (
-            "Projects" +
-            "?" +
-            `$select=${ODataQueryBuilder.ProjectEntitySelect}`
-        );
+        return "Projects" + "?" + `$select=${ODataQueryBuilder.ProjectEntitySelect}`;
     }
 
     public static WorkItemsOfTypeQueryString(workItemType: string): string {
@@ -556,9 +461,7 @@ export class ODataQueryBuilder {
         );
     }
 
-    public static TeamsInAreaQueryString(
-        input: PortfolioPlanningTeamsInAreaQueryInput
-    ): string {
+    public static TeamsInAreaQueryString(input: PortfolioPlanningTeamsInAreaQueryInput): string {
         return (
             "Areas" +
             "?" +
@@ -584,9 +487,7 @@ export class ODataQueryBuilder {
             )
         )
      */
-    private static ProjectAreasFilter(
-        input: PortfolioPlanningTeamsInAreaQueryInput
-    ): string {
+    private static ProjectAreasFilter(input: PortfolioPlanningTeamsInAreaQueryInput): string {
         return Object.keys(input)
             .map(
                 projectId =>
@@ -605,12 +506,8 @@ export class ODataQueryBuilder {
         )
      * @param input 
      */
-    private static ProjectsQueryFilter(
-        input: PortfolioPlanningProjectQueryInput
-    ): string {
-        return input.projectIds
-            .map(pid => `(ProjectId eq ${pid})`)
-            .join(" or ");
+    private static ProjectsQueryFilter(input: PortfolioPlanningProjectQueryInput): string {
+        return input.projectIds.map(pid => `(ProjectId eq ${pid})`).join(" or ");
     }
 
     /**
@@ -630,9 +527,7 @@ export class ODataQueryBuilder {
         )
      * @param input 
      */
-    private static BuildODataQueryFilter(
-        input: PortfolioPlanningQueryInput
-    ): string {
+    private static BuildODataQueryFilter(input: PortfolioPlanningQueryInput): string {
         const projectFilters = input.WorkItems.map(wi => {
             const wiIdClauses = wi.workItemIds.map(id => `WorkItemId eq ${id}`);
 
@@ -664,12 +559,8 @@ export class ODataQueryBuilder {
         )
      * @param input 
      */
-    private static BuildODataDescendantsQuery(
-        input: PortfolioPlanningQueryInput
-    ): string {
-        const requirementWiTypes = input.RequirementWorkItemTypes.map(
-            id => `WorkItemType eq '${id}'`
-        );
+    private static BuildODataDescendantsQuery(input: PortfolioPlanningQueryInput): string {
+        const requirementWiTypes = input.RequirementWorkItemTypes.map(id => `WorkItemType eq '${id}'`);
 
         return (
             "Descendants(" +

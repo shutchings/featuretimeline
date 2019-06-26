@@ -1,12 +1,10 @@
-import {
-    createAction,
-    ActionsUnion
-} from "../../../Common/redux/Helpers/ActionHelper";
+import { createAction, ActionsUnion } from "../../../Common/redux/Helpers/ActionHelper";
 import { PortfolioPlanningDirectory } from "../../Models/PortfolioPlanningQueryModels";
 
 export const enum PlanDirectoryActionTypes {
     Initialize = "PlanDirectory/Initialize",
     CreatePlan = "PlanDirectory/CreatePlan",
+    DeletePlan = "PlanDirectory/DeletePlan",
     ToggleSelectedPlanId = "PlanDirectory/SelectPlan",
     ToggleNewPlanDialogVisible = "PlanDirectory/ToggleNewPlanDialogVisible"
 }
@@ -20,6 +18,7 @@ export const PlanDirectoryActions = {
             name,
             description
         }),
+    deletePlan: (id: string) => createAction(PlanDirectoryActionTypes.DeletePlan, { id }),
     toggleSelectedPlanId: (id: string) =>
         createAction(PlanDirectoryActionTypes.ToggleSelectedPlanId, {
             id

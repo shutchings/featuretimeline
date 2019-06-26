@@ -5,6 +5,11 @@ export interface IProject {
     title: string;
 }
 
+export interface ITeam {
+    teamId: string;
+    teamName: string;
+}
+
 export interface IEpic {
     id: number;
     project: string;
@@ -23,8 +28,7 @@ export interface IEpic {
     countProgress: number;
 }
 
-export interface IAddEpics
-{
+export interface IAddEpics {
     planId: string;
     projectId: string;
     epicsToAdd: number[];
@@ -32,8 +36,7 @@ export interface IAddEpics
     requirementWorkItemType: string;
 }
 
-export interface IRemoveEpic
-{
+export interface IRemoveEpic {
     planId: string;
     epicToRemove: number;
 }

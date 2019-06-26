@@ -1,12 +1,7 @@
-import {
-    createAction,
-    ActionsUnion
-} from "../../../Common/redux/Helpers/ActionHelper";
+import { createAction, ActionsUnion } from "../../../Common/redux/Helpers/ActionHelper";
 import { ProgressTrackingCriteria, IAddEpics, IRemoveEpic } from "../../Contracts";
 import moment = require("moment");
-import {
-    PortfolioPlanningFullContentQueryResult
-} from "../../Models/PortfolioPlanningQueryModels";
+import { PortfolioPlanningFullContentQueryResult } from "../../Models/PortfolioPlanningQueryModels";
 import { Action } from "redux";
 
 export const enum EpicTimelineActionTypes {
@@ -42,20 +37,15 @@ export const EpicTimelineActions = {
         createAction(EpicTimelineActionTypes.ToggleSetDatesDialogHidden, {
             hidden
         }),
-    setSelectedItemId: (id: number) =>
-        createAction(EpicTimelineActionTypes.SetSelectedItemId, { id }),
+    setSelectedItemId: (id: number) => createAction(EpicTimelineActionTypes.SetSelectedItemId, { id }),
     portfolioItemsReceived: (result: PortfolioPlanningFullContentQueryResult) =>
         createAction(EpicTimelineActionTypes.PortfolioItemsReceived, result),
     portfolioItemDeleted: (itemDeleted: IRemoveEpic) =>
         createAction(EpicTimelineActionTypes.PortfolioItemDeleted, itemDeleted),
-    openAddEpicDialog: () =>
-        createAction(EpicTimelineActionTypes.OpenAddEpicDialog),
-    closeAddEpicDialog: () =>
-        createAction(EpicTimelineActionTypes.CloseAddEpicDialog),
-    addEpics: (epicsToAdd: IAddEpics) =>
-        createAction(EpicTimelineActionTypes.AddEpics, epicsToAdd),
-    removeEpic: (epicToRemove: IRemoveEpic) =>
-        createAction(EpicTimelineActionTypes.RemoveEpic, epicToRemove),
+    openAddEpicDialog: () => createAction(EpicTimelineActionTypes.OpenAddEpicDialog),
+    closeAddEpicDialog: () => createAction(EpicTimelineActionTypes.CloseAddEpicDialog),
+    addEpics: (epicsToAdd: IAddEpics) => createAction(EpicTimelineActionTypes.AddEpics, epicsToAdd),
+    removeEpic: (epicToRemove: IRemoveEpic) => createAction(EpicTimelineActionTypes.RemoveEpic, epicToRemove),
     toggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>
         createAction(EpicTimelineActionTypes.ToggleProgressTrackingCriteria, {
             criteria

@@ -84,12 +84,13 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
 export function getDefaultState(): IEpicTimelineState {
     return {
         projects: [],
+        teams: {},
         epics: [],
         message: "Initial message",
         addEpicDialogOpen: false,
         setDatesDialogHidden: false,
         selectedItemId: null,
-        progressTrackingCriteria: ProgressTrackingCriteria.StoryPoints
+        progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount
     };
 }
 
@@ -132,6 +133,23 @@ function handlePortfolioItemsReceived(
                     countProgress: item.CountProgress
                 };
             });
+
+            draft.teams = {};
+
+            if (teamAreas.teamsInArea) {
+                Object.keys(teamAreas.teamsInArea).forEach(areaId => {
+                    const teams = teamAreas.teamsInArea[areaId];
+
+                    teams.forEach(team => {
+                        if (!draft.teams[team.teamId]) {
+                            draft.teams[team.teamId] = {
+                                teamId: team.teamId,
+                                teamName: team.teamName
+                            };
+                        }
+                    });
+                });
+            }
         } else if (mergeStrategy === MergeType.Add) {
             projects.projects.forEach(newProjectInfo => {
                 const filteredProjects = draft.projects.filter(p => p.id === newProjectInfo.ProjectSK);
@@ -198,6 +216,21 @@ function handlePortfolioItemsReceived(
                     witHttpClient.updateWorkItem(doc, newItemInfo.WorkItemId);
                 }
             });
+
+            if (teamAreas.teamsInArea && draft.teams) {
+                Object.keys(teamAreas.teamsInArea).forEach(areaId => {
+                    const teams = teamAreas.teamsInArea[areaId];
+
+                    teams.forEach(team => {
+                        if (!draft.teams[team.teamId]) {
+                            draft.teams[team.teamId] = {
+                                teamId: team.teamId,
+                                teamName: team.teamName
+                            };
+                        }
+                    });
+                });
+            }
         }
     });
 }
@@ -216,5 +249,12 @@ function handlePortfolioItemDeleted(state: IEpicTimelineState, action: Portfolio
             const indexToRemoveProject = state.projects.findIndex(project => project.id === removedEpic.project);
             draft.projects.splice(indexToRemoveProject, 1);
         }
+
+        // Remove team if all team items have been removed.
+        Object.keys(draft.teams).forEach(teamId => {
+            if (!draft.epics.some(epic => epic.teamId === teamId)) {
+                delete draft.teams[teamId];
+            }
+        });
     });
 }
