@@ -34,11 +34,7 @@ export function planDirectoryReducer(
                 const { id } = action.payload;
 
                 // Remove the plan from local state
-                const indexOfPlanToDelete = draft.plans.findIndex(
-                    plan => plan.id === id
-                );
-
-                draft.plans.splice(indexOfPlanToDelete, 1);
+                draft.plans = draft.plans.filter(plan => plan.id !== id);
 
                 // Navigate back to directory page
                 draft.selectedPlanId = undefined;
