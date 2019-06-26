@@ -8,9 +8,6 @@ import {
 import produce from "immer";
 import { ProgressTrackingCriteria } from "../../Contracts";
 import { MergeType } from "../../Models/PortfolioPlanningQueryModels";
-import { WorkItemTrackingHttpClient } from "TFS/WorkItemTracking/RestClient";
-import { JsonPatchDocument } from "VSS/WebApi/Contracts";
-import * as VSS_Service from "VSS/Service";
 
 export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimelineActions): IEpicTimelineState {
     return produce(state || getDefaultState(), (draft: IEpicTimelineState) => {
