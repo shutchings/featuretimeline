@@ -1,9 +1,11 @@
 import { effects, SagaIterator } from "redux-saga";
 import { PortfolioPlanningDataService } from "../../../Services/PortfolioPlanningDataService";
-import { PlanDirectoryActions } from "../Actions/PlanDirectoryActions";
+import { PlanDirectoryActions, PlanDirectoryActionTypes } from "../Actions/PlanDirectoryActions";
+import { ActionsOfType } from "../Helpers";
 
 export function* planDirectorySaga(): SagaIterator {
     yield effects.call(initializePlanDirectory);
+    yield effects.takeEvery(PlanDirectoryActionTypes.DeletePlan, deletePlan);
 }
 
 export function* initializePlanDirectory(): SagaIterator {
@@ -15,4 +17,18 @@ export function* initializePlanDirectory(): SagaIterator {
     ]);
 
     yield effects.put(PlanDirectoryActions.initialize(allPlans));
+}
+
+export function* deletePlan(
+    action: ActionsOfType<PlanDirectoryActions, PlanDirectoryActionTypes.DeletePlan>
+): SagaIterator {
+    const { id } = action.payload;
+
+    const service = PortfolioPlanningDataService.getInstance();
+
+    yield effects.call([
+        service,
+        service.DeletePortfolioPlan
+    ],
+    id);
 }

@@ -30,6 +30,21 @@ export function planDirectoryReducer(
 
                 break;
             }
+            case PlanDirectoryActionTypes.DeletePlan: {
+                const { id } = action.payload;
+
+                // Remove the plan from local state
+                const indexOfPlanToDelete = draft.plans.findIndex(
+                    plan => plan.id === id
+                );
+
+                draft.plans.splice(indexOfPlanToDelete, 1);
+
+                // Navigate back to directory page
+                draft.selectedPlanId = undefined;
+
+                break;
+            }
             case PlanDirectoryActionTypes.ToggleSelectedPlanId: {
                 const { id } = action.payload;
 

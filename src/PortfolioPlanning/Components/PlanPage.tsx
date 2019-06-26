@@ -9,6 +9,7 @@ export interface PlanPageProps {
     title: string;
     description: string;
     backButtonClicked: () => void;
+    deleteButtonClicked: (id: string) => void;
 }
 
 export default class PlanPage extends React.Component<PlanPageProps> {
@@ -21,9 +22,10 @@ export default class PlanPage extends React.Component<PlanPageProps> {
             <Page className="plan-page">
                 <PlanHeader
                     id={this.props.id}
-                    title={this.props.title}
+                    name={this.props.title}
                     description={this.props.description}
                     backButtonClicked={this.props.backButtonClicked}
+                    deleteButtonClicked={this.props.deleteButtonClicked}
                 />
                 <div className="page-content page-content-top">
                     <ConnectedEpicTimeline />
