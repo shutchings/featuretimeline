@@ -1,12 +1,8 @@
 import * as React from "react";
 import {
     TitleSize,
-    CustomHeader,
-    HeaderTitleArea,
-    HeaderTitle,
-    HeaderTitleRow
+    Header
 } from "azure-devops-ui/Header";
-import { HeaderCommandBar } from "azure-devops-ui/HeaderCommandBar";
 import "./PlanDirectoryHeader.scss";
 
 export interface PlanDirectoryProps {
@@ -22,24 +18,17 @@ export default class PlanDirectoryHeader extends React.Component<
 
     public render() {
         return (
-            <CustomHeader className="bolt-header-with-commandbar">
-                <HeaderTitleArea>
-                    <HeaderTitleRow>
-                        <HeaderTitle titleSize={TitleSize.Large}>
-                            Plans
-                        </HeaderTitle>
-                    </HeaderTitleRow>
-                </HeaderTitleArea>
-                <HeaderCommandBar
-                    items={[
+            <Header
+                title="Plans"
+                titleSize={TitleSize.Large}
+                commandBarItems={[
                         {
                             id: "new-plan",
                             text: "New plan",
                             onActivate: this.props.onNewPlanClick
                         }
                     ]}
-                />
-            </CustomHeader>
+            />
         );
     }
 }
