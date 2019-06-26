@@ -40,7 +40,9 @@ export class PlanDirectory extends React.Component<
                     backButtonClicked={() =>
                         this.props.toggleSelectedPlanId(undefined)
                     }
-                    deleteButtonClicked={(id: string) => alert(id)}
+                    deleteButtonClicked={(id: string) =>
+                        this.props.deletePlan(id)
+                    }
                 />
             );
         } else {
@@ -112,6 +114,7 @@ function mapStateToProps(
 
 const Actions = {
     createPlan: PlanDirectoryActions.createPlan,
+    deletePlan: PlanDirectoryActions.deletePlan,
     toggleSelectedPlanId: PlanDirectoryActions.toggleSelectedPlanId,
     toggleNewPlanDialogVisible: PlanDirectoryActions.toggleNewPlanDialogVisible
 };
