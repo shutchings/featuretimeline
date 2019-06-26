@@ -114,16 +114,11 @@ function handlePortfolioItemsReceived(
     action: PortfolioItemsReceivedAction
 ): IEpicTimelineState {
     return produce(state, draft => {
-        const {
-            items,
-            projects,
-            teamAreas,
-            mergeStrategy
-        } = action.payload;
+        const { items, projects, teamAreas, mergeStrategy } = action.payload;
 
         //  TODO    Handle exception message from OData query results.
 
-         if(mergeStrategy === MergeType.Replace){
+        if (mergeStrategy === MergeType.Replace) {
             draft.projects = projects.projects.map(project => {
                 return {
                     id: project.ProjectSK,
@@ -154,8 +149,7 @@ function handlePortfolioItemsReceived(
                     countProgress: item.CountProgress
                 };
             });
-        } else if (mergeStrategy && mergeStrategy === MergeType.Add) {
-        else if (mergeStrategy === MergeType.Add)
+        } else if (mergeStrategy === MergeType.Add) {
             projects.projects.forEach(newProjectInfo => {
                 const filteredProjects = draft.projects.filter(
                     p => p.id === newProjectInfo.ProjectSK
@@ -209,27 +203,21 @@ function handlePortfolioItemDeleted(
     action: PortfolioItemDeletedAction
 ): IEpicTimelineState {
     return produce(state, draft => {
-        const { 
-            epicToRemove
-         } = action.payload;
+        const { epicToRemove } = action.payload;
 
-         const indexToRemoveEpic = state.epics.findIndex(
-             epic => epic.id === epicToRemove
-         );
+        const indexToRemoveEpic = state.epics.findIndex(
+            epic => epic.id === epicToRemove
+        );
 
-         const removedEpic = draft.epics.splice(indexToRemoveEpic, 1)[0];
-         draft.selectedItemId = undefined;
+        const removedEpic = draft.epics.splice(indexToRemoveEpic, 1)[0];
+        draft.selectedItemId = undefined;
 
-         // Remove the project if it's the last epic in the project
-         if (
-             !draft.epics.some(
-                 epic => epic.project === removedEpic.project
-             )
-         ) {
-             const indexToRemoveProject = state.projects.findIndex(
-                 project => project.id === removedEpic.project
-             );
-             draft.projects.splice(indexToRemoveProject, 1);
-         }
+        // Remove the project if it's the last epic in the project
+        if (!draft.epics.some(epic => epic.project === removedEpic.project)) {
+            const indexToRemoveProject = state.projects.findIndex(
+                project => project.id === removedEpic.project
+            );
+            draft.projects.splice(indexToRemoveProject, 1);
+        }
     });
 }
