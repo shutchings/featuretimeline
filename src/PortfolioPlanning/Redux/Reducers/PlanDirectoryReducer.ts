@@ -1,14 +1,8 @@
 import { IPlanDirectoryState } from "../Contracts";
 import produce from "immer";
-import {
-    PlanDirectoryActions,
-    PlanDirectoryActionTypes
-} from "../Actions/PlanDirectoryActions";
+import { PlanDirectoryActions, PlanDirectoryActionTypes } from "../Actions/PlanDirectoryActions";
 
-export function planDirectoryReducer(
-    state: IPlanDirectoryState,
-    action: PlanDirectoryActions
-): IPlanDirectoryState {
+export function planDirectoryReducer(state: IPlanDirectoryState, action: PlanDirectoryActions): IPlanDirectoryState {
     return produce(state || getDefaultState(), (draft: IPlanDirectoryState) => {
         switch (action.type) {
             case PlanDirectoryActionTypes.Initialize: {

@@ -9,18 +9,13 @@ import produce from "immer";
 import { ProgressTrackingCriteria } from "../../Contracts";
 import { MergeType } from "../../Models/PortfolioPlanningQueryModels";
 
-export function epicTimelineReducer(
-    state: IEpicTimelineState,
-    action: EpicTimelineActions
-): IEpicTimelineState {
+export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimelineActions): IEpicTimelineState {
     return produce(state || getDefaultState(), (draft: IEpicTimelineState) => {
         switch (action.type) {
             case EpicTimelineActionTypes.UpdateStartDate: {
                 const { epicId, startDate } = action.payload;
 
-                const epicToUpdate = draft.epics.find(
-                    epic => epic.id === epicId
-                );
+                const epicToUpdate = draft.epics.find(epic => epic.id === epicId);
 
                 epicToUpdate.startDate = startDate.toDate();
 
@@ -29,9 +24,7 @@ export function epicTimelineReducer(
             case EpicTimelineActionTypes.UpdateEndDate: {
                 const { epicId, endDate } = action.payload;
 
-                const epicToUpdate = draft.epics.find(
-                    epic => epic.id === epicId
-                );
+                const epicToUpdate = draft.epics.find(epic => epic.id === epicId);
 
                 epicToUpdate.endDate = endDate.toDate();
 
@@ -40,18 +33,12 @@ export function epicTimelineReducer(
             case EpicTimelineActionTypes.ShiftEpic: {
                 const { epicId, startDate } = action.payload;
 
-                const epicToUpdate = draft.epics.find(
-                    epic => epic.id === epicId
-                );
+                const epicToUpdate = draft.epics.find(epic => epic.id === epicId);
 
-                const epicDuration =
-                    epicToUpdate.endDate.getTime() -
-                    epicToUpdate.startDate.getTime();
+                const epicDuration = epicToUpdate.endDate.getTime() - epicToUpdate.startDate.getTime();
 
                 epicToUpdate.startDate = startDate.toDate();
-                epicToUpdate.endDate = startDate
-                    .add(epicDuration, "milliseconds")
-                    .toDate();
+                epicToUpdate.endDate = startDate.add(epicDuration, "milliseconds").toDate();
 
                 break;
             }
@@ -70,10 +57,7 @@ export function epicTimelineReducer(
                 break;
             }
             case EpicTimelineActionTypes.PortfolioItemsReceived:
-                return handlePortfolioItemsReceived(
-                    state,
-                    action as PortfolioItemsReceivedAction
-                );
+                return handlePortfolioItemsReceived(state, action as PortfolioItemsReceivedAction);
 
             case EpicTimelineActionTypes.OpenAddEpicDialog: {
                 draft.addEpicDialogOpen = true;
@@ -84,10 +68,7 @@ export function epicTimelineReducer(
                 break;
             }
             case EpicTimelineActionTypes.PortfolioItemDeleted: {
-                return handlePortfolioItemDeleted(
-                    state,
-                    action as PortfolioItemDeletedAction
-                );
+                return handlePortfolioItemDeleted(state, action as PortfolioItemDeletedAction);
             }
             case EpicTimelineActionTypes.ToggleProgressTrackingCriteria: {
                 draft.progressTrackingCriteria = action.payload.criteria;
@@ -130,8 +111,7 @@ function handlePortfolioItemsReceived(
             draft.epics = items.items.map(item => {
                 //  Using the first team found for the area, if available.
                 const teamIdValue: string =
-                    teamAreas.teamsInArea[item.AreaId] &&
-                    teamAreas.teamsInArea[item.AreaId][0]
+                    teamAreas.teamsInArea[item.AreaId] && teamAreas.teamsInArea[item.AreaId][0]
                         ? teamAreas.teamsInArea[item.AreaId][0].teamId
                         : null;
 
@@ -153,29 +133,23 @@ function handlePortfolioItemsReceived(
 
             draft.teams = {};
 
-            if(teamAreas.teamsInArea) {
-                Object.keys(teamAreas.teamsInArea).forEach(
-                    areaId => {
-                        const teams = teamAreas.teamsInArea[areaId];
+            if (teamAreas.teamsInArea) {
+                Object.keys(teamAreas.teamsInArea).forEach(areaId => {
+                    const teams = teamAreas.teamsInArea[areaId];
 
-                        teams.forEach(team => {
-                            if(!draft.teams[team.teamId])
-                            {
-                                draft.teams[team.teamId] = {
-                                    teamId: team.teamId,
-                                    teamName: team.teamName
-                                };
-                            }
-                        });
+                    teams.forEach(team => {
+                        if (!draft.teams[team.teamId]) {
+                            draft.teams[team.teamId] = {
+                                teamId: team.teamId,
+                                teamName: team.teamName
+                            };
+                        }
+                    });
                 });
             }
-        }
-        else if (mergeStrategy === MergeType.Add)
-        {
+        } else if (mergeStrategy === MergeType.Add) {
             projects.projects.forEach(newProjectInfo => {
-                const filteredProjects = draft.projects.filter(
-                    p => p.id === newProjectInfo.ProjectSK
-                );
+                const filteredProjects = draft.projects.filter(p => p.id === newProjectInfo.ProjectSK);
 
                 if (filteredProjects.length === 0) {
                     draft.projects.push({
@@ -187,17 +161,13 @@ function handlePortfolioItemsReceived(
 
             //  TODO    change draft.projects and draft.epics to maps
             items.items.forEach(newItemInfo => {
-                const filteredItems = draft.epics.filter(
-                    p => p.id === newItemInfo.WorkItemId
-                );
+                const filteredItems = draft.epics.filter(p => p.id === newItemInfo.WorkItemId);
 
                 if (filteredItems.length === 0) {
                     //  Using the first team found for the area, if available.
                     const teamIdValue: string =
-                        teamAreas.teamsInArea[newItemInfo.AreaId] &&
-                        teamAreas.teamsInArea[newItemInfo.AreaId][0]
-                            ? teamAreas.teamsInArea[newItemInfo.AreaId][0]
-                                  .teamId
+                        teamAreas.teamsInArea[newItemInfo.AreaId] && teamAreas.teamsInArea[newItemInfo.AreaId][0]
+                            ? teamAreas.teamsInArea[newItemInfo.AreaId][0].teamId
                             : null;
 
                     draft.epics.push({
@@ -217,51 +187,42 @@ function handlePortfolioItemsReceived(
                 }
             });
 
-            if(teamAreas.teamsInArea && draft.teams) {
-                Object.keys(teamAreas.teamsInArea).forEach(
-                    areaId => {
-                        const teams = teamAreas.teamsInArea[areaId];
+            if (teamAreas.teamsInArea && draft.teams) {
+                Object.keys(teamAreas.teamsInArea).forEach(areaId => {
+                    const teams = teamAreas.teamsInArea[areaId];
 
-                        teams.forEach(team => {
-                            if(!draft.teams[team.teamId])
-                            {
-                                draft.teams[team.teamId] = {
-                                    teamId: team.teamId,
-                                    teamName: team.teamName
-                                };
-                            }
-                        });
+                    teams.forEach(team => {
+                        if (!draft.teams[team.teamId]) {
+                            draft.teams[team.teamId] = {
+                                teamId: team.teamId,
+                                teamName: team.teamName
+                            };
+                        }
+                    });
                 });
             }
         }
     });
 }
 
-function handlePortfolioItemDeleted(
-    state: IEpicTimelineState,
-    action: PortfolioItemDeletedAction
-): IEpicTimelineState {
+function handlePortfolioItemDeleted(state: IEpicTimelineState, action: PortfolioItemDeletedAction): IEpicTimelineState {
     return produce(state, draft => {
         const { epicToRemove } = action.payload;
 
-        const indexToRemoveEpic = state.epics.findIndex(
-            epic => epic.id === epicToRemove
-        );
+        const indexToRemoveEpic = state.epics.findIndex(epic => epic.id === epicToRemove);
 
         const removedEpic = draft.epics.splice(indexToRemoveEpic, 1)[0];
         draft.selectedItemId = undefined;
 
         // Remove the project if it's the last epic in the project
         if (!draft.epics.some(epic => epic.project === removedEpic.project)) {
-            const indexToRemoveProject = state.projects.findIndex(
-                project => project.id === removedEpic.project
-            );
+            const indexToRemoveProject = state.projects.findIndex(project => project.id === removedEpic.project);
             draft.projects.splice(indexToRemoveProject, 1);
         }
 
         // Remove team if all team items have been removed.
         Object.keys(draft.teams).forEach(teamId => {
-            if(!draft.epics.some(epic => epic.teamId === teamId)) {
+            if (!draft.epics.some(epic => epic.teamId === teamId)) {
                 delete draft.teams[teamId];
             }
         });

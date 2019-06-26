@@ -1,11 +1,5 @@
 import { IEpicTimelineState, IPortfolioPlanningState } from "../Contracts";
-import {
-    IProject,
-    IEpic,
-    ITimelineGroup,
-    ITimelineItem,
-    ProgressTrackingCriteria
-} from "../../Contracts";
+import { IProject, IEpic, ITimelineGroup, ITimelineItem, ProgressTrackingCriteria } from "../../Contracts";
 import moment = require("moment");
 
 export function getProjects(state: IEpicTimelineState): IProject[] {
@@ -31,10 +25,7 @@ export function getTimelineItems(state: IEpicTimelineState): ITimelineItem[] {
         let total: number;
         let progress: number;
 
-        if (
-            state.progressTrackingCriteria ===
-            ProgressTrackingCriteria.CompletedCount
-        ) {
+        if (state.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount) {
             completed = epic.completedCount;
             total = epic.totalCount;
             progress = epic.countProgress;
@@ -77,8 +68,6 @@ export function getAddEpicDialogOpen(state: IEpicTimelineState): boolean {
     return state.addEpicDialogOpen;
 }
 
-export function getProgressTrackingCriteria(
-    state: IEpicTimelineState
-): ProgressTrackingCriteria {
+export function getProgressTrackingCriteria(state: IEpicTimelineState): ProgressTrackingCriteria {
     return state.progressTrackingCriteria;
 }

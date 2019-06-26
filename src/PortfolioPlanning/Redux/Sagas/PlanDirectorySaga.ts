@@ -11,10 +11,7 @@ export function* planDirectorySaga(): SagaIterator {
 export function* initializePlanDirectory(): SagaIterator {
     const service = PortfolioPlanningDataService.getInstance();
 
-    const allPlans = yield effects.call([
-        service,
-        service.GetAllPortfolioPlans
-    ]);
+    const allPlans = yield effects.call([service, service.GetAllPortfolioPlans]);
 
     yield effects.put(PlanDirectoryActions.initialize(allPlans));
 }
@@ -26,9 +23,5 @@ export function* deletePlan(
 
     const service = PortfolioPlanningDataService.getInstance();
 
-    yield effects.call([
-        service,
-        service.DeletePortfolioPlan
-    ],
-    id);
+    yield effects.call([service, service.DeletePortfolioPlan], id);
 }
