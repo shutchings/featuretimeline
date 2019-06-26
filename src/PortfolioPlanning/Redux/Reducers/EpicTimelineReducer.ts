@@ -6,7 +6,7 @@ import {
     PortfolioItemDeletedAction
 } from "../Actions/EpicTimelineActions";
 import produce from "immer";
-import { ProgressTrackingCriteria } from "../../Contracts";
+import { ProgressTrackingCriteria, LoadingStatus } from "../../Contracts";
 import { MergeType } from "../../Models/PortfolioPlanningQueryModels";
 
 export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimelineActions): IEpicTimelineState {
@@ -87,7 +87,8 @@ export function getDefaultState(): IEpicTimelineState {
         addEpicDialogOpen: false,
         setDatesDialogHidden: false,
         selectedItemId: null,
-        progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount
+        progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount,
+        planLoadingStatus: LoadingStatus.Loading
     };
 }
 

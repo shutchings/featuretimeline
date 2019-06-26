@@ -1,4 +1,4 @@
-import { IProject, IEpic, ProgressTrackingCriteria, ITeam } from "../Contracts";
+import { IProject, IEpic, ProgressTrackingCriteria, ITeam, LoadingStatus } from "../Contracts";
 import { PortfolioPlanningMetadata } from "../Models/PortfolioPlanningQueryModels";
 
 export interface IPortfolioPlanningState {
@@ -15,6 +15,7 @@ export interface IEpicTimelineState {
     setDatesDialogHidden: boolean;
     selectedItemId: number;
     progressTrackingCriteria: ProgressTrackingCriteria;
+    planLoadingStatus: LoadingStatus;
 }
 
 export interface IPlanDirectoryState {
