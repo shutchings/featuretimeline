@@ -166,15 +166,6 @@ function handlePortfolioItemsReceived(
             items.items.forEach(newItemInfo => {
                 const filteredItems = draft.epics.filter(p => p.id === newItemInfo.WorkItemId);
 
-                const noDatesFound = newItemInfo.StartDate === undefined || newItemInfo.TargetDate === undefined;
-                let now, oneMonthFromNow;
-
-                if (noDatesFound) {
-                    now = new Date();
-                    oneMonthFromNow = new Date();
-                    oneMonthFromNow.setDate(now.getDate() + 30);
-                }
-
                 if (filteredItems.length === 0) {
                     //  Using the first team found for the area, if available.
                     const teamIdValue: string =
@@ -187,8 +178,8 @@ function handlePortfolioItemsReceived(
                         project: newItemInfo.ProjectId,
                         teamId: teamIdValue,
                         title: newItemInfo.Title,
-                        startDate: newItemInfo.StartDate || now,
-                        endDate: newItemInfo.TargetDate || oneMonthFromNow,
+                        startDate: newItemInfo.StartDate,
+                        endDate: newItemInfo.TargetDate,
                         completedCount: newItemInfo.CompletedCount,
                         totalCount: newItemInfo.TotalCount,
                         completedStoryPoints: newItemInfo.CompletedStoryPoints,
@@ -196,24 +187,6 @@ function handlePortfolioItemsReceived(
                         storyPointsProgress: newItemInfo.StoryPointsProgress,
                         countProgress: newItemInfo.CountProgress
                     });
-                }
-
-                if (noDatesFound) {
-                    const doc: JsonPatchDocument = [
-                        {
-                            op: "add",
-                            path: "/fields/Microsoft.VSTS.Scheduling.StartDate",
-                            value: now
-                        },
-                        {
-                            op: "add",
-                            path: "/fields/Microsoft.VSTS.Scheduling.TargetDate",
-                            value: oneMonthFromNow
-                        }
-                    ];
-
-                    const witHttpClient: WorkItemTrackingHttpClient = VSS_Service.getClient(WorkItemTrackingHttpClient);
-                    witHttpClient.updateWorkItem(doc, newItemInfo.WorkItemId);
                 }
             });
 

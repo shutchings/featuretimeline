@@ -45,19 +45,19 @@ function* onShiftEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineAct
     yield effects.call(saveDatesToServer, epicId);
 }
 
-function* saveDatesToServer(epicId: number): SagaIterator {
+function* saveDatesToServer(epicId: number, defaultStartDate?: Date, defaultEndDate?: Date): SagaIterator {
     const epic: IEpic = yield effects.select(getEpicById, epicId);
 
     const doc: JsonPatchDocument = [
         {
             op: "add",
             path: "/fields/Microsoft.VSTS.Scheduling.StartDate",
-            value: epic.startDate
+            value: defaultStartDate || epic.startDate
         },
         {
             op: "add",
             path: "/fields/Microsoft.VSTS.Scheduling.TargetDate",
-            value: epic.endDate
+            value: defaultEndDate || epic.endDate
         }
     ];
 
@@ -115,6 +115,22 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
         [portfolioService, portfolioService.loadPortfolioContent],
         portfolioQueryInput
     );
+
+    let epicsWithoutDates:number[] = [];
+
+    queryResult.items.items.map(item => {
+      if(item.StartDate === undefined || item.TargetDate === undefined) {
+          epicsWithoutDates.push(item.WorkItemId);
+      }  
+    })
+
+    for(let index=0; index<epicsWithoutDates.length; index++) {
+        const now = new Date();	
+        const oneMonthFromNow = new Date();	
+        oneMonthFromNow.setDate(now.getDate() + 30);
+        yield effects.call(saveDatesToServer, epicsWithoutDates[index], now, oneMonthFromNow);
+    }
+    
 
     //  Add new epics selected by customer to existing ones in the plan.
     queryResult.mergeStrategy = MergeType.Add;
