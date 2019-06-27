@@ -124,7 +124,8 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
                                             justifyContent: "space-between",
                                             overflow: "hidden",
                                             marginRight: "5px",
-                                            alignItems: "baseline"
+                                            alignItems: "baseline",
+                                            whiteSpace: "nowrap"
                                         }}
                                     >
                                         {itemContext.title}
