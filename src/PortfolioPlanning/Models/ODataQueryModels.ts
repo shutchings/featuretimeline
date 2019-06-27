@@ -24,6 +24,7 @@ export interface ODataQueryProjectInput {
     WorkItemTypeFilter: string;
     DescendantsWorkItemTypeFilter: string;
     EffortODataColumnName: string;
+    EffortWorkItemFieldRefName: string;
     workItemIds: number[];
 }
 
@@ -36,4 +37,10 @@ export interface ODataAreaQueryResult {
 export interface ODataTeamResult {
     TeamSK: string;
     TeamName: string;
+}
+
+export enum WellKnownEffortODataColumnNames {
+    Size = "Size",
+    StoryPoints = "StoryPoints",
+    Effort = "Effort"
 }

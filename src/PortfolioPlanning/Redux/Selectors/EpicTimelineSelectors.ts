@@ -1,5 +1,12 @@
 import { IEpicTimelineState, IPortfolioPlanningState } from "../Contracts";
-import { IProject, IEpic, ITimelineGroup, ITimelineItem, ProgressTrackingCriteria } from "../../Contracts";
+import {
+    IProject,
+    IEpic,
+    ITimelineGroup,
+    ITimelineItem,
+    ProgressTrackingCriteria,
+    IProjectConfiguration
+} from "../../Contracts";
 import moment = require("moment");
 
 export function getProjects(state: IEpicTimelineState): IProject[] {
@@ -57,7 +64,17 @@ export function getMessage(state: IEpicTimelineState): string {
 
 // TODO: Is there a way for the substate to be passed to these selectors?
 export function getEpicById(state: IPortfolioPlanningState, id: number): IEpic {
-    return state.epicTimelineState.epics.find(epic => epic.id === id);
+    const found = state.epicTimelineState.epics.filter(epic => epic.id === id);
+
+    if (found && found.length === 1) {
+        return found[0];
+    }
+
+    return null;
+}
+
+export function getProjectConfigurationById(state: IPortfolioPlanningState, projectId: string): IProjectConfiguration {
+    return state.epicTimelineState.projectConfiguration[projectId.toLowerCase()];
 }
 
 export function getSetDatesDialogHidden(state: IEpicTimelineState): boolean {

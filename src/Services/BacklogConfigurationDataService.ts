@@ -2,7 +2,7 @@ import { TeamContext } from "TFS/Core/Contracts";
 import { BacklogConfiguration } from "TFS/Work/Contracts";
 import { getClient } from "VSS/Service";
 import { WorkHttpClient } from "TFS/Work/RestClient";
-import { ProjectConfiguration } from "../PortfolioPlanning/Models/ProjectBacklogModels";
+import { ProjectBacklogConfiguration } from "../PortfolioPlanning/Models/ProjectBacklogModels";
 
 export class BacklogConfigurationDataService {
     private static readonly EffortTypeField: string = "Effort";
@@ -15,7 +15,7 @@ export class BacklogConfigurationDataService {
         return BacklogConfigurationDataService._instance;
     }
 
-    public async getProjectConfiguration(projectId: string): Promise<ProjectConfiguration> {
+    public async getProjectBacklogConfiguration(projectId: string): Promise<ProjectBacklogConfiguration> {
         const client = this.getWorkClient();
         const teamContext: TeamContext = {
             projectId: projectId,

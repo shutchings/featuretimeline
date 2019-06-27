@@ -3,6 +3,10 @@ import moment = require("moment");
 export interface IProject {
     id: string;
     title: string;
+}
+
+export interface IProjectConfiguration {
+    id: string;
     /**
      * Default work item type associated to the Microsoft.EpicCategory portfolio backlog level for the project.
      */
@@ -12,6 +16,10 @@ export interface IProject {
      * Default work item type associated to the Microsoft.RequirementCategory backlog level for the project.
      */
     defaultRequirementWorkItemType: string;
+
+    effortWorkItemFieldRefName: string;
+
+    effortODataColumnName: string;
 }
 
 export interface ITeam {
@@ -43,7 +51,7 @@ export interface IAddEpics {
     epicsToAdd: number[];
     workItemType: string;
     requirementWorkItemType: string;
-    effortODataColumnName: string;
+    effortWorkItemFieldRefName: string;
 }
 
 export interface IRemoveEpic {

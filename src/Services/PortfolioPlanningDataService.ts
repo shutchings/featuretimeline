@@ -14,12 +14,14 @@ import {
     PortfolioPlanningTeamsInAreaQueryInput,
     PortfolioPlanningTeamsInAreaQueryResult,
     TeamsInArea,
-    PortfolioPlanningFullContentQueryResult,
-    PortfolioPlanningWorkitemTypeFieldNameQueryInput,
-    PortfolioPlanningWorkItemTypeFieldNameQueryResult
+    PortfolioPlanningFullContentQueryResult
 } from "../PortfolioPlanning/Models/PortfolioPlanningQueryModels";
 import { ODataClient } from "../Common/OData/ODataClient";
-import { ODataWorkItemQueryResult, ODataAreaQueryResult } from "../PortfolioPlanning/Models/ODataQueryModels";
+import {
+    ODataWorkItemQueryResult,
+    ODataAreaQueryResult,
+    WellKnownEffortODataColumnNames
+} from "../PortfolioPlanning/Models/ODataQueryModels";
 import { GUIDUtil } from "../Common/GUIDUtil";
 import { ProjectConfiguration } from "../PortfolioPlanning/Models/ProjectBacklogModels";
 
@@ -81,21 +83,36 @@ export class PortfolioPlanningDataService {
             );
     }
 
-    public async runWorkItemTypeFieldNameQuery(
-        queryInput: PortfolioPlanningWorkitemTypeFieldNameQueryInput) : Promise<PortfolioPlanningWorkItemTypeFieldNameQueryResult>
-    {
-        const odataQueryString = ODataQueryBuilder.WorkItemTypeFieldNameQueryString(queryInput);
+    public async getODataColumnNameFromWorkItemFieldReferenceName(fieldReferenceName: string): Promise<string> {
+        //  For out-of-the-box process templates (Agile, Scrum, etc...), we'll use well-known column names to avoid
+        //  a call to the $metadata OData endpoint.
+        const columnName = this.GetODataColumnNameFromFieldRefName(fieldReferenceName);
 
-        const client = await ODataClient.getInstance();
-        const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
+        if (!columnName) {
+            const client = await ODataClient.getInstance();
+            return client.runMetadataWorkItemReferenceNameQuery(fieldReferenceName);
+        }
 
-        return client
-            .runGetQuery(fullQueryUrl)
-            .then(
-                (results: any) => this.ParseODataWorkItemTypeFieldNameQueryResponse(results),
-                error => this.ParseODataErrorResponse(error)
-            );
+        return Promise.resolve(columnName);
     }
+
+    private GetODataColumnNameFromFieldRefName(fieldReferenceName: string): WellKnownEffortODataColumnNames {
+        if (!fieldReferenceName) {
+            return null;
+        }
+
+        return PortfolioPlanningDataService.WellKnownODataColumnNamesByWorkItemRefName[
+            fieldReferenceName.toLowerCase()
+        ];
+    }
+
+    private static readonly WellKnownODataColumnNamesByWorkItemRefName: {
+        [fieldReferenceName: string]: WellKnownEffortODataColumnNames;
+    } = {
+        "microsoft.vsts.scheduling.effort": WellKnownEffortODataColumnNames.Effort,
+        "microsoft.vsts.scheduling.storypoints": WellKnownEffortODataColumnNames.StoryPoints,
+        "microsoft.vsts.scheduling.size": WellKnownEffortODataColumnNames.Size
+    };
 
     public async loadPortfolioContent(
         portfolioQueryInput: PortfolioPlanningQueryInput
@@ -109,13 +126,12 @@ export class PortfolioPlanningDataService {
             const projectKey = wi.projectId.toLowerCase();
 
             if (!projectConfigurations[projectKey]) {
-                const firstReqWiType =
-                    wi.DescendantsWorkItemTypeFilter.length > 0 ? wi.DescendantsWorkItemTypeFilter[0] : null;
-
                 projectConfigurations[projectKey] = {
                     projectId: projectKey,
                     defaultEpicWorkItemType: wi.WorkItemTypeFilter,
-                    defaultRequirementWorkItemType: firstReqWiType
+                    defaultRequirementWorkItemType: wi.DescendantsWorkItemTypeFilter,
+                    effortFieldRefName: wi.EffortWorkItemFieldRefName,
+                    effortODataColumnName: wi.EffortODataColumnName
                 };
             }
         });
@@ -522,44 +538,6 @@ export class ODataQueryBuilder {
         );
     }
 
-    public static WorkItemTypeFieldNameQueryString(input: PortfolioPlanningWorkitemTypeFieldNameQueryInput) : string {
-         // prettier-ignore
-         return (
-            "WorkItemTypeFields" +
-            "?" +
-                "$select=FieldType,FieldName" +
-            "&" +
-                `$filter=${this.WorkItemTypeFieldFilter(input)}` +
-            "&" +
-                "$expand=Teams($select=TeamSK,TeamName)"
-        );
-    }
-
-    /**
-     *  (
-                ProjectSK eq FBED1309-56DB-44DB-9006-24AD73EEE785
-            and (
-                    AreaSK eq aaf9cd34-350e-45da-8600-a39bbfe14cb8
-                or  AreaSK eq 549aa146-cad9-48ba-86da-09f0bdee4a03
-            )
-        ) or (
-                ProjectId eq 6974D8FE-08C8-4123-AD1D-FB830A098DFB
-            and (
-                    AreaSK eq fa64fee6-434f-4405-94e3-10c1694d5d26
-            )
-        )
-     */
-    private static WorkItemTypeFieldFilter(input: PortfolioPlanningWorkitemTypeFieldNameQueryInput): string {
-        return Object.keys(input)
-            .map(
-                projectId =>
-                    `(ProjectSK eq ${projectId} and (${input[projectId]
-                        .map(areaId => `AreaSK eq ${areaId}`)
-                        .join(" or ")}))`
-            )
-            .join(" or ");
-    }    
-
     /**
      *  (
                 ProjectSK eq FBED1309-56DB-44DB-9006-24AD73EEE785
@@ -650,13 +628,11 @@ export class ODataQueryBuilder {
         const descendantsTypesSet: { [workItemType: string]: string } = {};
 
         input.WorkItems.forEach(wi => {
-            wi.DescendantsWorkItemTypeFilter.forEach(descendantsWi => {
-                const wiTypeKey = descendantsWi.toLowerCase();
+            const wiTypeKey = wi.DescendantsWorkItemTypeFilter.toLowerCase();
 
-                if (!descendantsTypesSet[wiTypeKey]) {
-                    descendantsTypesSet[wiTypeKey] = "dummy";
-                }
-            });
+            if (!descendantsTypesSet[wiTypeKey]) {
+                descendantsTypesSet[wiTypeKey] = "dummy";
+            }
         });
 
         const requirementWiTypes = Object.keys(descendantsTypesSet).map(id => `WorkItemType eq '${id}'`);

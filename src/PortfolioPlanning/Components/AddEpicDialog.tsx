@@ -8,6 +8,7 @@ import { PortfolioPlanningDataService } from "../../Services/PortfolioPlanningDa
 import "./AddEpicDialog.scss";
 import { BacklogConfigurationDataService } from "../../Services/BacklogConfigurationDataService";
 import { Spinner, SpinnerSize } from "office-ui-fabric-react/lib/Spinner";
+import { ProjectBacklogConfiguration } from "../Models/ProjectBacklogModels";
 
 export interface IAddEpicDialogProps {
     planId: string;
@@ -20,6 +21,7 @@ interface IAddEpicDialogState {
     epicsToAdd: IEpic[];
     projects: IDropdownOption[];
     selectedProject: IProject;
+    selectedProjectBacklogConfiguration: ProjectBacklogConfiguration;
     epics: IDropdownOption[];
     selectedEpics: number[];
     epicsLoaded: boolean;
@@ -32,6 +34,7 @@ export class AddEpicDialog extends React.Component<IAddEpicDialogProps, IAddEpic
             epicsToAdd: [],
             projects: [],
             selectedProject: null,
+            selectedProjectBacklogConfiguration: null,
             epics: [],
             selectedEpics: [],
             epicsLoaded: false
@@ -56,9 +59,11 @@ export class AddEpicDialog extends React.Component<IAddEpicDialogProps, IAddEpic
         const loadingStyle = {
             margin: "10px"
         };
-        const projectsSection = (this.state.loadingProjects) ?
-            <Spinner size={SpinnerSize.large} style={loadingStyle} label="Loading..." /> :
-            this._renderProjectPicker();
+        const projectsSection = this.state.loadingProjects ? (
+            <Spinner size={SpinnerSize.large} style={loadingStyle} label="Loading..." />
+        ) : (
+            this._renderProjectPicker()
+        );
 
         return (
             <Dialog
@@ -88,7 +93,7 @@ export class AddEpicDialog extends React.Component<IAddEpicDialogProps, IAddEpic
                 placeHolder="Select an option"
                 label="Please select a project"
                 options={this.state.projects}
-                selectedKey={(this.state.selectedProject) ? this.state.selectedProject.id : null}
+                selectedKey={this.state.selectedProject ? this.state.selectedProject.id : null}
                 onChanged={(Option, index) => this._onProjectChange(index)}
             />
         );
@@ -100,37 +105,32 @@ export class AddEpicDialog extends React.Component<IAddEpicDialogProps, IAddEpic
 
             const selectedItem = this.state.projects[index];
 
-            BacklogConfigurationDataService.getInstance()
-                .getProjectConfiguration(selectedItem.key.toString())
-                .then(
-                    projectConfig => {
-                        this._getEpicsInProject(selectedItem.key.toString()).then(epics => {
-                            const allEpics: IDropdownOption[] = [];
-                            epics.forEach(epic => {
-                                allEpics.push({
-                                    key: epic.WorkItemId,
-                                    text: epic.Title
-                                });
-                            });
-
-                            this.setState({
-                                loadingProjects: false,
-                                selectedProject: {
-                                    id: selectedItem.key.toString(),
-                                    title: selectedItem.text,
-                                    defaultEpicWorkItemType: projectConfig.defaultEpicWorkItemType,
-                                    defaultRequirementWorkItemType: projectConfig.defaultRequirementWorkItemType
-                                },
-                                epics: allEpics,
-                                epicsLoaded: true
-                            });
+            this._getEpicsInProject(selectedItem.key.toString()).then(
+                epics => {
+                    const allEpics: IDropdownOption[] = [];
+                    epics.workItems.forEach(epic => {
+                        allEpics.push({
+                            key: epic.WorkItemId,
+                            text: epic.Title
                         });
-                    },
-                    error => {
-                        this.setState({ loadingProjects: false });
-                        console.log(JSON.stringify(error, null, "    "));
-                    }
-                );
+                    });
+
+                    this.setState({
+                        loadingProjects: false,
+                        selectedProject: {
+                            id: selectedItem.key.toString(),
+                            title: selectedItem.text
+                        },
+                        selectedProjectBacklogConfiguration: epics.projectBacklogConfig,
+                        epics: allEpics,
+                        epicsLoaded: true
+                    });
+                },
+                error => {
+                    this.setState({ loadingProjects: false });
+                    console.log(JSON.stringify(error, null, "    "));
+                }
+            );
         }
     };
 
@@ -182,9 +182,9 @@ export class AddEpicDialog extends React.Component<IAddEpicDialogProps, IAddEpic
             planId: this.props.planId,
             projectId: this.state.selectedProject.id,
             epicsToAdd: this.state.selectedEpics,
-            workItemType: this.state.selectedProject.defaultEpicWorkItemType,
-            requirementWorkItemType: this.state.selectedProject.defaultRequirementWorkItemType
-            effortODataColumnName: this.state.selectedProject.
+            workItemType: this.state.selectedProjectBacklogConfiguration.defaultEpicWorkItemType,
+            requirementWorkItemType: this.state.selectedProjectBacklogConfiguration.defaultRequirementWorkItemType,
+            effortWorkItemFieldRefName: this.state.selectedProjectBacklogConfiguration.effortFieldRefName
         });
 
         this.props.onCloseAddEpicDialog();
@@ -195,16 +195,21 @@ export class AddEpicDialog extends React.Component<IAddEpicDialogProps, IAddEpic
         return projects.projects;
     };
 
-    private _getEpicsInProject = async (projectId: string): Promise<WorkItem[]> => {
-        const epicWorkItemType = await BacklogConfigurationDataService.getInstance().getProjectConfiguration(
+    private _getEpicsInProject = async (
+        projectId: string
+    ): Promise<{ workItems: WorkItem[]; projectBacklogConfig: ProjectBacklogConfiguration }> => {
+        const projectConfig = await BacklogConfigurationDataService.getInstance().getProjectBacklogConfiguration(
             projectId
         );
 
         const epics = await PortfolioPlanningDataService.getInstance().getAllWorkItemsOfTypeInProject(
             projectId,
-            epicWorkItemType.defaultEpicWorkItemType
+            projectConfig.defaultEpicWorkItemType
         );
 
-        return epics.workItems;
+        return {
+            workItems: epics.workItems,
+            projectBacklogConfig: projectConfig
+        };
     };
 }

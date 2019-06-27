@@ -81,6 +81,7 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
 export function getDefaultState(): IEpicTimelineState {
     return {
         projects: [],
+        projectConfiguration: {},
         teams: {},
         epics: [],
         message: "Initial message",
@@ -113,6 +114,20 @@ function handlePortfolioItemsReceived(
                     defaultRequirementWorkItemType: defaultProjectWiTypes
                         ? defaultProjectWiTypes.defaultRequirementWorkItemType
                         : null
+                };
+            });
+
+            draft.projectConfiguration = {};
+            Object.keys(projects.projectConfigurations).forEach(projectIdKey => {
+                const projectConfig = projects.projectConfigurations[projectIdKey];
+                const projectIdKeyLowercase = projectIdKey.toLowerCase();
+
+                draft.projectConfiguration[projectIdKeyLowercase] = {
+                    id: projectIdKeyLowercase,
+                    defaultEpicWorkItemType: projectConfig.defaultEpicWorkItemType,
+                    defaultRequirementWorkItemType: projectConfig.defaultRequirementWorkItemType,
+                    effortWorkItemFieldRefName: projectConfig.effortFieldRefName,
+                    effortODataColumnName: projectConfig.effortODataColumnName
                 };
             });
 
@@ -160,18 +175,21 @@ function handlePortfolioItemsReceived(
                 const filteredProjects = draft.projects.filter(p => p.id === newProjectInfo.ProjectSK);
 
                 if (filteredProjects.length === 0) {
-                    const defaultProjectWiTypes = projects.projectConfigurations[newProjectInfo.ProjectSK.toLowerCase()];
+                    const newProjectIdLowercase = newProjectInfo.ProjectSK.toLowerCase();
+                    const projectConfig = projects.projectConfigurations[newProjectIdLowercase];
 
                     draft.projects.push({
                         id: newProjectInfo.ProjectSK,
-                        title: newProjectInfo.ProjectName,
-                        defaultEpicWorkItemType: defaultProjectWiTypes
-                            ? defaultProjectWiTypes.defaultEpicWorkItemType
-                            : null,
-                        defaultRequirementWorkItemType: defaultProjectWiTypes
-                            ? defaultProjectWiTypes.defaultRequirementWorkItemType
-                            : null
+                        title: newProjectInfo.ProjectName
                     });
+
+                    draft.projectConfiguration[newProjectIdLowercase] = {
+                        id: newProjectIdLowercase,
+                        defaultEpicWorkItemType: projectConfig.defaultEpicWorkItemType,
+                        defaultRequirementWorkItemType: projectConfig.defaultRequirementWorkItemType,
+                        effortWorkItemFieldRefName: projectConfig.effortFieldRefName,
+                        effortODataColumnName: projectConfig.effortODataColumnName
+                    };
                 }
             });
 

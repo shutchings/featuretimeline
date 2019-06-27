@@ -44,6 +44,7 @@ export function* LoadPortfolio(planId: string) {
                 projectId: projectInfo.ProjectId,
                 WorkItemTypeFilter: projectInfo.PortfolioWorkItemType,
                 DescendantsWorkItemTypeFilter: projectInfo.RequirementWorkItemType,
+                EffortWorkItemFieldRefName: projectInfo.EffortWorkItemFieldRefName,
                 EffortODataColumnName: projectInfo.EffortODataColumnName,
                 workItemIds: projectInfo.WorkItemIds
             };

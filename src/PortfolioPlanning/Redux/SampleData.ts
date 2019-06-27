@@ -8,15 +8,10 @@ const thirdProjectId = "3";
 const thirdProjectName = "Project 3";
 const teamId = "fbed1309-56db-44db-9006-24ad73eee785";
 
-export const DefaultWorkItemTypes = {
-    defaultEpicWorkItemType: "",
-    defaultRequirementWorkItemType: ""
-};
-
 export const Projects: IProject[] = [
-    { id: firstProjectId, title: firstProjectName, ...DefaultWorkItemTypes },
-    { id: secondProjectId, title: secondProjectName, ...DefaultWorkItemTypes },
-    { id: thirdProjectId, title: thirdProjectName, ...DefaultWorkItemTypes }
+    { id: firstProjectId, title: firstProjectName },
+    { id: secondProjectId, title: secondProjectName },
+    { id: thirdProjectId, title: thirdProjectName }
 ];
 
 export const Epics: IEpic[] = [

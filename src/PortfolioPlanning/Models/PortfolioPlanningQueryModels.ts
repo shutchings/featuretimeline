@@ -81,6 +81,7 @@ export interface ProjectPortfolioPlanning {
     PortfolioWorkItemType: string;
     RequirementWorkItemType: string;
     EffortODataColumnName: string;
+    EffortWorkItemFieldRefName: string;
     WorkItemIds: number[];
 }
 
@@ -129,16 +130,13 @@ export enum MergeType {
     Replace
 }
 
-
-export interface PortfolioPlanningWorkitemTypeFieldNameQueryInput
-{
+export interface PortfolioPlanningWorkitemTypeFieldNameQueryInput {
     ProjectSK: string;
     FieldReferenceName: string;
     WorkItemType: string;
 }
 
-export interface PortfolioPlanningWorkItemTypeFieldNameQueryResult extends IQueryResultError
-{
+export interface PortfolioPlanningWorkItemTypeFieldNameQueryResult extends IQueryResultError {
     FieldType: string;
     FieldName: string;
 }
