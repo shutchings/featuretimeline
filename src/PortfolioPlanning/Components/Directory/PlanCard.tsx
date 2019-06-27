@@ -20,11 +20,11 @@ export default class PlanCard extends React.Component<PlanCardProps> {
                         <div className="description">{this.props.description}</div>
                         <div className="teams-container">
                             <div className="teams-label">Teams</div>
-                            <div>Fabrikam, Contoso, WIT X</div>
+                            <div>TODO</div>
                         </div>
                         <div className="projects-container">
                             <div className="projects-label">Projects</div>
-                            <div>Fabrikam, AzureDevOps</div>
+                            <div>TODO</div>
                         </div>
                     </div>
                 </Card>
