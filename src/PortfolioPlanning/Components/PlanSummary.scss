@@ -1,0 +1,19 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+@import "node_modules/azure-devops-ui/Core/core.scss";
+
+.plan-summary {
+    display: flex;
+
+    .summary-item {
+        padding-right: $spacing-32;
+        max-width: 400px;
+    }
+
+    .projects-teams-label {
+        @extend .title-xs;
+        color: $secondary-text;
+    }
+    .projects-teams-content {
+        @extend .title-s;
+    }
+}

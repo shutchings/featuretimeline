@@ -19,6 +19,7 @@ import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
 import { ProgressDetails } from "../../Common/react/Components/ProgressDetails/ProgressDetails";
 import { InfoIcon } from "../../Common/react/Components/InfoIcon/InfoIcon";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
+import { PlanSummary } from "./PlanSummary";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -62,7 +63,8 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
             };
 
             return (
-                <div>
+                <div className="page-content">
+                    <PlanSummary projects={this.props.groups.map(group => group.title)} teams={this.props.teams} />
                     <div className="configuration-container">
                         <div className="progress-options">
                             <div className="progress-options-label">Track Progress Using: </div>
@@ -122,7 +124,8 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
                                             justifyContent: "space-between",
                                             overflow: "hidden",
                                             marginRight: "5px",
-                                            alignItems: "baseline"
+                                            alignItems: "baseline",
+                                            whiteSpace: "nowrap"
                                         }}
                                     >
                                         {itemContext.title}
