@@ -371,8 +371,8 @@ export class PortfolioPlanningDataService {
                 WorkItemType: rawItem.WorkItemType,
                 Title: rawItem.Title,
                 State: rawItem.State,
-                StartDate: rawItem.StartDate,
-                TargetDate: rawItem.TargetDate,
+                StartDate: rawItem.StartDate ? new Date(rawItem.StartDate) : null,
+                TargetDate: rawItem.TargetDate ? new Date(rawItem.TargetDate) : null,
                 ProjectId: rawItem.ProjectSK,
                 AreaId: areaIdValue,
                 TeamId: null, //  Will be assigned when teams in areas data is retrieved.
