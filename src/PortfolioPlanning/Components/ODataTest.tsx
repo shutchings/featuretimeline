@@ -14,15 +14,17 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
         super(props);
 
         const initialTestData: PortfolioModels.PortfolioPlanningQueryInput = {
-            PortfolioWorkItemType: "Epic",
-            RequirementWorkItemTypes: ["User Story"],
             WorkItems: [
                 {
                     projectId: "FBED1309-56DB-44DB-9006-24AD73EEE785",
+                    WorkItemTypeFilter: "Epic",
+                    DescendantsWorkItemTypeFilter: ["User Story"],
                     workItemIds: [5250, 5251]
                 },
                 {
                     projectId: "6974D8FE-08C8-4123-AD1D-FB830A098DFB",
+                    WorkItemTypeFilter: "Epic",
+                    DescendantsWorkItemTypeFilter: ["User Story"],
                     workItemIds: [5249]
                 }
             ]

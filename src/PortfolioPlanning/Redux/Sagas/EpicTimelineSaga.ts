@@ -72,7 +72,7 @@ function* saveDatesToServer(epicId: number): SagaIterator {
 }
 
 function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.AddEpics>): SagaIterator {
-    const { planId, projectId, epicsToAdd, workItemType, requirementWorkItemType } = action.payload;
+    const { planId, projectId, epicsToAdd, workItemType, requirementWorkItemType, effortODataColumnName } = action.payload;
 
     //  TODO    sanitize input epics ids (unique ids only)
 
@@ -90,6 +90,7 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
             ProjectId: projectIdLowerCase,
             PortfolioWorkItemType: workItemType,
             RequirementWorkItemType: requirementWorkItemType,
+            EffortODataColumnName: effortODataColumnName,
             WorkItemIds: epicsToAdd
         };
     } else {
@@ -100,12 +101,12 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
     yield effects.call([portfolioService, portfolioService.UpdatePortfolioPlan], storedPlan);
 
     const portfolioQueryInput: PortfolioPlanningQueryInput = {
-        PortfolioWorkItemType: workItemType,
-        RequirementWorkItemTypes: [requirementWorkItemType],
-
         WorkItems: [
             {
                 projectId: projectId,
+                WorkItemTypeFilter: workItemType,
+                DescendantsWorkItemTypeFilter: requirementWorkItemType,
+                EffortODataColumnName: effortODataColumnName,
                 workItemIds: epicsToAdd
             }
         ]

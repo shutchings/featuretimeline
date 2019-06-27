@@ -102,9 +102,17 @@ function handlePortfolioItemsReceived(
 
         if (mergeStrategy === MergeType.Replace) {
             draft.projects = projects.projects.map(project => {
+                const defaultProjectWiTypes = projects.projectConfigurations[project.ProjectSK.toLowerCase()];
+
                 return {
                     id: project.ProjectSK,
-                    title: project.ProjectName
+                    title: project.ProjectName,
+                    defaultEpicWorkItemType: defaultProjectWiTypes
+                        ? defaultProjectWiTypes.defaultEpicWorkItemType
+                        : null,
+                    defaultRequirementWorkItemType: defaultProjectWiTypes
+                        ? defaultProjectWiTypes.defaultRequirementWorkItemType
+                        : null
                 };
             });
 
@@ -152,9 +160,17 @@ function handlePortfolioItemsReceived(
                 const filteredProjects = draft.projects.filter(p => p.id === newProjectInfo.ProjectSK);
 
                 if (filteredProjects.length === 0) {
+                    const defaultProjectWiTypes = projects.projectConfigurations[newProjectInfo.ProjectSK.toLowerCase()];
+
                     draft.projects.push({
                         id: newProjectInfo.ProjectSK,
-                        title: newProjectInfo.ProjectName
+                        title: newProjectInfo.ProjectName,
+                        defaultEpicWorkItemType: defaultProjectWiTypes
+                            ? defaultProjectWiTypes.defaultEpicWorkItemType
+                            : null,
+                        defaultRequirementWorkItemType: defaultProjectWiTypes
+                            ? defaultProjectWiTypes.defaultRequirementWorkItemType
+                            : null
                     });
                 }
             });

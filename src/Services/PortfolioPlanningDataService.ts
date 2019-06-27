@@ -14,11 +14,14 @@ import {
     PortfolioPlanningTeamsInAreaQueryInput,
     PortfolioPlanningTeamsInAreaQueryResult,
     TeamsInArea,
-    PortfolioPlanningFullContentQueryResult
+    PortfolioPlanningFullContentQueryResult,
+    PortfolioPlanningWorkitemTypeFieldNameQueryInput,
+    PortfolioPlanningWorkItemTypeFieldNameQueryResult
 } from "../PortfolioPlanning/Models/PortfolioPlanningQueryModels";
 import { ODataClient } from "../Common/OData/ODataClient";
 import { ODataWorkItemQueryResult, ODataAreaQueryResult } from "../PortfolioPlanning/Models/ODataQueryModels";
 import { GUIDUtil } from "../Common/GUIDUtil";
+import { ProjectConfiguration } from "../PortfolioPlanning/Models/ProjectBacklogModels";
 
 export class PortfolioPlanningDataService {
     private static _instance: PortfolioPlanningDataService;
@@ -78,12 +81,44 @@ export class PortfolioPlanningDataService {
             );
     }
 
+    public async runWorkItemTypeFieldNameQuery(
+        queryInput: PortfolioPlanningWorkitemTypeFieldNameQueryInput) : Promise<PortfolioPlanningWorkItemTypeFieldNameQueryResult>
+    {
+        const odataQueryString = ODataQueryBuilder.WorkItemTypeFieldNameQueryString(queryInput);
+
+        const client = await ODataClient.getInstance();
+        const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
+
+        return client
+            .runGetQuery(fullQueryUrl)
+            .then(
+                (results: any) => this.ParseODataWorkItemTypeFieldNameQueryResponse(results),
+                error => this.ParseODataErrorResponse(error)
+            );
+    }
+
     public async loadPortfolioContent(
         portfolioQueryInput: PortfolioPlanningQueryInput
     ): Promise<PortfolioPlanningFullContentQueryResult> {
         const projectsQueryInput: PortfolioPlanningProjectQueryInput = {
             projectIds: portfolioQueryInput.WorkItems.map(workItems => workItems.projectId)
         };
+
+        const projectConfigurations: { [projectId: string]: ProjectConfiguration } = {};
+        portfolioQueryInput.WorkItems.forEach(wi => {
+            const projectKey = wi.projectId.toLowerCase();
+
+            if (!projectConfigurations[projectKey]) {
+                const firstReqWiType =
+                    wi.DescendantsWorkItemTypeFilter.length > 0 ? wi.DescendantsWorkItemTypeFilter[0] : null;
+
+                projectConfigurations[projectKey] = {
+                    projectId: projectKey,
+                    defaultEpicWorkItemType: wi.WorkItemTypeFilter,
+                    defaultRequirementWorkItemType: firstReqWiType
+                };
+            }
+        });
 
         const [portfolioQueryResult, projectQueryResult] = await Promise.all([
             this.runPortfolioItemsQuery(portfolioQueryInput),
@@ -106,6 +141,9 @@ export class PortfolioPlanningDataService {
         }
 
         const teamAreasQueryResult = await this.runTeamsInAreasQuery(teamsInAreaQueryInput);
+
+        //  Assign the default work item types for each project provided in the query input.
+        projectQueryResult.projectConfigurations = projectConfigurations;
 
         return {
             items: portfolioQueryResult,
@@ -352,7 +390,9 @@ export class PortfolioPlanningDataService {
 
         return {
             exceptionMessage: null,
-            projects: rawResult
+            projects: rawResult,
+            // TODO     Return a different model so we don't have to know about default types here.
+            projectConfigurations: null
         };
     }
 
@@ -426,52 +466,99 @@ export class ODataQueryBuilder {
     private static readonly ProjectEntitySelect: string = "ProjectSK,ProjectName";
 
     public static WorkItemsQueryString(input: PortfolioPlanningQueryInput): string {
+        // prettier-ignore
         return (
             "WorkItems" +
             "?" +
-            "$select=WorkItemId,WorkItemType,Title,State,StartDate,TargetDate,ProjectSK,AreaSK" +
+                "$select=WorkItemId,WorkItemType,Title,State,StartDate,TargetDate,ProjectSK,AreaSK" +
             "&" +
-            `$filter=${this.BuildODataQueryFilter(input)}` +
+                `$filter=${this.BuildODataQueryFilter(input)}` +
             "&" +
-            `$expand=${this.BuildODataDescendantsQuery(input)}`
+                `$expand=${this.BuildODataDescendantsQuery(input)}`
         );
     }
 
     public static ProjectsQueryString(input: PortfolioPlanningProjectQueryInput): string {
+        // prettier-ignore
         return (
             "Projects" +
             "?" +
-            `$select=${ODataQueryBuilder.ProjectEntitySelect}` +
+                `$select=${ODataQueryBuilder.ProjectEntitySelect}` +
             "&" +
-            `$filter=${this.ProjectsQueryFilter(input)}`
+                `$filter=${this.ProjectsQueryFilter(input)}`
         );
     }
 
     public static AllProjectsQueryString(): string {
-        return "Projects" + "?" + `$select=${ODataQueryBuilder.ProjectEntitySelect}`;
+        // prettier-ignore
+        return (
+            "Projects" +
+            "?" +
+                `$select=${ODataQueryBuilder.ProjectEntitySelect}`
+        );
     }
 
     public static WorkItemsOfTypeQueryString(workItemType: string): string {
+        // prettier-ignore
         return (
             "WorkItems" +
             "?" +
-            "$select=WorkItemId,WorkItemType,Title,State" +
+                "$select=WorkItemId,WorkItemType,Title,State" +
             "&" +
-            `$filter=WorkItemType eq '${workItemType}'`
+                `$filter=WorkItemType eq '${workItemType}'`
         );
     }
 
     public static TeamsInAreaQueryString(input: PortfolioPlanningTeamsInAreaQueryInput): string {
+        // prettier-ignore
         return (
             "Areas" +
             "?" +
-            "$select=ProjectSK,AreaSK" +
+                "$select=ProjectSK,AreaSK" +
             "&" +
-            `$filter=${this.ProjectAreasFilter(input)}` +
+                `$filter=${this.ProjectAreasFilter(input)}` +
             "&" +
-            "$expand=Teams($select=TeamSK,TeamName)"
+                "$expand=Teams($select=TeamSK,TeamName)"
         );
     }
+
+    public static WorkItemTypeFieldNameQueryString(input: PortfolioPlanningWorkitemTypeFieldNameQueryInput) : string {
+         // prettier-ignore
+         return (
+            "WorkItemTypeFields" +
+            "?" +
+                "$select=FieldType,FieldName" +
+            "&" +
+                `$filter=${this.WorkItemTypeFieldFilter(input)}` +
+            "&" +
+                "$expand=Teams($select=TeamSK,TeamName)"
+        );
+    }
+
+    /**
+     *  (
+                ProjectSK eq FBED1309-56DB-44DB-9006-24AD73EEE785
+            and (
+                    AreaSK eq aaf9cd34-350e-45da-8600-a39bbfe14cb8
+                or  AreaSK eq 549aa146-cad9-48ba-86da-09f0bdee4a03
+            )
+        ) or (
+                ProjectId eq 6974D8FE-08C8-4123-AD1D-FB830A098DFB
+            and (
+                    AreaSK eq fa64fee6-434f-4405-94e3-10c1694d5d26
+            )
+        )
+     */
+    private static WorkItemTypeFieldFilter(input: PortfolioPlanningWorkitemTypeFieldNameQueryInput): string {
+        return Object.keys(input)
+            .map(
+                projectId =>
+                    `(ProjectSK eq ${projectId} and (${input[projectId]
+                        .map(areaId => `AreaSK eq ${areaId}`)
+                        .join(" or ")}))`
+            )
+            .join(" or ");
+    }    
 
     /**
      *  (
@@ -533,7 +620,7 @@ export class ODataQueryBuilder {
 
             const parts: string[] = [];
             parts.push(`Project/ProjectId eq ${wi.projectId}`);
-            parts.push(`WorkItemType eq '${input.PortfolioWorkItemType}'`);
+            parts.push(`WorkItemType eq '${wi.WorkItemTypeFilter}'`);
             parts.push(`(${wiIdClauses.join(" or ")})`);
 
             return `(${parts.join(" and ")})`;
@@ -560,22 +647,35 @@ export class ODataQueryBuilder {
      * @param input 
      */
     private static BuildODataDescendantsQuery(input: PortfolioPlanningQueryInput): string {
-        const requirementWiTypes = input.RequirementWorkItemTypes.map(id => `WorkItemType eq '${id}'`);
+        const descendantsTypesSet: { [workItemType: string]: string } = {};
 
+        input.WorkItems.forEach(wi => {
+            wi.DescendantsWorkItemTypeFilter.forEach(descendantsWi => {
+                const wiTypeKey = descendantsWi.toLowerCase();
+
+                if (!descendantsTypesSet[wiTypeKey]) {
+                    descendantsTypesSet[wiTypeKey] = "dummy";
+                }
+            });
+        });
+
+        const requirementWiTypes = Object.keys(descendantsTypesSet).map(id => `WorkItemType eq '${id}'`);
+
+        // prettier-ignore
         return (
             "Descendants(" +
-            "$apply=" +
-            `filter(${requirementWiTypes.join(" or ")})` +
-            "/aggregate(" +
-            "$count as TotalCount," +
-            "iif(StateCategory eq 'Completed',1,0) with sum as CompletedCount," +
-            "StoryPoints with sum as TotalStoryPoints," +
-            "iif(StateCategory eq 'Completed',StoryPoints,0) with sum as CompletedStoryPoints" +
-            ")" +
-            "/compute(" +
-            "(CompletedCount div cast(TotalCount, Edm.Decimal)) as CountProgress," +
-            "(CompletedStoryPoints div TotalStoryPoints) as StoryPointsProgress" +
-            ")" +
+                "$apply=" +
+                    `filter(${requirementWiTypes.join(" or ")})` +
+                    "/aggregate(" +
+                        "$count as TotalCount," +
+                        "iif(StateCategory eq 'Completed',1,0) with sum as CompletedCount," +
+                        "StoryPoints with sum as TotalStoryPoints," +
+                        "iif(StateCategory eq 'Completed',StoryPoints,0) with sum as CompletedStoryPoints" +
+                    ")" +
+                    "/compute(" +
+                        "(CompletedCount div cast(TotalCount, Edm.Decimal)) as CountProgress," +
+                        "(CompletedStoryPoints div TotalStoryPoints) as StoryPointsProgress" +
+                    ")" +
             ")"
         );
     }

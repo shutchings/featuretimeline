@@ -22,7 +22,8 @@ export function* LoadPortfolio(planId: string) {
                 },
                 projects: {
                     exceptionMessage: null,
-                    projects: []
+                    projects: [],
+                    projectConfigurations: {}
                 },
                 teamAreas: {
                     exceptionMessage: null,
@@ -35,21 +36,15 @@ export function* LoadPortfolio(planId: string) {
         return;
     }
 
-    const allProjectKeys = Object.keys(planInfo.projects);
-    const firstProject = allProjectKeys.length > 0 ? planInfo.projects[allProjectKeys[0]] : null;
-
     const portfolioQueryInput: PortfolioPlanningQueryInput = {
-        //  TODO    Only supporting one work item type per plan for now. Work item type should be per project.
-        PortfolioWorkItemType: firstProject ? firstProject.PortfolioWorkItemType : "Epic",
-
-        //  TODO    Only supporting one work item type per plan for now. Work item type should be per project.
-        RequirementWorkItemTypes: [firstProject ? firstProject.RequirementWorkItemType : "User story"],
-
         WorkItems: Object.keys(planInfo.projects).map(projectKey => {
             const projectInfo = planInfo.projects[projectKey];
 
             return {
                 projectId: projectInfo.ProjectId,
+                WorkItemTypeFilter: projectInfo.PortfolioWorkItemType,
+                DescendantsWorkItemTypeFilter: projectInfo.RequirementWorkItemType,
+                EffortODataColumnName: projectInfo.EffortODataColumnName,
                 workItemIds: projectInfo.WorkItemIds
             };
         })

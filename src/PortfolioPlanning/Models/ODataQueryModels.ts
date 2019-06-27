@@ -21,6 +21,9 @@ export interface ODataWorkItemDescendants {
 
 export interface ODataQueryProjectInput {
     projectId: string;
+    WorkItemTypeFilter: string;
+    DescendantsWorkItemTypeFilter: string;
+    EffortODataColumnName: string;
     workItemIds: number[];
 }
 
