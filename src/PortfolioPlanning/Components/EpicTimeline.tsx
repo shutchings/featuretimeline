@@ -63,7 +63,7 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
             };
 
             return (
-                <div>
+                <div className="page-content">
                     <PlanSummary projects={this.props.groups.map(group => group.title)} teams={this.props.teams} />
                     <div className="configuration-container">
                         <div className="progress-options">

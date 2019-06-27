@@ -1,4 +1,5 @@
 import * as React from "react";
+import "./PlanSummary.scss";
 import { ITeam } from "../Contracts";
 
 export interface IPlanSummaryProps {
@@ -13,14 +14,14 @@ export const PlanSummary = (props: IPlanSummaryProps) => {
         .join(", ");
 
     return (
-        <div style={{ display: "flex" }} className="page-content">
-            <div>
-                <div>Projects</div>
-                <div>{projects}</div>
+        <div className="plan-summary">
+            <div className="summary-item">
+                <div className="projects-teams-label">Teams</div>
+                <div className="projects-teams-content">{teams}</div>
             </div>
-            <div>
-                <div>Teams</div>
-                <div>{teams}</div>
+            <div className="summary-item">
+                <div className="projects-teams-label">Projects</div>
+                <div className="projects-teams-content">{projects}</div>
             </div>
         </div>
     );
