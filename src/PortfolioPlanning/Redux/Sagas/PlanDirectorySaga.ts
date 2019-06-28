@@ -51,8 +51,16 @@ export function* updateProjectsAndTeamsMetadata(
         .reduce((teamList, allTeamList) => allTeamList.concat(teamList), [])
         .map(team => team.teamName);
 
-    planToUpdate.projectNames = addedProjects;
-    planToUpdate.teamNames = addedTeams;
+    addedProjects.forEach(projectName => {
+        if (!planToUpdate.projectNames.find(existingName => existingName === projectName)) {
+            planToUpdate.projectNames.push(projectName);
+        }
+    });
+    addedTeams.forEach(teamName => {
+        if (!planToUpdate.teamNames.find(existingName => existingName === teamName)) {
+            planToUpdate.teamNames.push(teamName);
+        }
+    });
 
     yield effects.call([service, service.UpdatePortfolioPlanDirectoryEntry], planToUpdate);
 
