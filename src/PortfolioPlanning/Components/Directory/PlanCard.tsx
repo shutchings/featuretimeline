@@ -35,9 +35,7 @@ export const PlanCard = (props: IPlanCardProps) => {
                                 <div>{props.teams.join(", ")}</div>
                             </div>
                         )}
-                    <div className="owner-container">
-                        <IdentityView value={props.owner} />
-                    </div>
+                    <IdentityView className="owner-container" value={props.owner} />
                 </div>
             </Card>
         </div>

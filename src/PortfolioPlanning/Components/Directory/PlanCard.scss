@@ -40,5 +40,10 @@
 
     .owner-container {
         display: flex;
+        align-items: center;
+
+        .display-name {
+            margin-left: $spacing-8;
+        }
     }
 }

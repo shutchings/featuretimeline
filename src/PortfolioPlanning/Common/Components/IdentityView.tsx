@@ -2,7 +2,6 @@ import * as React from "react";
 import "./IdentityView.scss";
 import { VssPersona, VssPersonaSize } from "azure-devops-ui/VssPersona";
 import { isIdentityRef, parseUniquefiedIdentityName } from "../Utilities/Identity";
-import { css } from "azure-devops-ui/Util";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 
 export interface IIdentityViewProps {
@@ -26,16 +25,16 @@ export const IdentityView = (props: IIdentityViewProps): JSX.Element => {
     }
 
     return (
-        <>
+        <div className={props.className}>
             <VssPersona
-                className={css("identity-view", props.className)}
+                className="identity-view"
                 size={props.size || "medium"}
                 identityDetailsProvider={{
                     getDisplayName: () => identityRef.displayName,
                     getIdentityImageUrl: () => identityRef.imageUrl
                 }}
             />
-            {identityRef.displayName}
-        </>
+            <div className="display-name">{identityRef.displayName}</div>
+        </div>
     );
 };
