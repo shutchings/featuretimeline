@@ -6,14 +6,14 @@
 }
 
 .plan-card {
-    width: 240px;
+    width: 260px;
     height: 300px;
     background-color: $white;
     @extend .font-weight-semibold;
 
     .name {
         @extend .title-s;
-        height: 32px;
+        height: 40px;
     }
 
     .description {

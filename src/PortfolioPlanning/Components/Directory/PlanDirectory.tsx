@@ -2,7 +2,7 @@ import * as React from "react";
 import "./PlanDirectory.scss";
 import { Page } from "azure-devops-ui/Page";
 import PlanDirectoryHeader from "./PlanDirectoryHeader";
-import PlanCard from "./PlanCard";
+import { PlanCard } from "./PlanCard";
 import NewPlanDialog from "./NewPlanDialog";
 import { PlanDirectoryActions } from "../../Redux/Actions/PlanDirectoryActions";
 import { connect } from "react-redux";
@@ -86,6 +86,8 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
                     id={plan.id}
                     name={plan.name}
                     description={plan.description}
+                    teams={plan.teamNames}
+                    projects={plan.projectNames}
                     onClick={id => this.props.toggleSelectedPlanId(id)}
                 />
             ));

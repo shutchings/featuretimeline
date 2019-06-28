@@ -14,7 +14,8 @@ import {
     PortfolioPlanningTeamsInAreaQueryInput,
     PortfolioPlanningTeamsInAreaQueryResult,
     TeamsInArea,
-    PortfolioPlanningFullContentQueryResult
+    PortfolioPlanningFullContentQueryResult,
+    PortfolioPlanningMetadata
 } from "../PortfolioPlanning/Models/PortfolioPlanningQueryModels";
 import { ODataClient } from "../Common/OData/ODataClient";
 import { ODataWorkItemQueryResult, ODataAreaQueryResult } from "../PortfolioPlanning/Models/ODataQueryModels";
@@ -181,6 +182,23 @@ export class PortfolioPlanningDataService {
             );
     }
 
+    public async GetPortfolioPlanDirectoryEntry(id: string): Promise<PortfolioPlanningMetadata> {
+        const allPlans = await this.GetAllPortfolioPlans();
+
+        return allPlans.entries.find(plan => plan.id === id);
+    }
+
+    public async UpdatePortfolioPlanDirectoryEntry(updatedPlan: PortfolioPlanningMetadata): Promise<void> {
+        const client = await this.GetStorageClient();
+
+        const allPlans = await this.GetAllPortfolioPlans();
+        let indexToUpdate = allPlans.entries.findIndex(plan => plan.id === updatedPlan.id);
+        updatedPlan.id = allPlans.entries[indexToUpdate].id;
+        allPlans.entries[indexToUpdate] = updatedPlan;
+
+        await client.updateDocument(PortfolioPlanningDataService.DirectoryCollectionName, allPlans);
+    }
+
     private static readonly DirectoryDocumentId: string = "Default";
     private static readonly DirectoryCollectionName: string = "Directory";
     private static readonly PortfolioPlansCollectionName: string = "PortfolioPlans";
@@ -193,6 +211,8 @@ export class PortfolioPlanningDataService {
             id: newPlanId,
             name: newPlanName,
             description: newPlanDescription,
+            teamNames: [],
+            projectNames: [],
             createdOn: new Date(),
             projects: {}
         };
