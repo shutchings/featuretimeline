@@ -5,7 +5,7 @@ import Timeline from "react-calendar-timeline";
 import "./EpicTimeline.scss";
 import { IEpicTimelineState, IPortfolioPlanningState } from "../Redux/Contracts";
 import {
-    getAddEpicDialogOpen,
+    getAddEpicPanelOpen,
     getSetDatesDialogHidden,
     getTimelineGroups,
     getTimelineItems,
@@ -14,12 +14,14 @@ import {
 import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
 import { DetailsDialog } from "./DetailsDialog";
-import { AddEpicDialog } from "./AddEpicDialog";
+import { AddEpicPanel } from "./AddEpicPanel";
 import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
-import { ProgressDetails } from "../../Common/react/Components/ProgressDetails/ProgressDetails";
-import { InfoIcon } from "../../Common/react/Components/InfoIcon/InfoIcon";
+import { ProgressDetails } from "../Common/Components/ProgressDetails";
+import { InfoIcon } from "../Common/Components/InfoIcon";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { PlanSummary } from "./PlanSummary";
+import { getSelectedPlanOwner } from "../Redux/Selectors/PlanDirectorySelectors";
+import { IdentityRef } from "VSS/WebApi/Contracts";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -31,11 +33,12 @@ interface IEpicTimelineMappedProps {
     groups: ITimelineGroup[];
     teams: { [teamId: string]: ITeam };
     items: ITimelineItem[];
-    addEpicDialogOpen: boolean;
+    addEpicPanelOpen: boolean;
     setDatesDialogHidden: boolean;
     selectedItemId: number;
     progressTrackingCriteria: ProgressTrackingCriteria;
     planLoadingStatus: LoadingStatus;
+    planOwner: IdentityRef;
 }
 
 export type IEpicTimelineProps = IEpicTimelineOwnProps & IEpicTimelineMappedProps & typeof Actions;
@@ -64,7 +67,11 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
 
             return (
                 <div className="page-content">
-                    <PlanSummary projects={this.props.groups.map(group => group.title)} teams={this.props.teams} />
+                    <PlanSummary
+                        projects={this.props.groups.map(group => group.title)}
+                        teams={this.props.teams}
+                        owner={this.props.planOwner}
+                    />
                     <div className="configuration-container">
                         <div className="progress-options">
                             <div className="progress-options-label">Track Progress Using: </div>
@@ -157,7 +164,7 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
                             );
                         }}
                     />
-                    {this._renderAddEpicDialog()}
+                    {this._renderAddEpicPanel()}
                     {this.props.selectedItemId && (
                         <DetailsDialog
                             key={Date.now()} // TODO: Is there a better way to reset the state?
@@ -214,7 +221,7 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
     };
 
     private _onAddEpicClick = (): void => {
-        this.props.onOpenAddEpicDialog();
+        this.props.onOpenAddEpicPanel();
     };
 
     private _onRemoveSelectedEpicClick = (): void => {
@@ -235,12 +242,12 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
         }
     };
 
-    private _renderAddEpicDialog(): JSX.Element {
-        if (this.props.addEpicDialogOpen) {
+    private _renderAddEpicPanel(): JSX.Element {
+        if (this.props.addEpicPanelOpen) {
             return (
-                <AddEpicDialog
+                <AddEpicPanel
                     planId={this.props.planId}
-                    onCloseAddEpicDialog={this.props.onCloseAddEpicDialog}
+                    onCloseAddEpicPanel={this.props.onCloseAddEpicPanel}
                     onAddEpics={this.props.onAddEpics}
                 />
             );
@@ -287,17 +294,18 @@ function mapStateToProps(state: IPortfolioPlanningState): IEpicTimelineMappedPro
         groups: getTimelineGroups(state.epicTimelineState),
         teams: state.epicTimelineState.teams,
         items: getTimelineItems(state.epicTimelineState),
-        addEpicDialogOpen: getAddEpicDialogOpen(state.epicTimelineState),
+        addEpicPanelOpen: getAddEpicPanelOpen(state.epicTimelineState),
         setDatesDialogHidden: getSetDatesDialogHidden(state.epicTimelineState),
         selectedItemId: state.epicTimelineState.selectedItemId,
+        planOwner: getSelectedPlanOwner(state),
         progressTrackingCriteria: getProgressTrackingCriteria(state.epicTimelineState),
         planLoadingStatus: state.epicTimelineState.planLoadingStatus
     };
 }
 
 const Actions = {
-    onOpenAddEpicDialog: EpicTimelineActions.openAddEpicDialog,
-    onCloseAddEpicDialog: EpicTimelineActions.closeAddEpicDialog,
+    onOpenAddEpicPanel: EpicTimelineActions.openAddEpicPanel,
+    onCloseAddEpicPanel: EpicTimelineActions.closeAddEpicPanel,
     onAddEpics: EpicTimelineActions.addEpics,
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
     onUpdateEndDate: EpicTimelineActions.updateEndDate,

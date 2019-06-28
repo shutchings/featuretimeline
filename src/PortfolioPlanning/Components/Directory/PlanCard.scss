@@ -6,14 +6,18 @@
 }
 
 .plan-card {
-    width: 240px;
+    width: 260px;
     height: 300px;
     background-color: $white;
     @extend .font-weight-semibold;
 
+    .summary {
+        height: 200px;
+    }
+
     .name {
         @extend .title-s;
-        height: 32px;
+        height: 40px;
     }
 
     .description {
@@ -25,7 +29,7 @@
     .teams-container {
         display: flex;
         flex-direction: column;
-        margin-top: $spacing-16;
+        margin-top: $spacing-8;
 
         .projects-label,
         .teams-label {
@@ -35,6 +39,20 @@
         .projects-list,
         .teams-list {
             @extend .body-m;
+            height: 40px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+
+    .owner-container {
+        height: 60px;
+        display: flex;
+        align-items: center;
+        margin-top: $spacing-8;
+
+        .display-name {
+            margin-left: $spacing-8;
         }
     }
 }

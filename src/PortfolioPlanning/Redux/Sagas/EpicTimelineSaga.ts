@@ -12,7 +12,7 @@ import {
     MergeType,
     PortfolioPlanning
 } from "../../Models/PortfolioPlanningQueryModels";
-import { PortfolioPlanningDataService } from "../../../Services/PortfolioPlanningDataService";
+import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
 import { PlanDirectoryActionTypes, PlanDirectoryActions } from "../Actions/PlanDirectoryActions";
 import { LoadPortfolio } from "./LoadPortfolio";
 import { ActionsOfType } from "../Helpers";
@@ -167,7 +167,7 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
     let now, oneMonthFromNow;
 
     queryResult.items.items.map(item => {
-        if (item.StartDate === undefined || item.TargetDate === undefined) {
+        if (!item.StartDate || !item.TargetDate) {
             now = new Date();
             oneMonthFromNow = new Date();
             oneMonthFromNow.setDate(now.getDate() + 30);

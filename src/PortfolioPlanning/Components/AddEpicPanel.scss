@@ -1,0 +1,20 @@
+.add-epic-panel-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.project-picker {
+    display: flex;
+    width: 200px;
+    margin: 0 0 10px 0;
+}
+
+.epic-list {
+    display: flex;
+}
+
+.epic-list-row {
+    box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.08);
+    padding: 10px;
+    width: 300px;
+}

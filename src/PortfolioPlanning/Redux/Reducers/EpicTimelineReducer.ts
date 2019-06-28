@@ -61,11 +61,11 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
 
                 return handlePortfolioItemsReceived(draft, action as PortfolioItemsReceivedAction);
 
-            case EpicTimelineActionTypes.OpenAddEpicDialog: {
+            case EpicTimelineActionTypes.OpenAddEpicPanel: {
                 draft.addEpicDialogOpen = true;
                 break;
             }
-            case EpicTimelineActionTypes.CloseAddEpicDialog: {
+            case EpicTimelineActionTypes.CloseAddEpicPanel: {
                 draft.addEpicDialogOpen = false;
                 break;
             }

@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as PortfolioModels from "../Models/PortfolioPlanningQueryModels";
-import { PortfolioPlanningDataService } from "../../Services/PortfolioPlanningDataService";
+import { PortfolioPlanningDataService } from "../Common/Services/PortfolioPlanningDataService";
 
 export interface ODataTestState {
     results: PortfolioModels.PortfolioPlanningQueryResult;
@@ -119,7 +119,7 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
                 console.log(JSON.stringify(allPlans, null, "    "));
 
                 PortfolioPlanningDataService.getInstance()
-                    .AddPortfolioPlan("new plan name", "new plan description")
+                    .AddPortfolioPlan("new plan name", "new plan description", undefined)
                     .then(newPlanCreated => {
                         console.log("Plan created");
                         console.log(JSON.stringify(newPlanCreated, null, "    "));
