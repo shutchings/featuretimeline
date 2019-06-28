@@ -19,22 +19,24 @@ export const PlanCard = (props: IPlanCardProps) => {
         <div className="plan-card-container" onClick={() => props.onClick(props.planId)}>
             <Card className="plan-card">
                 <div className="flex-column">
-                    <div className="name">{props.name}</div>
-                    <div className="description">{props.description}</div>
-                    {props.projects &&
-                        props.projects.length > 0 && (
-                            <div className="projects-container">
-                                <div className="projects-label">Projects</div>
-                                <div>{props.projects.join(", ")}</div>
-                            </div>
-                        )}
-                    {props.teams &&
-                        props.teams.length > 0 && (
-                            <div className="teams-container">
-                                <div className="teams-label">Teams</div>
-                                <div>{props.teams.join(", ")}</div>
-                            </div>
-                        )}
+                    <div className="flex-column summary">
+                        <div className="name">{props.name}</div>
+                        <div className="description">{props.description}</div>
+                        {props.projects &&
+                            props.projects.length > 0 && (
+                                <div className="projects-container">
+                                    <div className="projects-label">Projects</div>
+                                    <div className="projects-list">{props.projects.join(", ")}</div>
+                                </div>
+                            )}
+                        {props.teams &&
+                            props.teams.length > 0 && (
+                                <div className="teams-container">
+                                    <div className="teams-label">Teams</div>
+                                    <div className="teams-list">{props.teams.join(", ")}</div>
+                                </div>
+                            )}
+                    </div>
                     <IdentityView className="owner-container" value={props.owner} />
                 </div>
             </Card>
