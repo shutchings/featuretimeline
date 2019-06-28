@@ -16,7 +16,7 @@ export function planDirectoryReducer(state: IPlanDirectoryState, action: PlanDir
                 break;
             }
             case PlanDirectoryActionTypes.CreatePlan: {
-                const { id, name, description } = action.payload;
+                const { id, name, description, owner } = action.payload;
 
                 draft.plans.push({
                     id: id,
@@ -24,6 +24,7 @@ export function planDirectoryReducer(state: IPlanDirectoryState, action: PlanDir
                     description: description,
                     projectNames: [],
                     teamNames: [],
+                    owner: owner,
                     createdOn: new Date()
                 });
 

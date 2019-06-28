@@ -14,6 +14,7 @@ import { EpicTimelineActions } from "../../Redux/Actions/EpicTimelineActions";
 import { LoadingStatus } from "../../Contracts";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
+import { getCurrentUser } from "../../Common/Utilities/Identity";
 
 export interface IPlanDirectoryProps {}
 
@@ -83,11 +84,12 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
 
             const plans = this.props.plans.map(plan => (
                 <PlanCard
-                    id={plan.id}
+                    planId={plan.id}
                     name={plan.name}
                     description={plan.description}
                     teams={plan.teamNames}
                     projects={plan.projectNames}
+                    owner={plan.owner}
                     onClick={id => this.props.toggleSelectedPlanId(id)}
                 />
             ));
@@ -108,11 +110,13 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
                     existingPlanNames={this.props.plans.map(plan => plan.name)}
                     onDismiss={() => this.props.toggleNewPlanDialogVisible(false)}
                     onCreate={(name: string, description: string) => {
+                        const owner = getCurrentUser();
+                        owner._links = undefined;
                         PortfolioPlanningDataService.getInstance()
-                            .AddPortfolioPlan(name, description)
+                            .AddPortfolioPlan(name, description, owner)
                             .then(
                                 newPlan => {
-                                    this.props.createPlan(newPlan.id, newPlan.name, newPlan.description);
+                                    this.props.createPlan(newPlan.id, newPlan.name, newPlan.description, owner);
                                     this.props.toggleNewPlanDialogVisible(false);
                                 },
                                 reason => {

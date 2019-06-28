@@ -1,4 +1,5 @@
 import { ODataQueryProjectInput } from "./ODataQueryModels";
+import { IdentityRef } from "VSS/WebApi/Contracts";
 
 export interface PortfolioPlanningQueryInput {
     /**
@@ -79,6 +80,7 @@ export interface PortfolioPlanningMetadata {
     description: string;
     teamNames: string[];
     projectNames: string[];
+    owner: IdentityRef;
     createdOn: Date;
 }
 
