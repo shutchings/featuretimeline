@@ -1,8 +1,11 @@
 import * as React from "react";
 import "./PlanSummary.scss";
 import { ITeam } from "../Contracts";
+import { IdentityRef } from "VSS/WebApi/Contracts";
+import { IdentityView } from "../Common/Components/IdentityView";
 
 export interface IPlanSummaryProps {
+    owner: IdentityRef;
     projects: string[];
     teams: { [teamId: string]: ITeam };
 }
@@ -15,14 +18,19 @@ export const PlanSummary = (props: IPlanSummaryProps) => {
 
     return (
         <div className="plan-summary">
-            <div className="summary-item">
-                <div className="projects-teams-label">Teams</div>
-                <div className="projects-teams-content">{teams}</div>
-            </div>
-            <div className="summary-item">
-                <div className="projects-teams-label">Projects</div>
-                <div className="projects-teams-content">{projects}</div>
-            </div>
+            <IdentityView className="owner" value={props.owner} />
+            {projects && (
+                <div className="summary-item">
+                    <div className="projects-teams-label">Teams</div>
+                    <div className="projects-teams-content">{teams}</div>
+                </div>
+            )}
+            {teams && (
+                <div className="summary-item">
+                    <div className="projects-teams-label">Projects</div>
+                    <div className="projects-teams-content">{projects}</div>
+                </div>
+            )}
         </div>
     );
 };

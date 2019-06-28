@@ -4,6 +4,18 @@
 .plan-summary {
     display: flex;
 
+    .owner {
+        display: flex;
+        align-items: center;
+
+        .display-name {
+            @extend .title-s;
+            margin-left: $spacing-8;
+        }
+
+        padding-right: $spacing-32;
+    }
+
     .summary-item {
         padding-right: $spacing-32;
         max-width: 400px;

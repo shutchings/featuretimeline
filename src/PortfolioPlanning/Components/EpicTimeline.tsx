@@ -20,6 +20,8 @@ import { ProgressDetails } from "../../Common/react/Components/ProgressDetails/P
 import { InfoIcon } from "../../Common/react/Components/InfoIcon/InfoIcon";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { PlanSummary } from "./PlanSummary";
+import { getSelectedPlanOwner } from "../Redux/Selectors/PlanDirectorySelectors";
+import { IdentityRef } from "VSS/WebApi/Contracts";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -36,6 +38,7 @@ interface IEpicTimelineMappedProps {
     selectedItemId: number;
     progressTrackingCriteria: ProgressTrackingCriteria;
     planLoadingStatus: LoadingStatus;
+    planOwner: IdentityRef;
 }
 
 export type IEpicTimelineProps = IEpicTimelineOwnProps & IEpicTimelineMappedProps & typeof Actions;
@@ -64,7 +67,11 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
 
             return (
                 <div className="page-content">
-                    <PlanSummary projects={this.props.groups.map(group => group.title)} teams={this.props.teams} />
+                    <PlanSummary
+                        projects={this.props.groups.map(group => group.title)}
+                        teams={this.props.teams}
+                        owner={this.props.planOwner}
+                    />
                     <div className="configuration-container">
                         <div className="progress-options">
                             <div className="progress-options-label">Track Progress Using: </div>
@@ -290,6 +297,7 @@ function mapStateToProps(state: IPortfolioPlanningState): IEpicTimelineMappedPro
         addEpicDialogOpen: getAddEpicDialogOpen(state.epicTimelineState),
         setDatesDialogHidden: getSetDatesDialogHidden(state.epicTimelineState),
         selectedItemId: state.epicTimelineState.selectedItemId,
+        planOwner: getSelectedPlanOwner(state),
         progressTrackingCriteria: getProgressTrackingCriteria(state.epicTimelineState),
         planLoadingStatus: state.epicTimelineState.planLoadingStatus
     };
