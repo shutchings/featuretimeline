@@ -20,7 +20,9 @@ import { ODataClient } from "../Common/OData/ODataClient";
 import {
     ODataWorkItemQueryResult,
     ODataAreaQueryResult,
-    WellKnownEffortODataColumnNames
+    WellKnownEffortODataColumnNames,
+    WorkItemTypeAggregationClauses,
+    ODataConstants
 } from "../PortfolioPlanning/Models/ODataQueryModels";
 import { GUIDUtil } from "../Common/GUIDUtil";
 import { ProjectConfiguration } from "../PortfolioPlanning/Models/ProjectBacklogModels";
@@ -38,10 +40,9 @@ export class PortfolioPlanningDataService {
     public async runPortfolioItemsQuery(
         queryInput: PortfolioPlanningQueryInput
     ): Promise<PortfolioPlanningQueryResult> {
-        const odataQueryString = ODataQueryBuilder.WorkItemsQueryString(queryInput);
-
+        const workItemsQuery = ODataQueryBuilder.WorkItemsQueryString(queryInput);
         const client = await ODataClient.getInstance();
-        const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
+        const fullQueryUrl = client.generateProjectLink(undefined, workItemsQuery.queryString);
 
         return (
             client
@@ -49,7 +50,11 @@ export class PortfolioPlanningDataService {
                 .runPostQuery(fullQueryUrl)
                 .then(
                     //(results: any) => this.ParseODataPortfolioPlanningQueryResultResponse(results),
-                    (results: any) => this.ParseODataPortfolioPlanningQueryResultResponseAsBatch(results),
+                    (results: any) =>
+                        this.ParseODataPortfolioPlanningQueryResultResponseAsBatch(
+                            results,
+                            workItemsQuery.aggregationClauses
+                        ),
                     error => this.ParseODataErrorResponse(error)
                 )
         );
@@ -74,6 +79,12 @@ export class PortfolioPlanningDataService {
     public async runTeamsInAreasQuery(
         queryInput: PortfolioPlanningTeamsInAreaQueryInput
     ): Promise<PortfolioPlanningTeamsInAreaQueryResult> {
+        if (!queryInput || Object.keys(queryInput).length === 0) {
+            return Promise.resolve({
+                exceptionMessage: null,
+                teamsInArea: {}
+            });
+        }
         const odataQueryString = ODataQueryBuilder.TeamsInAreaQueryString(queryInput);
 
         const client = await ODataClient.getInstance();
@@ -377,28 +388,38 @@ export class PortfolioPlanningDataService {
     }
     */
 
-    private ParseODataPortfolioPlanningQueryResultResponseAsBatch(results: any): PortfolioPlanningQueryResult {
+    private ParseODataPortfolioPlanningQueryResultResponseAsBatch(
+        results: any,
+        aggregationClauses: WorkItemTypeAggregationClauses
+    ): PortfolioPlanningQueryResult {
         if (!results) {
             return null;
         }
 
-        //  TODO hack hack ... Look for start of JSON response "{"@odata.context""
-        const responseString: string = results;
-        const start = responseString.indexOf('{"@odata.context"');
-        const end = responseString.lastIndexOf("}");
-        const jsonString = responseString.substring(start, end + 1);
-        const jsonObject = JSON.parse(jsonString);
+        try {
+            //  TODO hack hack ... Look for start of JSON response "{"@odata.context""
+            const responseString: string = results;
+            const start = responseString.indexOf('{"@odata.context"');
+            const end = responseString.lastIndexOf("}");
+            const jsonString = responseString.substring(start, end + 1);
+            const jsonObject = JSON.parse(jsonString);
 
-        if (!jsonObject || !jsonObject["value"]) {
-            return null;
+            if (!jsonObject || !jsonObject["value"]) {
+                return null;
+            }
+
+            return {
+                exceptionMessage: null,
+                items: this.PortfolioPlanningQueryResultItems(jsonObject.value, aggregationClauses)
+            };
+        } catch (error) {
+            console.log(error);
+
+            return {
+                exceptionMessage: "Could not retrieve work item data.",
+                items: []
+            };
         }
-
-        const rawResult: ODataWorkItemQueryResult[] = jsonObject.value;
-
-        return {
-            exceptionMessage: null,
-            items: this.PortfolioPlanningQueryResultItems(rawResult)
-        };
     }
 
     private ParseODataTeamsInAreaQueryResultResponse(results: any): PortfolioPlanningTeamsInAreaQueryResult {
@@ -443,13 +464,15 @@ export class PortfolioPlanningDataService {
     }
 
     private PortfolioPlanningQueryResultItems(
-        rawItems: ODataWorkItemQueryResult[]
+        jsonValuePayload: any,
+        aggregationClauses: WorkItemTypeAggregationClauses
     ): PortfolioPlanningQueryResultItem[] {
-        if (!rawItems) {
+        if (!jsonValuePayload) {
             return null;
         }
 
-        return rawItems.map(rawItem => {
+        return jsonValuePayload.map(jsonArrayItem => {
+            const rawItem: ODataWorkItemQueryResult = jsonArrayItem;
             const areaIdValue: string = rawItem.AreaSK ? rawItem.AreaSK.toLowerCase() : null;
 
             const result: PortfolioPlanningQueryResultItem = {
@@ -470,20 +493,54 @@ export class PortfolioPlanningDataService {
                 CountProgress: 0.0
             };
 
-            if (rawItem.Descendants && rawItem.Descendants.length === 1) {
-                result.CompletedCount = rawItem.Descendants[0].CompletedCount;
-                result.TotalCount = rawItem.Descendants[0].TotalCount;
+            const descendantsJsonObject = jsonArrayItem[ODataConstants.Descendants];
+            if (descendantsJsonObject && descendantsJsonObject.length === 1) {
+                const projectIdLowercase = rawItem.ProjectSK.toLowerCase();
+                const portfolioWorkItemTypeLowercase = rawItem.WorkItemType.toLowerCase();
+                const propertyAliases = aggregationClauses.aliasMap[projectIdLowercase]
+                    ? aggregationClauses.aliasMap[projectIdLowercase][portfolioWorkItemTypeLowercase]
+                    : null;
 
-                //  TODO    UI models need to be updated with "Effort" instead of hard-coding "Story points"
-                result.CompletedStoryPoints = rawItem.Descendants[0].CompletedEffort;
-                result.TotalStoryPoints = rawItem.Descendants[0].TotalEffort;
-
-                result.StoryPointsProgress = rawItem.Descendants[0].EffortProgress;
-                result.CountProgress = rawItem.Descendants[0].CountProgress;
+                this.ParseDescendant(descendantsJsonObject[0], result, propertyAliases);
             }
 
             return result;
         });
+    }
+
+    private ParseDescendant(
+        descendantJsonObject: any,
+        resultItem: PortfolioPlanningQueryResultItem,
+        propertyAliases: {
+            totalEffortAlias: string;
+            completedEffortAlias: string;
+        }
+    ): void {
+        //  Parse static content. All queries, no matter the work item types project configuration
+        //  will always return these values for each descendant.
+        const totalCount: number = descendantJsonObject[ODataConstants.TotalCount] || 0;
+        const completedCount: number = descendantJsonObject[ODataConstants.CompletedCount] || 0;
+        const countProgress: number = totalCount && completedCount && totalCount > 0 ? completedCount / totalCount : 0;
+
+        resultItem.TotalCount = totalCount;
+        resultItem.CompletedCount = completedCount;
+        resultItem.CountProgress = countProgress;
+
+        //  Effort progress values depend on the work item type used for the requirement backlog level.
+        let totalEffort: number = 0;
+        let completedEffort: number = 0;
+        let effortProgress: number = 0;
+
+        if (propertyAliases) {
+            totalEffort = descendantJsonObject[propertyAliases.totalEffortAlias] || 0;
+            completedEffort = descendantJsonObject[propertyAliases.completedEffortAlias] || 0;
+            effortProgress = totalEffort && completedEffort && totalEffort > 0 ? completedEffort / totalEffort : 0;
+        }
+
+        //  TODO    UI models need to be updated with "Effort" instead of hard-coding "Story points"
+        resultItem.TotalStoryPoints = totalEffort;
+        resultItem.CompletedStoryPoints = completedEffort;
+        resultItem.StoryPointsProgress = effortProgress;
     }
 
     private PortfolioPlanningAreaQueryResultItems(rawItems: ODataAreaQueryResult[]): TeamsInArea {
@@ -512,17 +569,26 @@ export class PortfolioPlanningDataService {
 export class ODataQueryBuilder {
     private static readonly ProjectEntitySelect: string = "ProjectSK,ProjectName";
 
-    public static WorkItemsQueryString(input: PortfolioPlanningQueryInput): string {
+    public static WorkItemsQueryString(
+        input: PortfolioPlanningQueryInput
+    ): {
+        queryString: string;
+        aggregationClauses: WorkItemTypeAggregationClauses;
+    } {
+        const descendantsQuery = this.BuildODataDescendantsQuery(input);
+
         // prettier-ignore
-        return (
+        return {
+            queryString: 
             "WorkItems" +
             "?" +
                 "$select=WorkItemId,WorkItemType,Title,State,StartDate,TargetDate,ProjectSK,AreaSK" +
             "&" +
                 `$filter=${this.BuildODataQueryFilter(input)}` +
             "&" +
-                `$expand=${this.BuildODataDescendantsQuery(input)}`
-        );
+                `$expand=${descendantsQuery.queryString}`,
+            aggregationClauses: descendantsQuery.aggregationClauses
+        };
     }
 
     public static ProjectsQueryString(input: PortfolioPlanningProjectQueryInput): string {
@@ -655,53 +721,126 @@ export class ODataQueryBuilder {
         )
      * @param input 
      */
-    private static BuildODataDescendantsQuery(input: PortfolioPlanningQueryInput): string {
-        const descendantsTypesSet: { [workItemType: string]: string } = {};
+    private static BuildODataDescendantsQuery(
+        input: PortfolioPlanningQueryInput
+    ): {
+        queryString: string;
+        aggregationClauses: WorkItemTypeAggregationClauses;
+    } {
+        /*
+        const descendantsTypesSet: {
+            [workItemType: string]: {
+                effortODataColumnName: string;
+                portfolioWorkItemType: string;
+            };
+        } = {};
         const requirementWiTypes: string[] = [];
 
         input.WorkItems.forEach(wi => {
             const wiTypeKey = wi.DescendantsWorkItemTypeFilter.toLowerCase();
 
             if (!descendantsTypesSet[wiTypeKey]) {
-                descendantsTypesSet[wiTypeKey] = wi.EffortODataColumnName;
+                descendantsTypesSet[wiTypeKey] = {
+                    effortODataColumnName: wi.EffortODataColumnName,
+                    portfolioWorkItemType: wi.WorkItemTypeFilter
+                };
                 requirementWiTypes.push(`WorkItemType eq '${wiTypeKey}'`);
             }
         });
+        */
 
-        const effortSelectionConditional: string = this.BuildEffortSelectionConditional(descendantsTypesSet);
+        const aggregationClauses = this.BuildEffortSelectionConditional(input);
+
+        const descendantsWorkItemTypeFilters = Object.keys(aggregationClauses.allDescendantsWorkItemTypes).map(
+            key => aggregationClauses.allDescendantsWorkItemTypes[key]
+        );
+
+        const allAggregationClauses = Object.keys(aggregationClauses.allClauses);
 
         // prettier-ignore
-        return (
-            "Descendants(" +
-                "$apply=" +
-                    `filter(${requirementWiTypes.join(" or ")})` +
-                    "/aggregate(" +
-                        "$count as TotalCount," +
-                        "iif(StateCategory eq 'Completed',1,0) with sum as CompletedCount," +
-                        `${effortSelectionConditional} with sum as TotalEffort,` +
-                        `iif(StateCategory eq 'Completed',${effortSelectionConditional},0) with sum as CompletedEffort` +
-                    ")" +
-                    "/compute(" +
-                        "(CompletedCount div cast(TotalCount, Edm.Decimal)) as CountProgress," +
-                        "(iif(TotalEffort gt 0, CompletedEffort div TotalEffort, 0)) as EffortProgress" +
-                    ")" +
-            ")"
-        );
+        return {
+            queryString: 
+                "Descendants(" +
+                    "$apply=" +
+                        `filter(${descendantsWorkItemTypeFilters.join(" or ")})` +
+                        "/aggregate(" +
+                            "$count as TotalCount," +
+                            "iif(StateCategory eq 'Completed',1,0) with sum as CompletedCount," +
+                            `${allAggregationClauses.join(", ")}` +
+                        ")" +
+                ")",
+            aggregationClauses: aggregationClauses
+        };
     }
 
-    private static BuildEffortSelectionConditional(input: { [workItemType: string]: string }): string {
-        const keys = Object.keys(input);
-        if (keys.length === 0) {
-            return "0";
+    private static BuildEffortSelectionConditional(input: PortfolioPlanningQueryInput): WorkItemTypeAggregationClauses {
+        const result: WorkItemTypeAggregationClauses = {
+            aliasMap: {},
+            allClauses: {},
+            allDescendantsWorkItemTypes: {}
+        };
+
+        if (!input) {
+            return result;
         }
 
-        const workItemType = keys[0];
-        const oDataColumnName = input[workItemType];
+        let temporaryIdCounter: number = 0;
+        const colTypeMap: {
+            [oDataColumnName: string]: { [descendantWorkItemType: string]: number /**alias seed */ };
+        } = {};
 
-        delete input[workItemType];
+        input.WorkItems.forEach(project => {
+            const descendantWorkItemTypeLowercase = project.DescendantsWorkItemTypeFilter.toLowerCase();
+            const portfolioWorkItemTypeLowercase = project.WorkItemTypeFilter.toLowerCase();
+            const oDataColumnName = project.EffortODataColumnName;
+            const projectIdKeyLowercase = project.projectId.toLowerCase();
 
-        return `iif(WorkItemType eq '${workItemType}', ${oDataColumnName}, ${this.BuildEffortSelectionConditional(
-            input
-        )})`;
+            if (!colTypeMap[oDataColumnName]) {
+                colTypeMap[oDataColumnName] = {};
+            }
+
+            if (!colTypeMap[oDataColumnName][descendantWorkItemTypeLowercase]) {
+                temporaryIdCounter++;
+                colTypeMap[oDataColumnName][descendantWorkItemTypeLowercase] = temporaryIdCounter;
+            }
+
+            const aliasSeed: number = colTypeMap[oDataColumnName][descendantWorkItemTypeLowercase];
+            const totalAlias = `Total${aliasSeed}`.toLowerCase();
+            const totalClause =
+                `iif(WorkItemType eq '${descendantWorkItemTypeLowercase}', ${oDataColumnName},  0) ` +
+                `with sum as ${totalAlias}`.toLowerCase();
+
+            const completedAlias = `Completed${aliasSeed}`.toLowerCase();
+            const completedClause =
+                "iif(" +
+                "    StateCategory eq 'Completed' " +
+                `and WorkItemType eq '${descendantWorkItemTypeLowercase}', ${oDataColumnName},  0) ` +
+                `with sum as ${completedAlias}`.toLowerCase();
+
+            //  Save column alias used by project and work item type to read results.
+            if (!result.aliasMap[projectIdKeyLowercase]) {
+                result.aliasMap[projectIdKeyLowercase] = {};
+            }
+
+            if (!result.aliasMap[projectIdKeyLowercase][portfolioWorkItemTypeLowercase]) {
+                result.aliasMap[projectIdKeyLowercase][portfolioWorkItemTypeLowercase] = {
+                    totalEffortAlias: totalAlias,
+                    completedEffortAlias: completedAlias
+                };
+            }
+
+            //  Add clauses set.
+            result.allClauses[totalClause] = "";
+            result.allClauses[completedClause] = "";
+
+            //  Keep a set of descendants work item types.
+            if (!result.allDescendantsWorkItemTypes[descendantWorkItemTypeLowercase]) {
+                result.allDescendantsWorkItemTypes[
+                    descendantWorkItemTypeLowercase
+                ] = `WorkItemType eq '${descendantWorkItemTypeLowercase}'`;
+            }
+        });
+
+        return result;
     }
 }
