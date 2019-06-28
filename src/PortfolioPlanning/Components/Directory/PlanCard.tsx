@@ -14,7 +14,7 @@ export interface IPlanCardProps {
 }
 
 export const PlanCard = (props: IPlanCardProps) => {
-        const user = getCurrentUser();
+    const user = getCurrentUser();
 
     return (
         <div className="plan-card-container" onClick={() => props.onClick(props.id)}>
@@ -37,7 +37,7 @@ export const PlanCard = (props: IPlanCardProps) => {
                             </div>
                         )}
                 </div>
-                    <IdentityView value={user} />
+                <IdentityView value={user} />
             </Card>
         </div>
     );
