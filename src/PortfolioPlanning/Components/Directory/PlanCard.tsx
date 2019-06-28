@@ -1,23 +1,22 @@
 import * as React from "react";
 import "./PlanCard.scss";
 import { Card } from "azure-devops-ui/Card";
-import { getCurrentUser } from "../../Common/Utilities/Identity";
 import { IdentityView } from "../../Common/Components/IdentityView";
+import { IdentityRef } from "VSS/WebApi/Contracts";
 
 export interface IPlanCardProps {
-    id: string;
+    planId: string;
     name: string;
     description: string;
     projects: string[];
     teams: string[];
+    owner: IdentityRef;
     onClick: (id: string) => void;
 }
 
 export const PlanCard = (props: IPlanCardProps) => {
-    const user = getCurrentUser();
-
     return (
-        <div className="plan-card-container" onClick={() => props.onClick(props.id)}>
+        <div className="plan-card-container" onClick={() => props.onClick(props.planId)}>
             <Card className="plan-card">
                 <div className="flex-column">
                     <div className="name">{props.name}</div>
@@ -37,8 +36,8 @@ export const PlanCard = (props: IPlanCardProps) => {
                             </div>
                         )}
                     <div className="owner-container">
-                        <IdentityView value={user} />
-                        {user.displayName}
+                        <IdentityView value={props.owner} />
+                        {props.owner.displayName}
                     </div>
                 </div>
             </Card>
