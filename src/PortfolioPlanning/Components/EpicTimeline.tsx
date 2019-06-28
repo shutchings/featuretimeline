@@ -5,7 +5,7 @@ import Timeline from "react-calendar-timeline";
 import "./EpicTimeline.scss";
 import { IEpicTimelineState, IPortfolioPlanningState } from "../Redux/Contracts";
 import {
-    getAddEpicDialogOpen,
+    getAddEpicPanelOpen,
     getSetDatesDialogHidden,
     getTimelineGroups,
     getTimelineItems,
@@ -14,7 +14,7 @@ import {
 import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
 import { DetailsDialog } from "./DetailsDialog";
-import { AddEpicDialog } from "./AddEpicDialog";
+import { AddEpicPanel } from "./AddEpicPanel";
 import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
 import { ProgressDetails } from "../../Common/react/Components/ProgressDetails/ProgressDetails";
 import { InfoIcon } from "../../Common/react/Components/InfoIcon/InfoIcon";
@@ -31,7 +31,7 @@ interface IEpicTimelineMappedProps {
     groups: ITimelineGroup[];
     teams: { [teamId: string]: ITeam };
     items: ITimelineItem[];
-    addEpicDialogOpen: boolean;
+    addEpicPanelOpen: boolean;
     setDatesDialogHidden: boolean;
     selectedItemId: number;
     progressTrackingCriteria: ProgressTrackingCriteria;
@@ -157,7 +157,7 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
                             );
                         }}
                     />
-                    {this._renderAddEpicDialog()}
+                    {this._renderAddEpicPanel()}
                     {this.props.selectedItemId && (
                         <DetailsDialog
                             key={Date.now()} // TODO: Is there a better way to reset the state?
@@ -214,7 +214,7 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
     };
 
     private _onAddEpicClick = (): void => {
-        this.props.onOpenAddEpicDialog();
+        this.props.onOpenAddEpicPanel();
     };
 
     private _onRemoveSelectedEpicClick = (): void => {
@@ -235,12 +235,12 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
         }
     };
 
-    private _renderAddEpicDialog(): JSX.Element {
-        if (this.props.addEpicDialogOpen) {
+    private _renderAddEpicPanel(): JSX.Element {
+        if (this.props.addEpicPanelOpen) {
             return (
-                <AddEpicDialog
+                <AddEpicPanel
                     planId={this.props.planId}
-                    onCloseAddEpicDialog={this.props.onCloseAddEpicDialog}
+                    onCloseAddEpicPanel={this.props.onCloseAddEpicPanel}
                     onAddEpics={this.props.onAddEpics}
                 />
             );
@@ -287,7 +287,7 @@ function mapStateToProps(state: IPortfolioPlanningState): IEpicTimelineMappedPro
         groups: getTimelineGroups(state.epicTimelineState),
         teams: state.epicTimelineState.teams,
         items: getTimelineItems(state.epicTimelineState),
-        addEpicDialogOpen: getAddEpicDialogOpen(state.epicTimelineState),
+        addEpicPanelOpen: getAddEpicPanelOpen(state.epicTimelineState),
         setDatesDialogHidden: getSetDatesDialogHidden(state.epicTimelineState),
         selectedItemId: state.epicTimelineState.selectedItemId,
         progressTrackingCriteria: getProgressTrackingCriteria(state.epicTimelineState),
@@ -296,8 +296,8 @@ function mapStateToProps(state: IPortfolioPlanningState): IEpicTimelineMappedPro
 }
 
 const Actions = {
-    onOpenAddEpicDialog: EpicTimelineActions.openAddEpicDialog,
-    onCloseAddEpicDialog: EpicTimelineActions.closeAddEpicDialog,
+    onOpenAddEpicPanel: EpicTimelineActions.openAddEpicPanel,
+    onCloseAddEpicPanel: EpicTimelineActions.closeAddEpicPanel,
     onAddEpics: EpicTimelineActions.addEpics,
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
     onUpdateEndDate: EpicTimelineActions.updateEndDate,

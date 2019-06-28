@@ -13,8 +13,8 @@ export const enum EpicTimelineActionTypes {
     SetSelectedItemId = "EpicTimeline/SetSelectedItemId",
     PortfolioItemsReceived = "EpicTimeline/PortfolioItemsReceived",
     PortfolioItemDeleted = "EpicTimeline/PortfolioItemDeleted",
-    OpenAddEpicDialog = "EpicTimeline/OpenAddEpicDialog",
-    CloseAddEpicDialog = "EpicTimeline/CloseAddEpicDialog",
+    OpenAddEpicPanel = "EpicTimeline/OpenAddEpicPanel",
+    CloseAddEpicPanel = "EpicTimeline/CloseAddEpicPanel",
     AddEpics = "EpicTimeline/AddEpics",
     RemoveEpic = "EpicTimeline/RemoveEpic",
     ToggleProgressTrackingCriteria = "EpicTimeline/ToggleProgressTrackingCriteria",
@@ -44,8 +44,8 @@ export const EpicTimelineActions = {
         createAction(EpicTimelineActionTypes.PortfolioItemsReceived, result),
     portfolioItemDeleted: (itemDeleted: IRemoveEpic) =>
         createAction(EpicTimelineActionTypes.PortfolioItemDeleted, itemDeleted),
-    openAddEpicDialog: () => createAction(EpicTimelineActionTypes.OpenAddEpicDialog),
-    closeAddEpicDialog: () => createAction(EpicTimelineActionTypes.CloseAddEpicDialog),
+    openAddEpicPanel: () => createAction(EpicTimelineActionTypes.OpenAddEpicPanel),
+    closeAddEpicPanel: () => createAction(EpicTimelineActionTypes.CloseAddEpicPanel),
     addEpics: (epicsToAdd: IAddEpics) => createAction(EpicTimelineActionTypes.AddEpics, epicsToAdd),
     removeEpic: (epicToRemove: IRemoveEpic) => createAction(EpicTimelineActionTypes.RemoveEpic, epicToRemove),
     toggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>
