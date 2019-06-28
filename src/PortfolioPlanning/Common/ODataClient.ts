@@ -1,5 +1,5 @@
 import { authTokenManager } from "VSS/Authentication/Services";
-import { GUIDUtil } from "../GUIDUtil";
+import { GUIDUtil } from "./Utilities/GUIDUtil";
 /// <reference types='jquery' />
 /// <reference types='jqueryui' />
 

@@ -1,5 +1,5 @@
 import { ODataQueryProjectInput } from "./ODataQueryModels";
-import { IdentityRef } from "VSS/WebApi/Contracts";
+import { IdentityRef } from "../Common/Services/node_modules/VSS/WebApi/Contracts";
 
 export interface PortfolioPlanningQueryInput {
     /**

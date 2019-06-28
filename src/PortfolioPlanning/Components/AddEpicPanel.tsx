@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Project, WorkItem } from "../Models/PortfolioPlanningQueryModels";
 import { IEpic, IProject, IAddEpics } from "../Contracts";
-import { PortfolioPlanningDataService } from "../../Services/PortfolioPlanningDataService";
+import { PortfolioPlanningDataService } from "../Common/Services/PortfolioPlanningDataService";
 import { Panel } from "azure-devops-ui/Panel";
 import { Dropdown, DropdownCallout } from "azure-devops-ui/Dropdown";
 import { Location } from "azure-devops-ui/Utilities/Position";

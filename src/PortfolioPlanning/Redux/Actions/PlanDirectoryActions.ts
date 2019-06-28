@@ -1,4 +1,4 @@
-import { createAction, ActionsUnion } from "../../../Common/redux/Helpers/ActionHelper";
+import { createAction, ActionsUnion } from "../Helpers";
 import { PortfolioPlanningDirectory } from "../../Models/PortfolioPlanningQueryModels";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 

@@ -1,4 +1,4 @@
-import { GUIDUtil } from "../../../Common/GUIDUtil";
+import { GUIDUtil } from "./GUIDUtil";
 import { isNullOrWhiteSpace, startsWith } from "../Utilities/String";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 

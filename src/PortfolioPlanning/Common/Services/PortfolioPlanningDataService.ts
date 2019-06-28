@@ -16,10 +16,10 @@ import {
     TeamsInArea,
     PortfolioPlanningFullContentQueryResult,
     PortfolioPlanningMetadata
-} from "../PortfolioPlanning/Models/PortfolioPlanningQueryModels";
-import { ODataClient } from "../Common/OData/ODataClient";
-import { ODataWorkItemQueryResult, ODataAreaQueryResult } from "../PortfolioPlanning/Models/ODataQueryModels";
-import { GUIDUtil } from "../Common/GUIDUtil";
+} from "../../Models/PortfolioPlanningQueryModels";
+import { ODataClient } from "../ODataClient";
+import { ODataWorkItemQueryResult, ODataAreaQueryResult } from "../../Models/ODataQueryModels";
+import { GUIDUtil } from "../Utilities/GUIDUtil";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 
 export class PortfolioPlanningDataService {
