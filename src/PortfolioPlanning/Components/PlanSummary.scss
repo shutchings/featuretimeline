@@ -27,5 +27,8 @@
     }
     .projects-teams-content {
         @extend .title-s;
+        max-height: 48px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
