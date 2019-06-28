@@ -59,7 +59,12 @@ export class AddEpicPanel extends React.Component<IAddEpicPanelProps, IAddEpicPa
                 titleProps={{ text: "Add items" }}
                 footerButtonProps={[
                     { text: "Cancel", onClick: () => this.props.onCloseAddEpicPanel() },
-                    { text: "Add", primary: true, onClick: () => this._onAddEpics() }
+                    {
+                        text: "Add",
+                        primary: true,
+                        onClick: () => this._onAddEpics(),
+                        disabled: this.state.selectedEpics.length === 0
+                    }
                 ]}
             >
                 <div className="add-epic-panel-container">
