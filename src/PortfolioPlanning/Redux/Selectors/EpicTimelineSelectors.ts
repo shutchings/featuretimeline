@@ -64,7 +64,7 @@ export function getSetDatesDialogHidden(state: IEpicTimelineState): boolean {
     return state.setDatesDialogHidden;
 }
 
-export function getAddEpicDialogOpen(state: IEpicTimelineState): boolean {
+export function getAddEpicPanelOpen(state: IEpicTimelineState): boolean {
     return state.addEpicDialogOpen;
 }
 
