@@ -22,6 +22,8 @@ export function planDirectoryReducer(state: IPlanDirectoryState, action: PlanDir
                     id: id,
                     name: name,
                     description: description,
+                    projectNames: [],
+                    teamNames: [],
                     createdOn: new Date()
                 });
 
@@ -35,6 +37,16 @@ export function planDirectoryReducer(state: IPlanDirectoryState, action: PlanDir
 
                 // Navigate back to directory page
                 draft.selectedPlanId = undefined;
+
+                break;
+            }
+            case PlanDirectoryActionTypes.UpdateProjectsAndTeamsMetadata: {
+                const { id, projectNames, teamNames } = action.payload;
+
+                const planToUpdate = draft.plans.find(plan => plan.id === id);
+
+                planToUpdate.projectNames = projectNames;
+                planToUpdate.teamNames = teamNames;
 
                 break;
             }

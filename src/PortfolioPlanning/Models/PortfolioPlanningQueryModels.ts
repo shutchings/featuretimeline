@@ -77,6 +77,8 @@ export interface PortfolioPlanningMetadata {
     id: string;
     name: string;
     description: string;
+    teamNames: string[];
+    projectNames: string[];
     createdOn: Date;
 }
 

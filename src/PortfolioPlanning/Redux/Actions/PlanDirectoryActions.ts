@@ -5,6 +5,7 @@ export const enum PlanDirectoryActionTypes {
     Initialize = "PlanDirectory/Initialize",
     CreatePlan = "PlanDirectory/CreatePlan",
     DeletePlan = "PlanDirectory/DeletePlan",
+    UpdateProjectsAndTeamsMetadata = "PlanDirectory/UpdateProjectsAndTeamsMetadata",
     ToggleSelectedPlanId = "PlanDirectory/SelectPlan",
     ToggleNewPlanDialogVisible = "PlanDirectory/ToggleNewPlanDialogVisible"
 }
@@ -19,6 +20,8 @@ export const PlanDirectoryActions = {
             description
         }),
     deletePlan: (id: string) => createAction(PlanDirectoryActionTypes.DeletePlan, { id }),
+    updateProjectsAndTeamsMetadata: (id: string, projectNames: string[], teamNames: string[]) =>
+        createAction(PlanDirectoryActionTypes.UpdateProjectsAndTeamsMetadata, { id, projectNames, teamNames }),
     toggleSelectedPlanId: (id: string) =>
         createAction(PlanDirectoryActionTypes.ToggleSelectedPlanId, {
             id

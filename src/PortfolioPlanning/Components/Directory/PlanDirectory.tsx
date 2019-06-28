@@ -86,8 +86,8 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
                     id={plan.id}
                     name={plan.name}
                     description={plan.description}
-                    teams={["Contoso", "WIT X"]}
-                    projects={["Fabrikam", "AzureDevOps"]}
+                    teams={plan.teamNames}
+                    projects={plan.projectNames}
                     onClick={id => this.props.toggleSelectedPlanId(id)}
                 />
             ));

@@ -2,11 +2,12 @@ import { effects, SagaIterator } from "redux-saga";
 import { PortfolioPlanningDataService } from "../../../Services/PortfolioPlanningDataService";
 import { PlanDirectoryActions, PlanDirectoryActionTypes } from "../Actions/PlanDirectoryActions";
 import { ActionsOfType } from "../Helpers";
-import { PortfolioPlanningDirectory } from "../../Models/PortfolioPlanningQueryModels";
+import { PortfolioPlanningDirectory, PortfolioPlanningMetadata } from "../../Models/PortfolioPlanningQueryModels";
 
 export function* planDirectorySaga(): SagaIterator {
     yield effects.call(initializePlanDirectory);
     yield effects.takeEvery(PlanDirectoryActionTypes.DeletePlan, deletePlan);
+    yield effects.takeEvery(PlanDirectoryActionTypes.UpdateProjectsAndTeamsMetadata, updateProjectsAndTeamsMetadata);
 }
 
 export function* initializePlanDirectory(): SagaIterator {
@@ -25,4 +26,21 @@ export function* deletePlan(
     const service = PortfolioPlanningDataService.getInstance();
 
     yield effects.call([service, service.DeletePortfolioPlan], id);
+}
+
+export function* updateProjectsAndTeamsMetadata(
+    action: ActionsOfType<PlanDirectoryActions, PlanDirectoryActionTypes.UpdateProjectsAndTeamsMetadata>
+): SagaIterator {
+    const { id, projectNames, teamNames } = action.payload;
+
+    const service = PortfolioPlanningDataService.getInstance();
+
+    const planToUpdate: PortfolioPlanningMetadata = yield effects.call(
+        [service, service.GetPortfolioPlanDirectoryEntry],
+        id
+    );
+    planToUpdate.projectNames = projectNames;
+    planToUpdate.teamNames = teamNames;
+
+    yield effects.call([service, service.UpdatePortfolioPlanDirectoryEntry], planToUpdate);
 }
