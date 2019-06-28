@@ -3,11 +3,13 @@ import { PortfolioPlanningDataService } from "../../../Services/PortfolioPlannin
 import { PlanDirectoryActions, PlanDirectoryActionTypes } from "../Actions/PlanDirectoryActions";
 import { ActionsOfType } from "../Helpers";
 import { PortfolioPlanningDirectory, PortfolioPlanningMetadata } from "../../Models/PortfolioPlanningQueryModels";
+import { EpicTimelineActionTypes, EpicTimelineActions } from "../Actions/EpicTimelineActions";
+import { getSelectedPlanId } from "../Selectors/PlanDirectorySelectors";
 
 export function* planDirectorySaga(): SagaIterator {
     yield effects.call(initializePlanDirectory);
     yield effects.takeEvery(PlanDirectoryActionTypes.DeletePlan, deletePlan);
-    yield effects.takeEvery(PlanDirectoryActionTypes.UpdateProjectsAndTeamsMetadata, updateProjectsAndTeamsMetadata);
+    yield effects.takeEvery(EpicTimelineActionTypes.PortfolioItemsReceived, updateProjectsAndTeamsMetadata);
 }
 
 export function* initializePlanDirectory(): SagaIterator {
@@ -28,19 +30,50 @@ export function* deletePlan(
     yield effects.call([service, service.DeletePortfolioPlan], id);
 }
 
+// export function* updateProjectsAndTeamsMetadata(
+//     action: ActionsOfType<PlanDirectoryActions, PlanDirectoryActionTypes.UpdateProjectsAndTeamsMetadata>
+// ): SagaIterator {
+//     const { id, projectNames, teamNames } = action.payload;
+
+//     const service = PortfolioPlanningDataService.getInstance();
+
+//     const planToUpdate: PortfolioPlanningMetadata = yield effects.call(
+//         [service, service.GetPortfolioPlanDirectoryEntry],
+//         id
+//     );
+//     planToUpdate.projectNames = projectNames;
+//     planToUpdate.teamNames = teamNames;
+
+//     yield effects.call([service, service.UpdatePortfolioPlanDirectoryEntry], planToUpdate);
+// }
+
 export function* updateProjectsAndTeamsMetadata(
-    action: ActionsOfType<PlanDirectoryActions, PlanDirectoryActionTypes.UpdateProjectsAndTeamsMetadata>
+    action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.PortfolioItemsReceived>
 ): SagaIterator {
-    const { id, projectNames, teamNames } = action.payload;
+    const { projects, teamAreas } = action.payload;
+
+    const planId = yield effects.select(getSelectedPlanId);
 
     const service = PortfolioPlanningDataService.getInstance();
 
     const planToUpdate: PortfolioPlanningMetadata = yield effects.call(
         [service, service.GetPortfolioPlanDirectoryEntry],
-        id
+        planId
     );
-    planToUpdate.projectNames = projectNames;
-    planToUpdate.teamNames = teamNames;
+
+    // Update metadata to contain teams and projects for directory
+    const addedProjects = projects.projects.map(project => project.ProjectName);
+    const addedTeams = Object.keys(teamAreas.teamsInArea)
+        .map(areaId => teamAreas.teamsInArea[areaId])
+        .reduce((teamList, allTeamList) => allTeamList.concat(teamList), [])
+        .map(team => team.teamName);
+
+    planToUpdate.projectNames = addedProjects;
+    planToUpdate.teamNames = addedTeams;
 
     yield effects.call([service, service.UpdatePortfolioPlanDirectoryEntry], planToUpdate);
+
+    yield effects.put(
+        PlanDirectoryActions.updateProjectsAndTeamsMetadata(planToUpdate.projectNames, planToUpdate.teamNames)
+    );
 }

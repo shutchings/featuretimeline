@@ -20,8 +20,8 @@ export const PlanDirectoryActions = {
             description
         }),
     deletePlan: (id: string) => createAction(PlanDirectoryActionTypes.DeletePlan, { id }),
-    updateProjectsAndTeamsMetadata: (id: string, projectNames: string[], teamNames: string[]) =>
-        createAction(PlanDirectoryActionTypes.UpdateProjectsAndTeamsMetadata, { id, projectNames, teamNames }),
+    updateProjectsAndTeamsMetadata: (projectNames: string[], teamNames: string[]) =>
+        createAction(PlanDirectoryActionTypes.UpdateProjectsAndTeamsMetadata, { projectNames, teamNames }),
     toggleSelectedPlanId: (id: string) =>
         createAction(PlanDirectoryActionTypes.ToggleSelectedPlanId, {
             id

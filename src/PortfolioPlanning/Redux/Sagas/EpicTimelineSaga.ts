@@ -151,15 +151,6 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
     queryResult.mergeStrategy = MergeType.Add;
 
     yield put(EpicTimelineActions.portfolioItemsReceived(queryResult));
-
-    // Update metadata to contain teams and projects for directory
-    const addedProjects = queryResult.projects.projects.map(project => project.ProjectName);
-    const addedTeams = Object.keys(queryResult.teamAreas.teamsInArea)
-        .map(areaId => queryResult.teamAreas.teamsInArea[areaId])
-        .reduce((teamList, allTeamList) => allTeamList.concat(teamList), [])
-        .map(team => team.teamName);
-
-    yield put(PlanDirectoryActions.updateProjectsAndTeamsMetadata(storedPlan.id, addedProjects, addedTeams));
 }
 
 function* onRemoveEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.RemoveEpic>): SagaIterator {
