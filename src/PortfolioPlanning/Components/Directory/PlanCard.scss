@@ -1,4 +1,5 @@
 @import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+@import "node_modules/azure-devops-ui/Core/core.scss";
 
 .plan-card-container {
     margin: 16px 16px;
@@ -6,14 +7,34 @@
 
 .plan-card {
     width: 240px;
-    height: 200px;
+    height: 300px;
     background-color: $white;
+    @extend .font-weight-semibold;
 
     .name {
-        padding-bottom: 4px;
+        @extend .title-s;
+        height: 32px;
     }
 
     .description {
-        padding-bottom: 8px;
+        @extend .body-m;
+        height: 40px;
+    }
+
+    .projects-container,
+    .teams-container {
+        display: flex;
+        flex-direction: column;
+        margin-top: $spacing-16;
+
+        .projects-label,
+        .teams-label {
+            @extend .body-s;
+        }
+
+        .projects-list,
+        .teams-list {
+            @extend .body-m;
+        }
     }
 }

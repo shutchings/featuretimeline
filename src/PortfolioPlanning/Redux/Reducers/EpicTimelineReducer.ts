@@ -6,7 +6,7 @@ import {
     PortfolioItemDeletedAction
 } from "../Actions/EpicTimelineActions";
 import produce from "immer";
-import { ProgressTrackingCriteria } from "../../Contracts";
+import { ProgressTrackingCriteria, LoadingStatus } from "../../Contracts";
 import { MergeType } from "../../Models/PortfolioPlanningQueryModels";
 
 export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimelineActions): IEpicTimelineState {
@@ -57,7 +57,9 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 break;
             }
             case EpicTimelineActionTypes.PortfolioItemsReceived:
-                return handlePortfolioItemsReceived(state, action as PortfolioItemsReceivedAction);
+                draft.planLoadingStatus = LoadingStatus.Loaded;
+
+                return handlePortfolioItemsReceived(draft, action as PortfolioItemsReceivedAction);
 
             case EpicTimelineActionTypes.OpenAddEpicDialog: {
                 draft.addEpicDialogOpen = true;
@@ -74,19 +76,39 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 draft.progressTrackingCriteria = action.payload.criteria;
                 break;
             }
+            case EpicTimelineActionTypes.ToggleLoadingStatus: {
+                const { status } = action.payload;
+
+                draft.planLoadingStatus = status;
+
+                break;
+            }
+            case EpicTimelineActionTypes.ResetPlanState: {
+                draft.planLoadingStatus = LoadingStatus.NotLoaded;
+                draft.selectedItemId = undefined;
+                draft.setDatesDialogHidden = true;
+                draft.addEpicDialogOpen = false;
+                draft.epics = [];
+                draft.projects = [];
+                draft.teams = {};
+
+                break;
+            }
         }
     });
 }
 
 export function getDefaultState(): IEpicTimelineState {
     return {
+        planLoadingStatus: LoadingStatus.NotLoaded,
+        exceptionMessage: "",
         projects: [],
         projectConfiguration: {},
         teams: {},
         epics: [],
         message: "Initial message",
         addEpicDialogOpen: false,
-        setDatesDialogHidden: false,
+        setDatesDialogHidden: true,
         selectedItemId: null,
         progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount
     };
