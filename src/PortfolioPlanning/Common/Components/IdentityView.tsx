@@ -26,13 +26,16 @@ export const IdentityView = (props: IIdentityViewProps): JSX.Element => {
     }
 
     return (
-        <VssPersona
-            className={css("identity-view", props.className)}
-            size={props.size || "medium"}
-            identityDetailsProvider={{
-                getDisplayName: () => identityRef.displayName,
-                getIdentityImageUrl: () => identityRef.imageUrl
-            }}
-        />
+        <>
+            <VssPersona
+                className={css("identity-view", props.className)}
+                size={props.size || "medium"}
+                identityDetailsProvider={{
+                    getDisplayName: () => identityRef.displayName,
+                    getIdentityImageUrl: () => identityRef.imageUrl
+                }}
+            />
+            {identityRef.displayName}
+        </>
     );
 };

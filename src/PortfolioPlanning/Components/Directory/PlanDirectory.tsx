@@ -89,7 +89,7 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
                     description={plan.description}
                     teams={plan.teamNames}
                     projects={plan.projectNames}
-                    owner={getCurrentUser()}
+                    owner={plan.owner}
                     onClick={id => this.props.toggleSelectedPlanId(id)}
                 />
             ));
@@ -110,11 +110,13 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
                     existingPlanNames={this.props.plans.map(plan => plan.name)}
                     onDismiss={() => this.props.toggleNewPlanDialogVisible(false)}
                     onCreate={(name: string, description: string) => {
+                        const owner = getCurrentUser();
+                        owner._links = undefined;
                         PortfolioPlanningDataService.getInstance()
-                            .AddPortfolioPlan(name, description)
+                            .AddPortfolioPlan(name, description, owner)
                             .then(
                                 newPlan => {
-                                    this.props.createPlan(newPlan.id, newPlan.name, newPlan.description);
+                                    this.props.createPlan(newPlan.id, newPlan.name, newPlan.description, owner);
                                     this.props.toggleNewPlanDialogVisible(false);
                                 },
                                 reason => {

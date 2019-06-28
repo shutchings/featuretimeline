@@ -20,6 +20,7 @@ import {
 import { ODataClient } from "../Common/OData/ODataClient";
 import { ODataWorkItemQueryResult, ODataAreaQueryResult } from "../PortfolioPlanning/Models/ODataQueryModels";
 import { GUIDUtil } from "../Common/GUIDUtil";
+import { IdentityRef } from "VSS/WebApi/Contracts";
 
 export class PortfolioPlanningDataService {
     private static _instance: PortfolioPlanningDataService;
@@ -203,7 +204,11 @@ export class PortfolioPlanningDataService {
     private static readonly DirectoryCollectionName: string = "Directory";
     private static readonly PortfolioPlansCollectionName: string = "PortfolioPlans";
 
-    public async AddPortfolioPlan(newPlanName: string, newPlanDescription: string): Promise<PortfolioPlanning> {
+    public async AddPortfolioPlan(
+        newPlanName: string,
+        newPlanDescription: string,
+        owner: IdentityRef
+    ): Promise<PortfolioPlanning> {
         const client = await this.GetStorageClient();
         const newPlanId = GUIDUtil.newGuid().toLowerCase();
 
@@ -213,6 +218,7 @@ export class PortfolioPlanningDataService {
             description: newPlanDescription,
             teamNames: [],
             projectNames: [],
+            owner: owner,
             createdOn: new Date(),
             projects: {}
         };

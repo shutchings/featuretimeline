@@ -37,7 +37,6 @@ export const PlanCard = (props: IPlanCardProps) => {
                         )}
                     <div className="owner-container">
                         <IdentityView value={props.owner} />
-                        {props.owner.displayName}
                     </div>
                 </div>
             </Card>
