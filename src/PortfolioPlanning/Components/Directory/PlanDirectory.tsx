@@ -118,6 +118,7 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
                                 newPlan => {
                                     this.props.createPlan(newPlan.id, newPlan.name, newPlan.description, owner);
                                     this.props.toggleNewPlanDialogVisible(false);
+                                    this.props.toggleSelectedPlanId(newPlan.id);
                                 },
                                 reason => {
                                     alert(`Create new plan failed: ${reason}`);
