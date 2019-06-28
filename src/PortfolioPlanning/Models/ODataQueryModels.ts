@@ -11,12 +11,14 @@ export interface ODataWorkItemQueryResult {
 }
 
 export interface ODataWorkItemDescendants {
-    StoryPointsProgress: number;
-    CountProgress: number;
-    CompletedStoryPoints: number;
-    TotalStoryPoints: number;
-    CompletedCount: number;
     TotalCount: number;
+    CompletedCount: number;
+
+    TotalEffort: number;
+    CompletedEffort: number;
+
+    CountProgress: number;
+    EffortProgress: number;
 }
 
 export interface ODataQueryProjectInput {

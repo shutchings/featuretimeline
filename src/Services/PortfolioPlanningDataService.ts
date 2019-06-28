@@ -43,12 +43,16 @@ export class PortfolioPlanningDataService {
         const client = await ODataClient.getInstance();
         const fullQueryUrl = client.generateProjectLink(undefined, odataQueryString);
 
-        return client
-            .runGetQuery(fullQueryUrl)
-            .then(
-                (results: any) => this.ParseODataPortfolioPlanningQueryResultResponse(results),
-                error => this.ParseODataErrorResponse(error)
-            );
+        return (
+            client
+                //.runGetQuery(fullQueryUrl)
+                .runPostQuery(fullQueryUrl)
+                .then(
+                    //(results: any) => this.ParseODataPortfolioPlanningQueryResultResponse(results),
+                    (results: any) => this.ParseODataPortfolioPlanningQueryResultResponseAsBatch(results),
+                    error => this.ParseODataErrorResponse(error)
+                )
+        );
     }
 
     public async runProjectQuery(
@@ -358,12 +362,38 @@ export class PortfolioPlanningDataService {
         };
     }
 
+    /*
     private ParseODataPortfolioPlanningQueryResultResponse(results: any): PortfolioPlanningQueryResult {
         if (!results || !results["value"]) {
             return null;
         }
 
         const rawResult: ODataWorkItemQueryResult[] = results.value;
+
+        return {
+            exceptionMessage: null,
+            items: this.PortfolioPlanningQueryResultItems(rawResult)
+        };
+    }
+    */
+
+    private ParseODataPortfolioPlanningQueryResultResponseAsBatch(results: any): PortfolioPlanningQueryResult {
+        if (!results) {
+            return null;
+        }
+
+        //  TODO hack hack ... Look for start of JSON response "{"@odata.context""
+        const responseString: string = results;
+        const start = responseString.indexOf('{"@odata.context"');
+        const end = responseString.lastIndexOf("}");
+        const jsonString = responseString.substring(start, end + 1);
+        const jsonObject = JSON.parse(jsonString);
+
+        if (!jsonObject || !jsonObject["value"]) {
+            return null;
+        }
+
+        const rawResult: ODataWorkItemQueryResult[] = jsonObject.value;
 
         return {
             exceptionMessage: null,
@@ -444,10 +474,11 @@ export class PortfolioPlanningDataService {
                 result.CompletedCount = rawItem.Descendants[0].CompletedCount;
                 result.TotalCount = rawItem.Descendants[0].TotalCount;
 
-                result.CompletedStoryPoints = rawItem.Descendants[0].CompletedStoryPoints;
-                result.TotalStoryPoints = rawItem.Descendants[0].TotalStoryPoints;
+                //  TODO    UI models need to be updated with "Effort" instead of hard-coding "Story points"
+                result.CompletedStoryPoints = rawItem.Descendants[0].CompletedEffort;
+                result.TotalStoryPoints = rawItem.Descendants[0].TotalEffort;
 
-                result.StoryPointsProgress = rawItem.Descendants[0].StoryPointsProgress;
+                result.StoryPointsProgress = rawItem.Descendants[0].EffortProgress;
                 result.CountProgress = rawItem.Descendants[0].CountProgress;
             }
 
@@ -626,16 +657,18 @@ export class ODataQueryBuilder {
      */
     private static BuildODataDescendantsQuery(input: PortfolioPlanningQueryInput): string {
         const descendantsTypesSet: { [workItemType: string]: string } = {};
+        const requirementWiTypes: string[] = [];
 
         input.WorkItems.forEach(wi => {
             const wiTypeKey = wi.DescendantsWorkItemTypeFilter.toLowerCase();
 
             if (!descendantsTypesSet[wiTypeKey]) {
-                descendantsTypesSet[wiTypeKey] = "dummy";
+                descendantsTypesSet[wiTypeKey] = wi.EffortODataColumnName;
+                requirementWiTypes.push(`WorkItemType eq '${wiTypeKey}'`);
             }
         });
 
-        const requirementWiTypes = Object.keys(descendantsTypesSet).map(id => `WorkItemType eq '${id}'`);
+        const effortSelectionConditional: string = this.BuildEffortSelectionConditional(descendantsTypesSet);
 
         // prettier-ignore
         return (
@@ -645,14 +678,30 @@ export class ODataQueryBuilder {
                     "/aggregate(" +
                         "$count as TotalCount," +
                         "iif(StateCategory eq 'Completed',1,0) with sum as CompletedCount," +
-                        "StoryPoints with sum as TotalStoryPoints," +
-                        "iif(StateCategory eq 'Completed',StoryPoints,0) with sum as CompletedStoryPoints" +
+                        `${effortSelectionConditional} with sum as TotalEffort,` +
+                        `iif(StateCategory eq 'Completed',${effortSelectionConditional},0) with sum as CompletedEffort` +
                     ")" +
                     "/compute(" +
                         "(CompletedCount div cast(TotalCount, Edm.Decimal)) as CountProgress," +
-                        "(CompletedStoryPoints div TotalStoryPoints) as StoryPointsProgress" +
+                        "(iif(TotalEffort gt 0, CompletedEffort div TotalEffort, 0)) as EffortProgress" +
                     ")" +
             ")"
         );
+    }
+
+    private static BuildEffortSelectionConditional(input: { [workItemType: string]: string }): string {
+        const keys = Object.keys(input);
+        if (keys.length === 0) {
+            return "0";
+        }
+
+        const workItemType = keys[0];
+        const oDataColumnName = input[workItemType];
+
+        delete input[workItemType];
+
+        return `iif(WorkItemType eq '${workItemType}', ${oDataColumnName}, ${this.BuildEffortSelectionConditional(
+            input
+        )})`;
     }
 }

@@ -120,6 +120,10 @@ export class ODataClient {
             Accept: `text/plain;api-version=${ODataClient.oDataVersion}`
         };
 
+        //  TODO    Hack, sending JSON type in request causes parsing error, xhr tries to parse it as JSON, but since it has the
+        //          batch boundaries, parsing fails.
+        contentRequest.dataType = undefined;
+
         return $.ajax(contentRequest);
     }
 
