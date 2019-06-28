@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as PortfolioModels from "../Models/PortfolioPlanningQueryModels";
-import { PortfolioPlanningDataService } from "../../Services/PortfolioPlanningDataService";
+import { PortfolioPlanningDataService } from "../Common/Services/PortfolioPlanningDataService";
 
 export interface ODataTestState {
     results: PortfolioModels.PortfolioPlanningQueryResult;

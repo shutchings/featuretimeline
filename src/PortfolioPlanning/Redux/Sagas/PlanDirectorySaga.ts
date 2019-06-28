@@ -1,5 +1,5 @@
 import { effects, SagaIterator } from "redux-saga";
-import { PortfolioPlanningDataService } from "../../../Services/PortfolioPlanningDataService";
+import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
 import { PlanDirectoryActions, PlanDirectoryActionTypes } from "../Actions/PlanDirectoryActions";
 import { ActionsOfType } from "../Helpers";
 import { PortfolioPlanningDirectory, PortfolioPlanningMetadata } from "../../Models/PortfolioPlanningQueryModels";

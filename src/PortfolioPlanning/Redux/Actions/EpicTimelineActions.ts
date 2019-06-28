@@ -1,4 +1,4 @@
-import { createAction, ActionsUnion } from "../../../Common/redux/Helpers/ActionHelper";
+import { createAction, ActionsUnion } from "../Helpers";
 import { ProgressTrackingCriteria, IAddEpics, IRemoveEpic, LoadingStatus } from "../../Contracts";
 import moment = require("moment");
 import { PortfolioPlanningFullContentQueryResult } from "../../Models/PortfolioPlanningQueryModels";

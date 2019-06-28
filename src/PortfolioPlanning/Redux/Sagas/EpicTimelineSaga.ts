@@ -12,7 +12,7 @@ import {
     MergeType,
     PortfolioPlanning
 } from "../../Models/PortfolioPlanningQueryModels";
-import { PortfolioPlanningDataService } from "../../../Services/PortfolioPlanningDataService";
+import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
 import { PlanDirectoryActionTypes, PlanDirectoryActions } from "../Actions/PlanDirectoryActions";
 import { LoadPortfolio } from "./LoadPortfolio";
 import { ActionsOfType } from "../Helpers";

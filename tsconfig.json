@@ -12,6 +12,6 @@
         "types": ["requirejs", "react", "react-dom", "vss-web-extension-sdk"],
         "typeRoots": ["../node_modules/@types"]
     },
-    "include": ["./src/**/*", "src/PortfolioPlanning/Components/.tsx"],
+    "include": ["./src/**/*"],
     "exclude": ["node_modules"]
 }

@@ -42,14 +42,6 @@ const plugins = [
             to: "react-dom.js"
         },
         {
-            from: "./src/FeatureTimeline/featuretimeline.html",
-            to: "./"
-        },
-        {
-            from: "./src/EpicRoadmap/EpicRoadmap.html",
-            to: "./"
-        },
-        {
             from: "./src/PortfolioPlanning/PortfolioPlanning.html",
             to: "./"
         },
@@ -76,8 +68,6 @@ if (mode !== "development") {
 }
 module.exports = {
     entry: {
-        FeatureTimeline: "./src/FeatureTimeline/FeatureTimeline.tsx",
-        EpicRoadmap: "./src/EpicRoadmap/EpicRoadmap.tsx",
         PortfolioPlanning: "./src/PortfolioPlanning/PortfolioPlanning.tsx"
     },
     output: {

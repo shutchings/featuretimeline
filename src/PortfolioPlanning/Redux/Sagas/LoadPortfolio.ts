@@ -1,5 +1,5 @@
 import { put, call } from "redux-saga/effects";
-import { PortfolioPlanningDataService } from "../../../Services/PortfolioPlanningDataService";
+import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
 import {
     PortfolioPlanningQueryInput,
     PortfolioPlanning,
