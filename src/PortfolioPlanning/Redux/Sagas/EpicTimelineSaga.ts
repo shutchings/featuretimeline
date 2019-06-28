@@ -133,7 +133,7 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
     let now, oneMonthFromNow;
 
     queryResult.items.items.map(item => {
-        if (item.StartDate === undefined || item.TargetDate === undefined) {
+        if (!item.StartDate || !item.TargetDate) {
             now = new Date();
             oneMonthFromNow = new Date();
             oneMonthFromNow.setDate(now.getDate() + 30);
