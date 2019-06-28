@@ -37,4 +37,8 @@
             @extend .body-m;
         }
     }
+
+    .owner-container {
+        display: flex;
+    }
 }
