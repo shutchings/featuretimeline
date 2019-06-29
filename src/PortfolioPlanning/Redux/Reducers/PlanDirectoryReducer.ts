@@ -15,18 +15,11 @@ export function planDirectoryReducer(state: IPlanDirectoryState, action: PlanDir
 
                 break;
             }
-            case PlanDirectoryActionTypes.CreatePlan: {
-                const { id, name, description, owner } = action.payload;
+            case PlanDirectoryActionTypes.CreatePlanSucceeded: {
+                const { newPlan } = action.payload;
 
-                draft.plans.push({
-                    id: id,
-                    name: name,
-                    description: description,
-                    projectNames: [],
-                    teamNames: [],
-                    owner: owner,
-                    createdOn: new Date()
-                });
+                draft.plans.push(newPlan);
+                draft.newPlanDialogVisible = false;
 
                 break;
             }
