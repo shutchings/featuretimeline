@@ -3,7 +3,7 @@ import "./NewPlanDialog.scss";
 import { CustomDialog } from "azure-devops-ui/Dialog";
 import { CustomHeader, HeaderTitleArea } from "azure-devops-ui/Header";
 import { PanelContent, PanelFooter } from "azure-devops-ui/Panel";
-import { TextField, TextFieldWidth } from "azure-devops-ui/TextField";
+import { TextField, TextFieldWidth, ITextField } from "azure-devops-ui/TextField";
 import { ObservableValue } from "azure-devops-ui/Core/Observable";
 import { Button } from "azure-devops-ui/Button";
 import { ButtonGroup } from "azure-devops-ui/ButtonGroup";
@@ -22,11 +22,18 @@ interface NewPlanDialogState {
 export default class NewPlanDialog extends React.Component<NewPlanDialogProps, NewPlanDialogState> {
     private nameObservable = new ObservableValue<string>("");
     private descriptionObservable = new ObservableValue<string>("");
+    private nameTextFieldRef: ITextField;
 
     constructor(props) {
         super(props);
 
         this.state = { errorMessage: "" };
+    }
+
+    public componentDidMount() {
+        if (this.nameTextFieldRef) {
+            this.nameTextFieldRef.focus();
+        }
     }
 
     public render() {
@@ -39,6 +46,7 @@ export default class NewPlanDialog extends React.Component<NewPlanDialogProps, N
                     <div className="text-field-container">
                         <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
                             <TextField
+                                ref={this._setNameTextFieldRef}
                                 className="text-field"
                                 value={this.nameObservable}
                                 onChange={this._onNameChange}
@@ -89,5 +97,11 @@ export default class NewPlanDialog extends React.Component<NewPlanDialogProps, N
         }
 
         this.nameObservable.value = newValue;
+    };
+
+    private _setNameTextFieldRef = (textField: ITextField): void => {
+        if (!this.nameTextFieldRef) {
+            this.nameTextFieldRef = textField;
+        }
     };
 }

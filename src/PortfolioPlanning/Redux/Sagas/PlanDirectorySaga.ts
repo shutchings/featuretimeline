@@ -2,12 +2,18 @@ import { effects, SagaIterator } from "redux-saga";
 import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
 import { PlanDirectoryActions, PlanDirectoryActionTypes } from "../Actions/PlanDirectoryActions";
 import { ActionsOfType } from "../Helpers";
-import { PortfolioPlanningDirectory, PortfolioPlanningMetadata } from "../../Models/PortfolioPlanningQueryModels";
+import {
+    PortfolioPlanningDirectory,
+    PortfolioPlanningMetadata,
+    PortfolioPlanning
+} from "../../Models/PortfolioPlanningQueryModels";
 import { EpicTimelineActionTypes, EpicTimelineActions } from "../Actions/EpicTimelineActions";
 import { getSelectedPlanId } from "../Selectors/PlanDirectorySelectors";
+import { getCurrentUser } from "../../Common/Utilities/Identity";
 
 export function* planDirectorySaga(): SagaIterator {
     yield effects.call(initializePlanDirectory);
+    yield effects.takeEvery(PlanDirectoryActionTypes.CreatePlan, createPlan);
     yield effects.takeEvery(PlanDirectoryActionTypes.DeletePlan, deletePlan);
     yield effects.takeEvery(EpicTimelineActionTypes.PortfolioItemsReceived, updateProjectsAndTeamsMetadata);
 }
@@ -20,9 +26,29 @@ export function* initializePlanDirectory(): SagaIterator {
     yield effects.put(PlanDirectoryActions.initialize(allPlans));
 }
 
-export function* deletePlan(
-    action: ActionsOfType<PlanDirectoryActions, PlanDirectoryActionTypes.DeletePlan>
-): SagaIterator {
+function* createPlan(action: ActionsOfType<PlanDirectoryActions, PlanDirectoryActionTypes.CreatePlan>) {
+    const { name, description } = action.payload;
+
+    const owner = getCurrentUser();
+    owner._links = undefined;
+
+    const service = PortfolioPlanningDataService.getInstance();
+
+    try {
+        const newPlan: PortfolioPlanning = yield effects.call(
+            [service, service.AddPortfolioPlan],
+            name,
+            description,
+            owner
+        );
+        yield effects.put(PlanDirectoryActions.createPlanSucceeded(newPlan));
+        yield effects.put(PlanDirectoryActions.toggleSelectedPlanId(newPlan.id));
+    } catch (exception) {
+        yield effects.put(PlanDirectoryActions.createPlanFailed(exception));
+    }
+}
+
+function* deletePlan(action: ActionsOfType<PlanDirectoryActions, PlanDirectoryActionTypes.DeletePlan>): SagaIterator {
     const { id } = action.payload;
 
     const service = PortfolioPlanningDataService.getInstance();
@@ -30,7 +56,7 @@ export function* deletePlan(
     yield effects.call([service, service.DeletePortfolioPlan], id);
 }
 
-export function* updateProjectsAndTeamsMetadata(
+function* updateProjectsAndTeamsMetadata(
     action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.PortfolioItemsReceived>
 ): SagaIterator {
     const { projects, teamAreas } = action.payload;
