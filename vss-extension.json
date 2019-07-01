@@ -3,7 +3,7 @@
     "id": "workitem-portfolio-planning-extension",
     "version": "0.0.2",
     "name": "Portfolio Plans",
-    "description": "Feature timeline of your in-progress features.",
+    "description": "Portfolio level plans across projects and teams.",
     "publisher": "ms-devlabs",
     "targets": [
         {
