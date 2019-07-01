@@ -38,7 +38,12 @@ export default class NewPlanDialog extends React.Component<NewPlanDialogProps, N
 
     public render() {
         return (
-            <CustomDialog className="new-plan-dialog" onDismiss={this.props.onDismiss} modal={true}>
+            <CustomDialog
+                className="new-plan-dialog"
+                onDismiss={this.props.onDismiss}
+                modal={true}
+                defaultActiveElement="name-text-field"
+            >
                 <CustomHeader>
                     <HeaderTitleArea className="title-m">Create a new plan</HeaderTitleArea>
                 </CustomHeader>
@@ -47,11 +52,12 @@ export default class NewPlanDialog extends React.Component<NewPlanDialogProps, N
                         <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
                             <TextField
                                 ref={this._setNameTextFieldRef}
-                                className="text-field"
+                                className="text-field name-text-field"
                                 value={this.nameObservable}
                                 onChange={this._onNameChange}
                                 width={TextFieldWidth.auto}
                                 placeholder="Add your plan name"
+                                autoFocus={true}
                             />
                         </FormItem>
                         <TextField
