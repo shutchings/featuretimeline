@@ -1,10 +1,10 @@
 {
     "manifestVersion": 1,
     "id": "workitem-portfolio-planning-extension",
-    "version": "0.0.2",
+    "version": "0.0.1",
     "name": "Portfolio Plans",
     "description": "Portfolio level plans across projects and teams.",
-    "publisher": "ms-devlabs",
+    "publisher": "sthutchi",
     "targets": [
         {
             "id": "Microsoft.VisualStudio.Services.Cloud"
@@ -34,7 +34,7 @@
             "addressable": true
         }
     ],
-    "categories": ["Plan and track"],
+    "categories": ["Azure Boards"],
     "contributions": [
         {
             "id": "workitem-portfolio-planning",
