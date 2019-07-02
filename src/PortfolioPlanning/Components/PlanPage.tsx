@@ -6,25 +6,21 @@ import { ConnectedEpicTimeline } from "./EpicTimeline";
 import { PlanSummary } from "./PlanSummary";
 import { IPortfolioPlanningState } from "../Redux/Contracts";
 import { getProjectNames, getTeamNames } from "../Redux/Selectors/EpicTimelineSelectors";
-import { getSelectedPlanOwner } from "../Redux/Selectors/PlanDirectorySelectors";
+import { getSelectedPlanOwner, getSelectedPlanMetadata } from "../Redux/Selectors/PlanDirectorySelectors";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { connect } from "react-redux";
-
-interface IPlanPageOwnProps {
-    planId: string;
-    title: string;
-    description: string;
-    backButtonClicked: () => void;
-    deleteButtonClicked: (id: string) => void;
-}
+import { PlanDirectoryActions } from "../Redux/Actions/PlanDirectoryActions";
+import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
+import { PortfolioPlanningMetadata } from "../Models/PortfolioPlanningQueryModels";
 
 interface IPlanPageMappedProps {
+    plan: PortfolioPlanningMetadata;
     projectNames: string[];
     teamNames: string[];
     planOwner: IdentityRef;
 }
 
-export type IPlanPageProps = IPlanPageOwnProps & IPlanPageMappedProps & typeof Actions;
+export type IPlanPageProps = IPlanPageMappedProps & typeof Actions;
 
 export default class PlanPage extends React.Component<IPlanPageProps, IPortfolioPlanningState> {
     constructor(props: IPlanPageProps) {
@@ -35,11 +31,11 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
         return (
             <Page className="plan-page">
                 <PlanHeader
-                    id={this.props.planId}
-                    name={this.props.title}
-                    description={this.props.description}
-                    backButtonClicked={this.props.backButtonClicked}
-                    deleteButtonClicked={this.props.deleteButtonClicked}
+                    id={this.props.plan.id}
+                    name={this.props.plan.name}
+                    description={this.props.plan.description}
+                    backButtonClicked={this._backButtonClicked}
+                    deleteButtonClicked={this._deleteButtonClicked}
                 />
                 <div className="page-content page-content-top">
                     <PlanSummary
@@ -52,17 +48,32 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
             </Page>
         );
     }
+
+    private _backButtonClicked = (): void => {
+        this.props.toggleSelectedPlanId(undefined);
+        this.props.resetPlanState();
+    };
+
+    private _deleteButtonClicked = (id: string): void => {
+        this.props.deletePlan(id);
+        this.props.resetPlanState();
+    };
 }
 
 function mapStateToProps(state: IPortfolioPlanningState): IPlanPageMappedProps {
     return {
+        plan: getSelectedPlanMetadata(state),
         projectNames: getProjectNames(state),
         teamNames: getTeamNames(state),
         planOwner: getSelectedPlanOwner(state)
     };
 }
 
-const Actions = {};
+const Actions = {
+    deletePlan: PlanDirectoryActions.deletePlan,
+    toggleSelectedPlanId: PlanDirectoryActions.toggleSelectedPlanId,
+    resetPlanState: EpicTimelineActions.resetPlanState
+};
 
 export const ConnectedPlanPage = connect(
     mapStateToProps,

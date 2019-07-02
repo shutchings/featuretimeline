@@ -31,23 +31,7 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
 
     public render() {
         if (this.props.selectedPlanId) {
-            const selectedPlan = this.props.plans.find(plan => plan.id === this.props.selectedPlanId);
-
-            return (
-                <ConnectedPlanPage
-                    planId={selectedPlan.id}
-                    title={selectedPlan.name}
-                    description={selectedPlan.description}
-                    backButtonClicked={() => {
-                        this.props.toggleSelectedPlanId(undefined);
-                        this.props.resetPlanState();
-                    }}
-                    deleteButtonClicked={(id: string) => {
-                        this.props.deletePlan(id);
-                        this.props.resetPlanState();
-                    }}
-                />
-            );
+            return <ConnectedPlanPage />;
         } else {
             return (
                 <Page className="plan-page">
