@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Project, WorkItem } from "../Models/PortfolioPlanningQueryModels";
-import { IEpic, IProject, IAddEpics } from "../Contracts";
+import { IEpic, IProject, IAddItems } from "../Contracts";
 import { PortfolioPlanningDataService } from "../Common/Services/PortfolioPlanningDataService";
 import { Panel } from "azure-devops-ui/Panel";
 import { Dropdown, DropdownCallout } from "azure-devops-ui/Dropdown";
@@ -8,15 +8,15 @@ import { Location } from "azure-devops-ui/Utilities/Position";
 import { IListBoxItem } from "azure-devops-ui/ListBox";
 import { ListSelection, ScrollableList, ListItem, IListItemDetails, IListRow } from "azure-devops-ui/List";
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
-import "./AddEpicPanel.scss";
+import "./AddItemPanel.scss";
 
-export interface IAddEpicPanelProps {
+export interface IAddItemPanelProps {
     planId: string;
-    onCloseAddEpicPanel: () => void;
-    onAddEpics: (epicsToAdd: IAddEpics) => void;
+    onCloseAddItemPanel: () => void;
+    onAddItems: (itemsToAdd: IAddItems) => void;
 }
 
-interface IAddEpicPanelState {
+interface IAddItemPanelState {
     epicsToAdd: IEpic[];
     projects: IListBoxItem[];
     selectedProject: IProject;
@@ -25,7 +25,7 @@ interface IAddEpicPanelState {
     epicsLoaded: boolean;
 }
 
-export class AddEpicPanel extends React.Component<IAddEpicPanelProps, IAddEpicPanelState> {
+export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPanelState> {
     private selection = new ListSelection(true);
     private _indexToWorkItemIdMap: { [index: number]: number } = {};
 
@@ -55,10 +55,10 @@ export class AddEpicPanel extends React.Component<IAddEpicPanelProps, IAddEpicPa
     public render() {
         return (
             <Panel
-                onDismiss={() => this.props.onCloseAddEpicPanel()}
+                onDismiss={() => this.props.onCloseAddItemPanel()}
                 titleProps={{ text: "Add items" }}
                 footerButtonProps={[
-                    { text: "Cancel", onClick: () => this.props.onCloseAddEpicPanel() },
+                    { text: "Cancel", onClick: () => this.props.onCloseAddItemPanel() },
                     {
                         text: "Add",
                         primary: true,
@@ -67,7 +67,7 @@ export class AddEpicPanel extends React.Component<IAddEpicPanelProps, IAddEpicPa
                     }
                 ]}
             >
-                <div className="add-epic-panel-container">
+                <div className="add-item-panel-container">
                     {this._renderProjectPicker()}
                     {this._renderEpics()}
                 </div>
@@ -123,7 +123,7 @@ export class AddEpicPanel extends React.Component<IAddEpicPanelProps, IAddEpicPa
     private _renderEpics = () => {
         return (
             <ScrollableList
-                className="epic-list"
+                className="item-list"
                 itemProvider={new ArrayItemProvider<IListBoxItem>(this.state.epics)}
                 renderRow={this.renderRow}
                 selection={this.selection}
@@ -141,7 +141,7 @@ export class AddEpicPanel extends React.Component<IAddEpicPanelProps, IAddEpicPa
         this._indexToWorkItemIdMap[index] = Number(epic.id);
         return (
             <ListItem key={key || "list-item" + index} index={index} details={details}>
-                <div className="epic-list-row">{epic.text}</div>
+                <div className="item-list-row">{epic.text}</div>
             </ListItem>
         );
     };
@@ -166,15 +166,15 @@ export class AddEpicPanel extends React.Component<IAddEpicPanelProps, IAddEpicPa
     };
 
     private _onAddEpics = (): void => {
-        this.props.onAddEpics({
+        this.props.onAddItems({
             planId: this.props.planId,
             projectId: this.state.selectedProject.id,
-            epicsToAdd: this.state.selectedEpics,
+            itemIdsToAdd: this.state.selectedEpics,
             workItemType: "Epic", // TODO get from state
             requirementWorkItemType: "User story" // TODO get from state
         });
 
-        this.props.onCloseAddEpicPanel();
+        this.props.onCloseAddItemPanel();
     };
 
     private _getAllProjects = async (): Promise<Project[]> => {

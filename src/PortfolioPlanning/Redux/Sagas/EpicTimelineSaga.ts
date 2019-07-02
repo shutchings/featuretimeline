@@ -21,9 +21,9 @@ export function* epicTimelineSaga(): SagaIterator {
     yield takeEvery(EpicTimelineActionTypes.UpdateStartDate, onUpdateStartDate);
     yield takeEvery(EpicTimelineActionTypes.UpdateEndDate, onUpdateEndDate);
     yield takeEvery(EpicTimelineActionTypes.ShiftEpic, onShiftEpic);
-    yield takeEvery(EpicTimelineActionTypes.AddEpics, onAddEpics);
+    yield takeEvery(EpicTimelineActionTypes.AddItems, onAddEpics);
     yield takeEvery(PlanDirectoryActionTypes.ToggleSelectedPlanId, onToggleSelectedPlanId);
-    yield takeEvery(EpicTimelineActionTypes.RemoveEpic, onRemoveEpic);
+    yield takeEvery(EpicTimelineActionTypes.RemoveItems, onRemoveEpic);
 }
 
 function* onUpdateStartDate(
@@ -84,8 +84,8 @@ function* saveDatesToServer(epicId: number, defaultStartDate?: Date, defaultEndD
     // TODO: Error experience
 }
 
-function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.AddEpics>): SagaIterator {
-    const { planId, projectId, epicsToAdd, workItemType, requirementWorkItemType } = action.payload;
+function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.AddItems>): SagaIterator {
+    const { planId, projectId, itemIdsToAdd: epicsToAdd, workItemType, requirementWorkItemType } = action.payload;
 
     //  TODO    sanitize input epics ids (unique ids only)
 
@@ -153,10 +153,10 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
     yield put(EpicTimelineActions.portfolioItemsReceived(queryResult));
 }
 
-function* onRemoveEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.RemoveEpic>): SagaIterator {
-    const { planId, epicToRemove } = action.payload;
+function* onRemoveEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.RemoveItems>): SagaIterator {
+    const { planId, itemIdToRemove } = action.payload;
 
-    const epic: IEpic = yield effects.select(getEpicById, epicToRemove);
+    const epic: IEpic = yield effects.select(getEpicById, itemIdToRemove);
 
     const portfolioService = PortfolioPlanningDataService.getInstance();
     const projectIdLowerCase = epic.project.toLowerCase();
@@ -168,7 +168,7 @@ function* onRemoveEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineAc
 
     if (storedPlan.projects[projectIdLowerCase]) {
         const updatedEpics = storedPlan.projects[projectIdLowerCase].WorkItemIds.filter(
-            current => current !== epicToRemove
+            current => current !== itemIdToRemove
         );
 
         if (updatedEpics.length > 0) {

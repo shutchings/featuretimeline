@@ -1,5 +1,5 @@
 import { createAction, ActionsUnion } from "../Helpers";
-import { ProgressTrackingCriteria, IAddEpics, IRemoveEpic, LoadingStatus } from "../../Contracts";
+import { ProgressTrackingCriteria, IAddItems, IRemoveItem, LoadingStatus } from "../../Contracts";
 import moment = require("moment");
 import { PortfolioPlanningFullContentQueryResult } from "../../Models/PortfolioPlanningQueryModels";
 import { Action } from "redux";
@@ -13,10 +13,10 @@ export const enum EpicTimelineActionTypes {
     SetSelectedItemId = "EpicTimeline/SetSelectedItemId",
     PortfolioItemsReceived = "EpicTimeline/PortfolioItemsReceived",
     PortfolioItemDeleted = "EpicTimeline/PortfolioItemDeleted",
-    OpenAddEpicPanel = "EpicTimeline/OpenAddEpicPanel",
-    CloseAddEpicPanel = "EpicTimeline/CloseAddEpicPanel",
-    AddEpics = "EpicTimeline/AddEpics",
-    RemoveEpic = "EpicTimeline/RemoveEpic",
+    OpenAddItemPanel = "EpicTimeline/OpenAddItemPanel",
+    CloseAddItemPanel = "EpicTimeline/CloseAddItemPanel",
+    AddItems = "EpicTimeline/AddItems",
+    RemoveItems = "EpicTimeline/RemoveItems",
     ToggleProgressTrackingCriteria = "EpicTimeline/ToggleProgressTrackingCriteria",
     ToggleLoadingStatus = "EpicTimeline/ToggleLoadingStatus",
     ResetPlanState = "EpicTimeline/ResetPlanState"
@@ -42,12 +42,12 @@ export const EpicTimelineActions = {
     setSelectedItemId: (id: number) => createAction(EpicTimelineActionTypes.SetSelectedItemId, { id }),
     portfolioItemsReceived: (result: PortfolioPlanningFullContentQueryResult) =>
         createAction(EpicTimelineActionTypes.PortfolioItemsReceived, result),
-    portfolioItemDeleted: (itemDeleted: IRemoveEpic) =>
+    portfolioItemDeleted: (itemDeleted: IRemoveItem) =>
         createAction(EpicTimelineActionTypes.PortfolioItemDeleted, itemDeleted),
-    openAddEpicPanel: () => createAction(EpicTimelineActionTypes.OpenAddEpicPanel),
-    closeAddEpicPanel: () => createAction(EpicTimelineActionTypes.CloseAddEpicPanel),
-    addEpics: (epicsToAdd: IAddEpics) => createAction(EpicTimelineActionTypes.AddEpics, epicsToAdd),
-    removeEpic: (epicToRemove: IRemoveEpic) => createAction(EpicTimelineActionTypes.RemoveEpic, epicToRemove),
+    openAddEpicPanel: () => createAction(EpicTimelineActionTypes.OpenAddItemPanel),
+    closeAddEpicPanel: () => createAction(EpicTimelineActionTypes.CloseAddItemPanel),
+    addItems: (itemsToAdd: IAddItems) => createAction(EpicTimelineActionTypes.AddItems, itemsToAdd),
+    removeItems: (itemToRemove: IRemoveItem) => createAction(EpicTimelineActionTypes.RemoveItems, itemToRemove),
     toggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>
         createAction(EpicTimelineActionTypes.ToggleProgressTrackingCriteria, {
             criteria
@@ -66,5 +66,5 @@ export interface PortfolioItemsReceivedAction extends Action {
 
 export interface PortfolioItemDeletedAction extends Action {
     type: EpicTimelineActionTypes.PortfolioItemDeleted;
-    payload: IRemoveEpic;
+    payload: IRemoveItem;
 }
