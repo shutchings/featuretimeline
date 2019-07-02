@@ -1,16 +1,16 @@
 import * as React from "react";
 import * as moment from "moment";
-import { ITimelineGroup, ITimelineItem, ITeam, LoadingStatus } from "../Contracts";
+import { ITimelineGroup, ITimelineItem, ITeam, LoadingStatus } from "../../Contracts";
 import Timeline from "react-calendar-timeline";
 import "./PlanTimeline.scss";
-import { IPortfolioPlanningState } from "../Redux/Contracts";
-import { getTimelineGroups, getTimelineItems } from "../Redux/Selectors/EpicTimelineSelectors";
-import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
+import { IPortfolioPlanningState } from "../../Redux/Contracts";
+import { getTimelineGroups, getTimelineItems } from "../../Redux/Selectors/EpicTimelineSelectors";
+import { EpicTimelineActions } from "../../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
-import { ProgressDetails } from "../Common/Components/ProgressDetails";
-import { InfoIcon } from "../Common/Components/InfoIcon";
+import { ProgressDetails } from "../../Common/Components/ProgressDetails";
+import { InfoIcon } from "../../Common/Components/InfoIcon";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
-import { getSelectedPlanOwner } from "../Redux/Selectors/PlanDirectorySelectors";
+import { getSelectedPlanOwner } from "../../Redux/Selectors/PlanDirectorySelectors";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 
 const day = 60 * 60 * 24 * 1000;
@@ -44,68 +44,66 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
             };
 
             return (
-                <div className="page-content">
-                    <Timeline
-                        groups={this.props.groups}
-                        items={this.props.items}
-                        defaultTimeStart={defaultTimeStart}
-                        defaultTimeEnd={defaultTimeEnd}
-                        canChangeGroup={false}
-                        stackItems={true}
-                        dragSnap={day}
-                        minZoom={week}
-                        canResize={"both"}
-                        minResizeWidth={50}
-                        onItemResize={this._onItemResize}
-                        onItemMove={this._onItemMove}
-                        moveResizeValidator={this._validateResize}
-                        selecte={[this.props.selectedItemId]}
-                        onItemSelect={itemId => this.props.onSetSelectedItemId(itemId)}
-                        onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
-                        itemRenderer={({ item, itemContext, getItemProps }) => {
-                            return (
-                                <div {...getItemProps(item.itemProps)}>
+                <Timeline
+                    groups={this.props.groups}
+                    items={this.props.items}
+                    defaultTimeStart={defaultTimeStart}
+                    defaultTimeEnd={defaultTimeEnd}
+                    canChangeGroup={false}
+                    stackItems={true}
+                    dragSnap={day}
+                    minZoom={week}
+                    canResize={"both"}
+                    minResizeWidth={50}
+                    onItemResize={this._onItemResize}
+                    onItemMove={this._onItemMove}
+                    moveResizeValidator={this._validateResize}
+                    selecte={[this.props.selectedItemId]}
+                    onItemSelect={itemId => this.props.onSetSelectedItemId(itemId)}
+                    onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
+                    itemRenderer={({ item, itemContext, getItemProps }) => {
+                        return (
+                            <div {...getItemProps(item.itemProps)}>
+                                <div
+                                    style={{
+                                        maxHeight: `${itemContext.dimensions.height}`,
+                                        display: "flex",
+                                        justifyContent: "space-between",
+                                        overflow: "hidden",
+                                        marginRight: "5px",
+                                        alignItems: "baseline",
+                                        whiteSpace: "nowrap"
+                                    }}
+                                >
+                                    {itemContext.title}
                                     <div
                                         style={{
-                                            maxHeight: `${itemContext.dimensions.height}`,
                                             display: "flex",
-                                            justifyContent: "space-between",
-                                            overflow: "hidden",
-                                            marginRight: "5px",
-                                            alignItems: "baseline",
-                                            whiteSpace: "nowrap"
+                                            justifyContent: "flex-end"
                                         }}
                                     >
-                                        {itemContext.title}
+                                        <InfoIcon
+                                            id={item.id}
+                                            onClick={() => this.props.onToggleSetDatesDialogHidden(false)}
+                                        />
+                                        <ProgressDetails
+                                            completed={item.itemProps.completed}
+                                            total={item.itemProps.total}
+                                            onClick={() => {}}
+                                        />
                                         <div
-                                            style={{
-                                                display: "flex",
-                                                justifyContent: "flex-end"
-                                            }}
+                                            className="bowtie-icon bowtie-navigate-forward-circle"
+                                            style={forwardCircleStyle}
+                                            onClick={() => this.navigateToEpicRoadmap(item)}
                                         >
-                                            <InfoIcon
-                                                id={item.id}
-                                                onClick={() => this.props.onToggleSetDatesDialogHidden(false)}
-                                            />
-                                            <ProgressDetails
-                                                completed={item.itemProps.completed}
-                                                total={item.itemProps.total}
-                                                onClick={() => {}}
-                                            />
-                                            <div
-                                                className="bowtie-icon bowtie-navigate-forward-circle"
-                                                style={forwardCircleStyle}
-                                                onClick={() => this.navigateToEpicRoadmap(item)}
-                                            >
-                                                &nbsp;
-                                            </div>
+                                            &nbsp;
                                         </div>
                                     </div>
                                 </div>
-                            );
-                        }}
-                    />
-                </div>
+                            </div>
+                        );
+                    }}
+                />
             );
         }
     }

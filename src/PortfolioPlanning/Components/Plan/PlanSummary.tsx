@@ -1,7 +1,7 @@
 import * as React from "react";
 import "./PlanSummary.scss";
 import { IdentityRef } from "VSS/WebApi/Contracts";
-import { IdentityView } from "../Common/Components/IdentityView";
+import { IdentityView } from "../../Common/Components/IdentityView";
 
 export interface IPlanSummaryProps {
     owner: IdentityRef;

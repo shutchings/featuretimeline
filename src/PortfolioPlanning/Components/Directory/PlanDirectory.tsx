@@ -7,7 +7,7 @@ import NewPlanDialog from "./NewPlanDialog";
 import { PlanDirectoryActions } from "../../Redux/Actions/PlanDirectoryActions";
 import { connect } from "react-redux";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
-import { ConnectedPlanPage } from "../PlanPage";
+import { ConnectedPlanPage } from "../Plan/PlanPage";
 import { PortfolioPlanningMetadata } from "../../Models/PortfolioPlanningQueryModels";
 import { EpicTimelineActions } from "../../Redux/Actions/EpicTimelineActions";
 import { LoadingStatus } from "../../Contracts";

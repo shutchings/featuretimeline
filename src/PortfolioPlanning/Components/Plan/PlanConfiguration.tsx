@@ -1,7 +1,7 @@
 import * as React from "react";
 import "./PlanConfiguration.scss";
 import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
-import { ProgressTrackingCriteria, ITimelineItem } from "../Contracts";
+import { ProgressTrackingCriteria, ITimelineItem } from "../../Contracts";
 
 export interface IPlanConfigurationProps {
     selectedItem: ITimelineItem;
