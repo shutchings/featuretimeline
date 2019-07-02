@@ -13,6 +13,7 @@ import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { PortfolioPlanningMetadata } from "../Models/PortfolioPlanningQueryModels";
 import { PlanConfiguration } from "./PlanConfiguration";
 import { ProgressTrackingCriteria } from "../Contracts";
+import { AddEpicPanel } from "./AddEpicPanel";
 
 interface IPlanPageMappedProps {
     plan: PortfolioPlanningMetadata;
@@ -20,6 +21,7 @@ interface IPlanPageMappedProps {
     teamNames: string[];
     selectedItemId: number;
     progressTrackingCriteria: ProgressTrackingCriteria;
+    addEpicPanelOpen: boolean;
 }
 
 export type IPlanPageProps = IPlanPageMappedProps & typeof Actions;
@@ -54,8 +56,21 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                     />
                     <ConnectedEpicTimeline />
                 </div>
+                {this._renderAddEpicPanel()}
             </Page>
         );
+    }
+
+    private _renderAddEpicPanel(): JSX.Element {
+        if (this.props.addEpicPanelOpen) {
+            return (
+                <AddEpicPanel
+                    planId={this.props.plan.id}
+                    onCloseAddEpicPanel={this.props.onCloseAddEpicPanel}
+                    onAddEpics={this.props.onAddEpics}
+                />
+            );
+        }
     }
 
     private _backButtonClicked = (): void => {
@@ -97,7 +112,8 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanPageMappedProps {
         projectNames: getProjectNames(state),
         teamNames: getTeamNames(state),
         selectedItemId: state.epicTimelineState.selectedItemId,
-        progressTrackingCriteria: state.epicTimelineState.progressTrackingCriteria
+        progressTrackingCriteria: state.epicTimelineState.progressTrackingCriteria,
+        addEpicPanelOpen: state.epicTimelineState.addEpicDialogOpen
     };
 }
 
@@ -107,7 +123,9 @@ const Actions = {
     resetPlanState: EpicTimelineActions.resetPlanState,
     onOpenAddEpicPanel: EpicTimelineActions.openAddEpicPanel,
     onRemoveSelectedEpic: EpicTimelineActions.removeEpic,
-    onToggleProgressTrackingCriteria: EpicTimelineActions.toggleProgressTrackingCriteria
+    onToggleProgressTrackingCriteria: EpicTimelineActions.toggleProgressTrackingCriteria,
+    onCloseAddEpicPanel: EpicTimelineActions.closeAddEpicPanel,
+    onAddEpics: EpicTimelineActions.addEpics
 };
 
 export const ConnectedPlanPage = connect(

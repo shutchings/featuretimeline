@@ -14,7 +14,6 @@ import {
 import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
 import { DetailsDialog } from "./DetailsDialog";
-import { AddEpicPanel } from "./AddEpicPanel";
 import { ProgressDetails } from "../Common/Components/ProgressDetails";
 import { InfoIcon } from "../Common/Components/InfoIcon";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
@@ -120,7 +119,6 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
                             );
                         }}
                     />
-                    {this._renderAddEpicPanel()}
                     {this.props.selectedItemId && (
                         <DetailsDialog
                             key={Date.now()} // TODO: Is there a better way to reset the state?
@@ -176,18 +174,6 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
         this.props.onShiftEpic(itemId, moment(time));
     };
 
-    private _renderAddEpicPanel(): JSX.Element {
-        if (this.props.addEpicPanelOpen) {
-            return (
-                <AddEpicPanel
-                    planId={this.props.planId}
-                    onCloseAddEpicPanel={this.props.onCloseAddEpicPanel}
-                    onAddEpics={this.props.onAddEpics}
-                />
-            );
-        }
-    }
-
     // TODO: We only need this on first render
     private _getDefaultTimes(items: ITimelineItem[]): [moment.Moment, moment.Moment] {
         let startTime = moment().add(-1, "months");
@@ -238,8 +224,6 @@ function mapStateToProps(state: IPortfolioPlanningState): IEpicTimelineMappedPro
 }
 
 const Actions = {
-    onCloseAddEpicPanel: EpicTimelineActions.closeAddEpicPanel,
-    onAddEpics: EpicTimelineActions.addEpics,
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
     onUpdateEndDate: EpicTimelineActions.updateEndDate,
     onShiftEpic: EpicTimelineActions.shiftEpic,
