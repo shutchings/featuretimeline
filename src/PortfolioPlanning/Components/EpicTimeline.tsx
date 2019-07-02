@@ -15,13 +15,13 @@ import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
 import { DetailsDialog } from "./DetailsDialog";
 import { AddEpicPanel } from "./AddEpicPanel";
-import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
 import { ProgressDetails } from "../Common/Components/ProgressDetails";
 import { InfoIcon } from "../Common/Components/InfoIcon";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { PlanSummary } from "./PlanSummary";
 import { getSelectedPlanOwner } from "../Redux/Selectors/PlanDirectorySelectors";
 import { IdentityRef } from "VSS/WebApi/Contracts";
+import { PlanConfiguration } from "./PlanConfiguration";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -54,11 +54,6 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
         } else {
             const selectedItem = this.props.items.find(item => item.id === this.props.selectedItemId);
 
-            const selectedProgressCriteriaKey =
-                this.props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount
-                    ? "completedCount"
-                    : "storyPoints";
-
             const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(this.props.items);
 
             const forwardCircleStyle = {
@@ -72,38 +67,13 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
                         teams={this.props.teams}
                         owner={this.props.planOwner}
                     />
-                    <div className="configuration-container">
-                        <div className="progress-options">
-                            <div className="progress-options-label">Track Progress Using: </div>
-                            <ComboBox
-                                className="progress-options-dropdown"
-                                selectedKey={selectedProgressCriteriaKey}
-                                allowFreeform={false}
-                                autoComplete="off"
-                                options={[
-                                    {
-                                        key: "completedCount",
-                                        text: ProgressTrackingCriteria.CompletedCount
-                                    },
-                                    {
-                                        key: "storyPoints",
-                                        text: ProgressTrackingCriteria.StoryPoints
-                                    }
-                                ]}
-                                onChanged={this._onProgressTrackingCriteriaChanged}
-                            />
-                        </div>
-                        <button className="epictimeline-add-epic-button" onClick={this._onAddEpicClick}>
-                            Add Epic
-                        </button>
-                        <button
-                            className="epictimeline-add-epic-button"
-                            disabled={!this.props.selectedItemId}
-                            onClick={this._onRemoveSelectedEpicClick}
-                        >
-                            Remove selected epic from plan
-                        </button>
-                    </div>
+                    <PlanConfiguration
+                        selectedItemId={this.props.selectedItemId}
+                        progressTrackingCriteria={this.props.progressTrackingCriteria}
+                        onAddItemClick={this._onAddEpicClick}
+                        onProgressTrackingCriteriaChanged={this._onProgressTrackingCriteriaChanged}
+                        onRemoveSelectedItemClick={this._onRemoveSelectedEpicClick}
+                    />
                     <Timeline
                         groups={this.props.groups}
                         items={this.props.items}
