@@ -9,7 +9,7 @@ export const enum EpicTimelineActionTypes {
     UpdateStartDate = "EpicTimeline/UpdateStartDate",
     UpdateEndDate = "EpicTimeline/UpdateEndDate",
     ShiftEpic = "EpicTimeline/ShiftEpic",
-    ToggleSetDatesDialogHidden = "EpicTimeline/ToggleSetDatesDialogHidden",
+    ToggleItemDetailsDialogHidden = "EpicTimeline/ToggleItemDetailsDialogHidden",
     SetSelectedItemId = "EpicTimeline/SetSelectedItemId",
     PortfolioItemsReceived = "EpicTimeline/PortfolioItemsReceived",
     PortfolioItemDeleted = "EpicTimeline/PortfolioItemDeleted",
@@ -35,8 +35,8 @@ export const EpicTimelineActions = {
         }),
     shiftEpic: (epicId: number, startDate: moment.Moment) =>
         createAction(EpicTimelineActionTypes.ShiftEpic, { epicId, startDate }),
-    toggleSetDatesDialogHidden: (hidden: boolean) =>
-        createAction(EpicTimelineActionTypes.ToggleSetDatesDialogHidden, {
+    toggleItemDetailsDialogHidden: (hidden: boolean) =>
+        createAction(EpicTimelineActionTypes.ToggleItemDetailsDialogHidden, {
             hidden
         }),
     setSelectedItemId: (id: number) => createAction(EpicTimelineActionTypes.SetSelectedItemId, { id }),

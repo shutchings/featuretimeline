@@ -13,7 +13,6 @@ import {
 } from "../Redux/Selectors/EpicTimelineSelectors";
 import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
-import { DetailsDialog } from "./DetailsDialog";
 import { ProgressDetails } from "../Common/Components/ProgressDetails";
 import { InfoIcon } from "../Common/Components/InfoIcon";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
@@ -49,8 +48,6 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
         if (this.props.planLoadingStatus === LoadingStatus.NotLoaded) {
             return <Spinner label="Loading..." size={SpinnerSize.large} />;
         } else {
-            const selectedItem = this.props.items.find(item => item.id === this.props.selectedItemId);
-
             const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(this.props.items);
 
             const forwardCircleStyle = {
@@ -119,23 +116,6 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
                             );
                         }}
                     />
-                    {this.props.selectedItemId && (
-                        <DetailsDialog
-                            key={Date.now()} // TODO: Is there a better way to reset the state?
-                            id={this.props.selectedItemId}
-                            title={selectedItem.title}
-                            startDate={selectedItem.start_time}
-                            endDate={selectedItem.end_time}
-                            hidden={this.props.setDatesDialogHidden}
-                            save={(id, startDate, endDate) => {
-                                this.props.onUpdateStartDate(id, startDate);
-                                this.props.onUpdateEndDate(id, endDate);
-                            }}
-                            close={() => {
-                                this.props.onToggleSetDatesDialogHidden(true);
-                            }}
-                        />
-                    )}
                 </div>
             );
         }
@@ -227,7 +207,7 @@ const Actions = {
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
     onUpdateEndDate: EpicTimelineActions.updateEndDate,
     onShiftEpic: EpicTimelineActions.shiftEpic,
-    onToggleSetDatesDialogHidden: EpicTimelineActions.toggleSetDatesDialogHidden,
+    onToggleSetDatesDialogHidden: EpicTimelineActions.toggleItemDetailsDialogHidden,
     onSetSelectedItemId: EpicTimelineActions.setSelectedItemId
 };
 

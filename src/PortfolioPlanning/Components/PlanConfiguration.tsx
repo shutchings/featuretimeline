@@ -1,10 +1,10 @@
 import * as React from "react";
 import "./PlanConfiguration.scss";
 import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
-import { ProgressTrackingCriteria } from "../Contracts";
+import { ProgressTrackingCriteria, ITimelineItem } from "../Contracts";
 
 export interface IPlanConfigurationProps {
-    selectedItemId: number;
+    selectedItem: ITimelineItem;
     progressTrackingCriteria: ProgressTrackingCriteria;
     onAddItemClick: () => void;
     onRemoveSelectedItemClick: () => void;
@@ -42,7 +42,7 @@ export const PlanConfiguration = (props: IPlanConfigurationProps) => {
             </button>
             <button
                 className="remove-item-button"
-                disabled={!props.selectedItemId}
+                disabled={!props.selectedItem}
                 onClick={props.onRemoveSelectedItemClick}
             >
                 Remove selected epic from plan

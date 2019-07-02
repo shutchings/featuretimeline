@@ -42,7 +42,7 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
 
                 break;
             }
-            case EpicTimelineActionTypes.ToggleSetDatesDialogHidden: {
+            case EpicTimelineActionTypes.ToggleItemDetailsDialogHidden: {
                 const { hidden } = action.payload;
 
                 draft.setDatesDialogHidden = hidden;

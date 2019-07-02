@@ -61,6 +61,10 @@ export function getTimelineItems(state: IEpicTimelineState): ITimelineItem[] {
     });
 }
 
+export function getSelectedItem(state: IEpicTimelineState): ITimelineItem {
+    return getTimelineItems(state).find(item => item.id === state.selectedItemId);
+}
+
 export function getMessage(state: IEpicTimelineState): string {
     return state.message;
 }
