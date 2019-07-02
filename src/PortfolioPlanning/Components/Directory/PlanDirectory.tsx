@@ -7,7 +7,7 @@ import NewPlanDialog from "./NewPlanDialog";
 import { PlanDirectoryActions } from "../../Redux/Actions/PlanDirectoryActions";
 import { connect } from "react-redux";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
-import PlanPage from "../PlanPage";
+import { ConnectedPlanPage } from "../PlanPage";
 import { PortfolioPlanningMetadata } from "../../Models/PortfolioPlanningQueryModels";
 import { EpicTimelineActions } from "../../Redux/Actions/EpicTimelineActions";
 import { LoadingStatus } from "../../Contracts";
@@ -34,8 +34,8 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
             const selectedPlan = this.props.plans.find(plan => plan.id === this.props.selectedPlanId);
 
             return (
-                <PlanPage
-                    id={selectedPlan.id}
+                <ConnectedPlanPage
+                    planId={selectedPlan.id}
                     title={selectedPlan.name}
                     description={selectedPlan.description}
                     backButtonClicked={() => {

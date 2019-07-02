@@ -18,7 +18,6 @@ import { AddEpicPanel } from "./AddEpicPanel";
 import { ProgressDetails } from "../Common/Components/ProgressDetails";
 import { InfoIcon } from "../Common/Components/InfoIcon";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
-import { PlanSummary } from "./PlanSummary";
 import { getSelectedPlanOwner } from "../Redux/Selectors/PlanDirectorySelectors";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { PlanConfiguration } from "./PlanConfiguration";
@@ -62,11 +61,6 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
 
             return (
                 <div className="page-content">
-                    <PlanSummary
-                        projects={this.props.groups.map(group => group.title)}
-                        teams={this.props.teams}
-                        owner={this.props.planOwner}
-                    />
                     <PlanConfiguration
                         selectedItemId={this.props.selectedItemId}
                         progressTrackingCriteria={this.props.progressTrackingCriteria}
