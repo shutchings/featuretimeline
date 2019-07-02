@@ -20,7 +20,6 @@ import { InfoIcon } from "../Common/Components/InfoIcon";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { getSelectedPlanOwner } from "../Redux/Selectors/PlanDirectorySelectors";
 import { IdentityRef } from "VSS/WebApi/Contracts";
-import { PlanConfiguration } from "./PlanConfiguration";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -61,13 +60,6 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
 
             return (
                 <div className="page-content">
-                    <PlanConfiguration
-                        selectedItemId={this.props.selectedItemId}
-                        progressTrackingCriteria={this.props.progressTrackingCriteria}
-                        onAddItemClick={this._onAddEpicClick}
-                        onProgressTrackingCriteriaChanged={this._onProgressTrackingCriteriaChanged}
-                        onRemoveSelectedItemClick={this._onRemoveSelectedEpicClick}
-                    />
                     <Timeline
                         groups={this.props.groups}
                         items={this.props.items}
@@ -184,28 +176,6 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
         this.props.onShiftEpic(itemId, moment(time));
     };
 
-    private _onAddEpicClick = (): void => {
-        this.props.onOpenAddEpicPanel();
-    };
-
-    private _onRemoveSelectedEpicClick = (): void => {
-        this.props.onRemoveSelectedEpic({
-            planId: this.props.planId,
-            epicToRemove: this.props.selectedItemId
-        });
-    };
-
-    private _onProgressTrackingCriteriaChanged = (item: { key: string; text: string }) => {
-        switch (item.key) {
-            case "completedCount":
-                this.props.onToggleProgressTrackingCriteria(ProgressTrackingCriteria.CompletedCount);
-                break;
-            case "storyPoints":
-                this.props.onToggleProgressTrackingCriteria(ProgressTrackingCriteria.StoryPoints);
-                break;
-        }
-    };
-
     private _renderAddEpicPanel(): JSX.Element {
         if (this.props.addEpicPanelOpen) {
             return (
@@ -268,16 +238,13 @@ function mapStateToProps(state: IPortfolioPlanningState): IEpicTimelineMappedPro
 }
 
 const Actions = {
-    onOpenAddEpicPanel: EpicTimelineActions.openAddEpicPanel,
     onCloseAddEpicPanel: EpicTimelineActions.closeAddEpicPanel,
     onAddEpics: EpicTimelineActions.addEpics,
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
     onUpdateEndDate: EpicTimelineActions.updateEndDate,
     onShiftEpic: EpicTimelineActions.shiftEpic,
     onToggleSetDatesDialogHidden: EpicTimelineActions.toggleSetDatesDialogHidden,
-    onSetSelectedItemId: EpicTimelineActions.setSelectedItemId,
-    onToggleProgressTrackingCriteria: EpicTimelineActions.toggleProgressTrackingCriteria,
-    onRemoveSelectedEpic: EpicTimelineActions.removeEpic
+    onSetSelectedItemId: EpicTimelineActions.setSelectedItemId
 };
 
 export const ConnectedEpicTimeline = connect(
