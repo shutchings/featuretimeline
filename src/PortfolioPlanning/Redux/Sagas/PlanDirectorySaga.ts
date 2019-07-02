@@ -7,15 +7,17 @@ import {
     PortfolioPlanningMetadata,
     PortfolioPlanning
 } from "../../Models/PortfolioPlanningQueryModels";
-import { EpicTimelineActionTypes, EpicTimelineActions } from "../Actions/EpicTimelineActions";
+import { EpicTimelineActionTypes } from "../Actions/EpicTimelineActions";
 import { getSelectedPlanId } from "../Selectors/PlanDirectorySelectors";
 import { getCurrentUser } from "../../Common/Utilities/Identity";
+import { getProjectNames, getTeamNames } from "../Selectors/EpicTimelineSelectors";
 
 export function* planDirectorySaga(): SagaIterator {
     yield effects.call(initializePlanDirectory);
     yield effects.takeEvery(PlanDirectoryActionTypes.CreatePlan, createPlan);
     yield effects.takeEvery(PlanDirectoryActionTypes.DeletePlan, deletePlan);
     yield effects.takeEvery(EpicTimelineActionTypes.PortfolioItemsReceived, updateProjectsAndTeamsMetadata);
+    yield effects.takeEvery(EpicTimelineActionTypes.PortfolioItemDeleted, updateProjectsAndTeamsMetadata);
 }
 
 export function* initializePlanDirectory(): SagaIterator {
@@ -56,12 +58,10 @@ function* deletePlan(action: ActionsOfType<PlanDirectoryActions, PlanDirectoryAc
     yield effects.call([service, service.DeletePortfolioPlan], id);
 }
 
-function* updateProjectsAndTeamsMetadata(
-    action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.PortfolioItemsReceived>
-): SagaIterator {
-    const { projects, teamAreas } = action.payload;
-
+function* updateProjectsAndTeamsMetadata(): SagaIterator {
     const planId = yield effects.select(getSelectedPlanId);
+    const projectNames = yield effects.select(getProjectNames);
+    const teamNames = yield effects.select(getTeamNames);
 
     const service = PortfolioPlanningDataService.getInstance();
 
@@ -70,23 +70,8 @@ function* updateProjectsAndTeamsMetadata(
         planId
     );
 
-    // Update metadata to contain teams and projects for directory
-    const addedProjects = projects.projects.map(project => project.ProjectName);
-    const addedTeams = Object.keys(teamAreas.teamsInArea)
-        .map(areaId => teamAreas.teamsInArea[areaId])
-        .reduce((teamList, allTeamList) => allTeamList.concat(teamList), [])
-        .map(team => team.teamName);
-
-    addedProjects.forEach(projectName => {
-        if (!planToUpdate.projectNames.find(existingName => existingName === projectName)) {
-            planToUpdate.projectNames.push(projectName);
-        }
-    });
-    addedTeams.forEach(teamName => {
-        if (!planToUpdate.teamNames.find(existingName => existingName === teamName)) {
-            planToUpdate.teamNames.push(teamName);
-        }
-    });
+    planToUpdate.projectNames = projectNames;
+    planToUpdate.teamNames = teamNames;
 
     yield effects.call([service, service.UpdatePortfolioPlanDirectoryEntry], planToUpdate);
 
