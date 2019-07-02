@@ -2,7 +2,7 @@ import * as React from "react";
 import "./PlanPage.scss";
 import { Page } from "azure-devops-ui/Page";
 import PlanHeader from "./PlanHeader";
-import { ConnectedEpicTimeline } from "./EpicTimeline";
+import { ConnectedPlanTimeline } from "./PlanTimeline";
 import { PlanSummary } from "./PlanSummary";
 import { IPortfolioPlanningState } from "../Redux/Contracts";
 import { getProjectNames, getTeamNames, getSelectedItem } from "../Redux/Selectors/EpicTimelineSelectors";
@@ -56,7 +56,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                         onProgressTrackingCriteriaChanged={this._onProgressTrackingCriteriaChanged}
                         onRemoveSelectedItemClick={this._onRemoveSelectedEpicClick}
                     />
-                    <ConnectedEpicTimeline />
+                    <ConnectedPlanTimeline />
                 </div>
                 {this._renderAddItemPanel()}
                 {this._renderItemDetailsDialog()}

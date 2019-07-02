@@ -20,7 +20,7 @@ import { ActionsOfType } from "../Helpers";
 export function* epicTimelineSaga(): SagaIterator {
     yield takeEvery(EpicTimelineActionTypes.UpdateStartDate, onUpdateStartDate);
     yield takeEvery(EpicTimelineActionTypes.UpdateEndDate, onUpdateEndDate);
-    yield takeEvery(EpicTimelineActionTypes.ShiftEpic, onShiftEpic);
+    yield takeEvery(EpicTimelineActionTypes.ShiftItem, onShiftEpic);
     yield takeEvery(EpicTimelineActionTypes.AddItems, onAddEpics);
     yield takeEvery(PlanDirectoryActionTypes.ToggleSelectedPlanId, onToggleSelectedPlanId);
     yield takeEvery(EpicTimelineActionTypes.RemoveItems, onRemoveEpic);
@@ -40,8 +40,8 @@ function* onUpdateEndDate(
     yield effects.call(saveDatesToServer, epicId);
 }
 
-function* onShiftEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.ShiftEpic>): SagaIterator {
-    const epicId = action.payload.epicId;
+function* onShiftEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.ShiftItem>): SagaIterator {
+    const epicId = action.payload.itemId;
     yield effects.call(saveDatesToServer, epicId);
 }
 

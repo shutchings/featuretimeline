@@ -30,10 +30,10 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
 
                 break;
             }
-            case EpicTimelineActionTypes.ShiftEpic: {
-                const { epicId, startDate } = action.payload;
+            case EpicTimelineActionTypes.ShiftItem: {
+                const { itemId, startDate } = action.payload;
 
-                const epicToUpdate = draft.epics.find(epic => epic.id === epicId);
+                const epicToUpdate = draft.epics.find(epic => epic.id === itemId);
 
                 const epicDuration = epicToUpdate.endDate.getTime() - epicToUpdate.startDate.getTime();
 

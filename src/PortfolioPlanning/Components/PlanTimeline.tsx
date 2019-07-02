@@ -1,16 +1,10 @@
 import * as React from "react";
 import * as moment from "moment";
-import { ITimelineGroup, ITimelineItem, ProgressTrackingCriteria, ITeam, LoadingStatus } from "../Contracts";
+import { ITimelineGroup, ITimelineItem, ITeam, LoadingStatus } from "../Contracts";
 import Timeline from "react-calendar-timeline";
-import "./EpicTimeline.scss";
-import { IEpicTimelineState, IPortfolioPlanningState } from "../Redux/Contracts";
-import {
-    getAddEpicPanelOpen,
-    getSetDatesDialogHidden,
-    getTimelineGroups,
-    getTimelineItems,
-    getProgressTrackingCriteria
-} from "../Redux/Selectors/EpicTimelineSelectors";
+import "./PlanTimeline.scss";
+import { IPortfolioPlanningState } from "../Redux/Contracts";
+import { getTimelineGroups, getTimelineItems } from "../Redux/Selectors/EpicTimelineSelectors";
 import { EpicTimelineActions } from "../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
 import { ProgressDetails } from "../Common/Components/ProgressDetails";
@@ -22,24 +16,19 @@ import { IdentityRef } from "VSS/WebApi/Contracts";
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
 
-interface IEpicTimelineOwnProps {}
-
-interface IEpicTimelineMappedProps {
+interface IPlanTimelineMappedProps {
     planId: string;
     groups: ITimelineGroup[];
     teams: { [teamId: string]: ITeam };
     items: ITimelineItem[];
-    addEpicPanelOpen: boolean;
-    setDatesDialogHidden: boolean;
     selectedItemId: number;
-    progressTrackingCriteria: ProgressTrackingCriteria;
     planLoadingStatus: LoadingStatus;
     planOwner: IdentityRef;
 }
 
-export type IEpicTimelineProps = IEpicTimelineOwnProps & IEpicTimelineMappedProps & typeof Actions;
+export type IPlanTimelineProps = IPlanTimelineMappedProps & typeof Actions;
 
-export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimelineState> {
+export class PlanTimeline extends React.Component<IPlanTimelineProps> {
     constructor() {
         super();
     }
@@ -151,7 +140,7 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
     };
 
     private _onItemMove = (itemId: number, time: number): void => {
-        this.props.onShiftEpic(itemId, moment(time));
+        this.props.onShiftItem(itemId, moment(time));
     };
 
     // TODO: We only need this on first render
@@ -188,17 +177,14 @@ export class EpicTimeline extends React.Component<IEpicTimelineProps, IEpicTimel
     }
 }
 
-function mapStateToProps(state: IPortfolioPlanningState): IEpicTimelineMappedProps {
+function mapStateToProps(state: IPortfolioPlanningState): IPlanTimelineMappedProps {
     return {
         planId: state.planDirectoryState.selectedPlanId,
         groups: getTimelineGroups(state.epicTimelineState),
         teams: state.epicTimelineState.teams,
         items: getTimelineItems(state.epicTimelineState),
-        addEpicPanelOpen: getAddEpicPanelOpen(state.epicTimelineState),
-        setDatesDialogHidden: getSetDatesDialogHidden(state.epicTimelineState),
         selectedItemId: state.epicTimelineState.selectedItemId,
         planOwner: getSelectedPlanOwner(state),
-        progressTrackingCriteria: getProgressTrackingCriteria(state.epicTimelineState),
         planLoadingStatus: state.epicTimelineState.planLoadingStatus
     };
 }
@@ -206,12 +192,12 @@ function mapStateToProps(state: IPortfolioPlanningState): IEpicTimelineMappedPro
 const Actions = {
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
     onUpdateEndDate: EpicTimelineActions.updateEndDate,
-    onShiftEpic: EpicTimelineActions.shiftEpic,
+    onShiftItem: EpicTimelineActions.shiftItem,
     onToggleSetDatesDialogHidden: EpicTimelineActions.toggleItemDetailsDialogHidden,
     onSetSelectedItemId: EpicTimelineActions.setSelectedItemId
 };
 
-export const ConnectedEpicTimeline = connect(
+export const ConnectedPlanTimeline = connect(
     mapStateToProps,
     Actions
-)(EpicTimeline);
+)(PlanTimeline);
