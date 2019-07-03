@@ -95,6 +95,13 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
 
                 break;
             }
+            case EpicTimelineActionTypes.TogglePlanSettingsPanelOpen: {
+                const { isOpen } = action.payload;
+
+                draft.planSettingsPanelOpen = isOpen;
+
+                break;
+            }
             case EpicTimelineActionTypes.UpdateVisibleTimeStart: {
                 draft.visibleTimeStart = action.payload.visibleTimeStart;
                 break;
@@ -118,6 +125,7 @@ export function getDefaultState(): IEpicTimelineState {
         message: "Initial message",
         addEpicDialogOpen: false,
         setDatesDialogHidden: true,
+        planSettingsPanelOpen: false,
         selectedItemId: null,
         progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount,
         visibleTimeStart: null,
