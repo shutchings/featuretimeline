@@ -1,4 +1,5 @@
 import * as React from "react";
+import "./PlanHeader.scss";
 import { TitleSize, Header } from "azure-devops-ui/Header";
 
 export interface PlanHeaderProps {
@@ -21,34 +22,51 @@ export default class PlanHeader extends React.Component<PlanHeaderProps> {
                     titleSize={TitleSize.Large}
                     description={this.props.description}
                     backButtonProps={{ onClick: this.props.onBackButtonClicked }}
+                    commandBarClassName="plan-header-command-bar"
                     commandBarItems={[
                         {
                             id: "add-item",
+                            iconProps: {
+                                iconName: "Add"
+                            },
                             important: true,
+                            subtle: true,
                             onActivate: () => {
                                 this.props.onAddItemClicked();
+                            }
+                        },
+                        {
+                            id: "settings",
+                            iconProps: {
+                                iconName: "Settings"
                             },
-                            text: "Add epic"
+                            important: true,
+                            subtle: true
                         },
                         {
                             id: "remove-item",
-                            important: true,
-                            onActivate: () => {
-                                this.props.onRemoveSelectedItemClicked();
-                            },
-                            text: "Remove selected epic",
-                            disabled: !this.props.itemIsSelected
-                        },
-                        {
                             iconProps: {
                                 iconName: "Delete"
                             },
-                            id: "delete-plan",
+                            text: "Remove selected epic",
                             important: false,
+                            subtle: true,
+                            disabled: !this.props.itemIsSelected,
+                            onActivate: () => {
+                                this.props.onRemoveSelectedItemClicked();
+                            }
+                        },
+                        {
+                            id: "delete-plan",
+                            iconProps: {
+                                iconName: "Delete"
+                            },
+                            text: "Delete plan",
+                            important: false,
+                            subtle: true,
                             onActivate: () => {
                                 this.props.onDeleteButtonClicked(this.props.id);
-                            },
-                            text: "Delete plan"
+                            }
                         }
                     ]}
                 />
