@@ -30,10 +30,10 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
 
                 break;
             }
-            case EpicTimelineActionTypes.ShiftEpic: {
-                const { epicId, startDate } = action.payload;
+            case EpicTimelineActionTypes.ShiftItem: {
+                const { itemId, startDate } = action.payload;
 
-                const epicToUpdate = draft.epics.find(epic => epic.id === epicId);
+                const epicToUpdate = draft.epics.find(epic => epic.id === itemId);
 
                 const epicDuration = epicToUpdate.endDate.getTime() - epicToUpdate.startDate.getTime();
 
@@ -42,7 +42,7 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
 
                 break;
             }
-            case EpicTimelineActionTypes.ToggleSetDatesDialogHidden: {
+            case EpicTimelineActionTypes.ToggleItemDetailsDialogHidden: {
                 const { hidden } = action.payload;
 
                 draft.setDatesDialogHidden = hidden;
@@ -61,11 +61,11 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
 
                 return handlePortfolioItemsReceived(draft, action as PortfolioItemsReceivedAction);
 
-            case EpicTimelineActionTypes.OpenAddEpicPanel: {
+            case EpicTimelineActionTypes.OpenAddItemPanel: {
                 draft.addEpicDialogOpen = true;
                 break;
             }
-            case EpicTimelineActionTypes.CloseAddEpicPanel: {
+            case EpicTimelineActionTypes.CloseAddItemPanel: {
                 draft.addEpicDialogOpen = false;
                 break;
             }
@@ -229,9 +229,9 @@ function handlePortfolioItemsReceived(
 
 function handlePortfolioItemDeleted(state: IEpicTimelineState, action: PortfolioItemDeletedAction): IEpicTimelineState {
     return produce(state, draft => {
-        const { epicToRemove } = action.payload;
+        const { itemIdToRemove } = action.payload;
 
-        const indexToRemoveEpic = state.epics.findIndex(epic => epic.id === epicToRemove);
+        const indexToRemoveEpic = state.epics.findIndex(epic => epic.id === itemIdToRemove);
 
         const removedEpic = draft.epics.splice(indexToRemoveEpic, 1)[0];
         draft.selectedItemId = undefined;
