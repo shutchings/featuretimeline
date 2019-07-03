@@ -40,8 +40,9 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                     id={this.props.plan.id}
                     name={this.props.plan.name}
                     description={this.props.plan.description}
-                    backButtonClicked={this._backButtonClicked}
-                    deleteButtonClicked={this._deletePlanButtonClicked}
+                    onAddItemClicked={this.props.onOpenAddItemPanel}
+                    onBackButtonClicked={this._backButtonClicked}
+                    onDeleteButtonClicked={this._deletePlanButtonClicked}
                 />
                 <div className="page-content page-content-top">
                     <PlanSummary
@@ -52,7 +53,6 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                     <PlanConfiguration
                         selectedItem={this.props.selectedItem}
                         progressTrackingCriteria={this.props.progressTrackingCriteria}
-                        onAddItemClick={this._onAddEpicClick}
                         onProgressTrackingCriteriaChanged={this._onProgressTrackingCriteriaChanged}
                         onRemoveSelectedItemClick={this._onRemoveSelectedEpicClick}
                     />
@@ -108,10 +108,6 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
         this.props.resetPlanState();
     };
 
-    private _onAddEpicClick = (): void => {
-        this.props.onOpenAddEpicPanel();
-    };
-
     private _onRemoveSelectedEpicClick = (): void => {
         this.props.onRemoveSelectedEpic({
             planId: this.props.plan.id,
@@ -147,10 +143,10 @@ const Actions = {
     deletePlan: PlanDirectoryActions.deletePlan,
     toggleSelectedPlanId: PlanDirectoryActions.toggleSelectedPlanId,
     resetPlanState: EpicTimelineActions.resetPlanState,
-    onOpenAddEpicPanel: EpicTimelineActions.openAddEpicPanel,
+    onOpenAddItemPanel: EpicTimelineActions.openAddItemPanel,
     onRemoveSelectedEpic: EpicTimelineActions.removeItems,
     onToggleProgressTrackingCriteria: EpicTimelineActions.toggleProgressTrackingCriteria,
-    onCloseAddItemPanel: EpicTimelineActions.closeAddEpicPanel,
+    onCloseAddItemPanel: EpicTimelineActions.closeAddItemPanel,
     onAddItems: EpicTimelineActions.addItems,
     onToggleSetDatesDialogHidden: EpicTimelineActions.toggleItemDetailsDialogHidden,
     onUpdateStartDate: EpicTimelineActions.updateStartDate,

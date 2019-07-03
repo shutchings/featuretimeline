@@ -5,8 +5,9 @@ export interface PlanHeaderProps {
     id: string;
     name: string;
     description: string;
-    backButtonClicked: () => void;
-    deleteButtonClicked: (id: string) => void;
+    onBackButtonClicked: () => void;
+    onAddItemClicked: () => void;
+    onDeleteButtonClicked: (id: string) => void;
 }
 
 export default class PlanHeader extends React.Component<PlanHeaderProps> {
@@ -17,8 +18,16 @@ export default class PlanHeader extends React.Component<PlanHeaderProps> {
                     title={this.props.name}
                     titleSize={TitleSize.Large}
                     description={this.props.description}
-                    backButtonProps={{ onClick: this.props.backButtonClicked }}
+                    backButtonProps={{ onClick: this.props.onBackButtonClicked }}
                     commandBarItems={[
+                        {
+                            id: "add-item",
+                            important: true,
+                            onActivate: () => {
+                                this.props.onAddItemClicked();
+                            },
+                            text: "Add epic"
+                        },
                         {
                             iconProps: {
                                 iconName: "Delete"
@@ -26,7 +35,7 @@ export default class PlanHeader extends React.Component<PlanHeaderProps> {
                             id: "delete-plan",
                             important: false,
                             onActivate: () => {
-                                this.props.deleteButtonClicked(this.props.id);
+                                this.props.onDeleteButtonClicked(this.props.id);
                             },
                             text: "Delete plan"
                         }

@@ -44,8 +44,8 @@ export const EpicTimelineActions = {
         createAction(EpicTimelineActionTypes.PortfolioItemsReceived, result),
     portfolioItemDeleted: (itemDeleted: IRemoveItem) =>
         createAction(EpicTimelineActionTypes.PortfolioItemDeleted, itemDeleted),
-    openAddEpicPanel: () => createAction(EpicTimelineActionTypes.OpenAddItemPanel),
-    closeAddEpicPanel: () => createAction(EpicTimelineActionTypes.CloseAddItemPanel),
+    openAddItemPanel: () => createAction(EpicTimelineActionTypes.OpenAddItemPanel),
+    closeAddItemPanel: () => createAction(EpicTimelineActionTypes.CloseAddItemPanel),
     addItems: (itemsToAdd: IAddItems) => createAction(EpicTimelineActionTypes.AddItems, itemsToAdd),
     removeItems: (itemToRemove: IRemoveItem) => createAction(EpicTimelineActionTypes.RemoveItems, itemToRemove),
     toggleProgressTrackingCriteria: (criteria: ProgressTrackingCriteria) =>

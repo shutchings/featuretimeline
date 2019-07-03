@@ -6,7 +6,6 @@ import { ProgressTrackingCriteria, ITimelineItem } from "../../Contracts";
 export interface IPlanConfigurationProps {
     selectedItem: ITimelineItem;
     progressTrackingCriteria: ProgressTrackingCriteria;
-    onAddItemClick: () => void;
     onRemoveSelectedItemClick: () => void;
     onProgressTrackingCriteriaChanged: (item: { key: string; text: string }) => void;
 }
@@ -37,9 +36,6 @@ export const PlanConfiguration = (props: IPlanConfigurationProps) => {
                     onChanged={props.onProgressTrackingCriteriaChanged}
                 />
             </div>
-            <button className="add-item-button" onClick={props.onAddItemClick}>
-                Add Epic
-            </button>
             <button
                 className="remove-item-button"
                 disabled={!props.selectedItem}
