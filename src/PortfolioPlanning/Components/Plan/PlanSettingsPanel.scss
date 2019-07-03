@@ -1,7 +1,15 @@
-.configuration-container {
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+@import "node_modules/azure-devops-ui/Core/core.scss";
+
+.settings-container {
     display: flex;
-    justify-content: flex-end;
-    align-items: center;
+    flex-direction: column;
+    // justify-content: flex-end;
+    // align-items: center;
+
+    .settings-item {
+        margin-bottom: $spacing-16;
+    }
 
     .progress-options {
         display: flex;
@@ -9,17 +17,19 @@
     }
 
     .progress-options-label {
-        margin: 5px;
-        margin-left: 15px;
-        font-size: 16px;
+        @extend .body-m;
     }
 
     .progress-options-dropdown {
         margin: 5px;
-        width: 170px;
     }
 
-    .remove-item-button {
-        margin: 5px;
+    .delete-plan {
+        display: flex;
+        flex-direction: column;
+
+        .delete-message {
+            margin-bottom: $spacing-8;
+        }
     }
 }

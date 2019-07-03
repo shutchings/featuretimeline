@@ -89,6 +89,7 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 draft.selectedItemId = undefined;
                 draft.setDatesDialogHidden = true;
                 draft.addEpicDialogOpen = false;
+                draft.planSettingsPanelOpen = false;
                 draft.epics = [];
                 draft.projects = [];
                 draft.teams = {};

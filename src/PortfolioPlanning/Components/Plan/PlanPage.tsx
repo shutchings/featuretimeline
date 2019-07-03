@@ -45,7 +45,6 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                     onAddItemClicked={this.props.onOpenAddItemPanel}
                     onRemoveSelectedItemClicked={this._onRemoveSelectedEpicClick}
                     onBackButtonClicked={this._backButtonClicked}
-                    onDeleteButtonClicked={this._deletePlanButtonClicked}
                     onSettingsButtonClicked={this._settingsButtonClicked}
                 />
                 <div className="page-content page-content-top">
@@ -104,6 +103,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                     selectedItem={this.props.selectedItem}
                     progressTrackingCriteria={this.props.progressTrackingCriteria}
                     onProgressTrackingCriteriaChanged={this._onProgressTrackingCriteriaChanged}
+                    onDeletePlanClicked={this._deletePlanButtonClicked}
                     onClosePlanSettingsPanel={() => {
                         this.props.onTogglePlanSettingsPanelOpen(false);
                     }}
@@ -117,8 +117,8 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
         this.props.resetPlanState();
     };
 
-    private _deletePlanButtonClicked = (id: string): void => {
-        this.props.deletePlan(id);
+    private _deletePlanButtonClicked = (): void => {
+        this.props.deletePlan(this.props.plan.id);
         this.props.resetPlanState();
     };
 

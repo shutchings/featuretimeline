@@ -3,11 +3,13 @@ import "./PlanSettingsPanel.scss";
 import { Panel } from "azure-devops-ui/Panel";
 import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
 import { ProgressTrackingCriteria, ITimelineItem } from "../../Contracts";
+import { Button } from "azure-devops-ui/Button";
 
 export interface IPlanSettingsProps {
     selectedItem: ITimelineItem;
     progressTrackingCriteria: ProgressTrackingCriteria;
     onProgressTrackingCriteriaChanged: (item: { key: string; text: string }) => void;
+    onDeletePlanClicked: () => void;
     onClosePlanSettingsPanel: () => void;
 }
 
@@ -21,8 +23,8 @@ export const PlanSettingsPanel = (props: IPlanSettingsProps) => {
             titleProps={{ text: "Settings" }}
             footerButtonProps={[{ text: "Close", primary: true, onClick: props.onClosePlanSettingsPanel }]}
         >
-            <div className="configuration-container">
-                <div className="progress-options">
+            <div className="settings-container">
+                <div className="progress-options settings-item">
                     <div className="progress-options-label">Track Progress Using: </div>
                     <ComboBox
                         className="progress-options-dropdown"
@@ -41,6 +43,15 @@ export const PlanSettingsPanel = (props: IPlanSettingsProps) => {
                         ]}
                         onChanged={props.onProgressTrackingCriteriaChanged}
                     />
+                </div>
+                <div className="delete-plan settings-item">
+                    <div className="delete-message">
+                        Delete this plan. This action can't be undone. All items in the plan will still be available in
+                        your backlogs.
+                    </div>
+                    <Button danger={true} onClick={props.onDeletePlanClicked}>
+                        Delete plan
+                    </Button>
                 </div>
             </div>
         </Panel>
