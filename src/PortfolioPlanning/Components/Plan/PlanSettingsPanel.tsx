@@ -1,15 +1,15 @@
 import * as React from "react";
-import "./PlanConfiguration.scss";
+import "./PlanSettingsPanel.scss";
 import { ComboBox } from "office-ui-fabric-react/lib/ComboBox";
 import { ProgressTrackingCriteria, ITimelineItem } from "../../Contracts";
 
-export interface IPlanConfigurationProps {
+export interface IPlanSettingsProps {
     selectedItem: ITimelineItem;
     progressTrackingCriteria: ProgressTrackingCriteria;
     onProgressTrackingCriteriaChanged: (item: { key: string; text: string }) => void;
 }
 
-export const PlanConfiguration = (props: IPlanConfigurationProps) => {
+export const PlanSettingsPanel = (props: IPlanSettingsProps) => {
     const selectedProgressCriteriaKey =
         props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount ? "completedCount" : "storyPoints";
 

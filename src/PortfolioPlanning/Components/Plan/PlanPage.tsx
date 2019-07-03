@@ -11,7 +11,7 @@ import { connect } from "react-redux";
 import { PlanDirectoryActions } from "../../Redux/Actions/PlanDirectoryActions";
 import { EpicTimelineActions } from "../../Redux/Actions/EpicTimelineActions";
 import { PortfolioPlanningMetadata } from "../../Models/PortfolioPlanningQueryModels";
-import { PlanConfiguration } from "./PlanConfiguration";
+import { PlanSettingsPanel } from "./PlanSettingsPanel";
 import { ProgressTrackingCriteria, ITimelineItem } from "../../Contracts";
 import { AddItemPanel } from "./AddItemPanel";
 import { DetailsDialog } from "./DetailsDialog";
@@ -52,7 +52,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                         teamNames={this.props.teamNames}
                         owner={this.props.plan.owner}
                     />
-                    <PlanConfiguration
+                    <PlanSettingsPanel
                         selectedItem={this.props.selectedItem}
                         progressTrackingCriteria={this.props.progressTrackingCriteria}
                         onProgressTrackingCriteriaChanged={this._onProgressTrackingCriteriaChanged}
