@@ -5,8 +5,10 @@ export interface PlanHeaderProps {
     id: string;
     name: string;
     description: string;
+    itemIsSelected: boolean;
     onBackButtonClicked: () => void;
     onAddItemClicked: () => void;
+    onRemoveSelectedItemClicked: () => void;
     onDeleteButtonClicked: (id: string) => void;
 }
 
@@ -27,6 +29,15 @@ export default class PlanHeader extends React.Component<PlanHeaderProps> {
                                 this.props.onAddItemClicked();
                             },
                             text: "Add epic"
+                        },
+                        {
+                            id: "remove-item",
+                            important: true,
+                            onActivate: () => {
+                                this.props.onRemoveSelectedItemClicked();
+                            },
+                            text: "Remove selected epic",
+                            disabled: !this.props.itemIsSelected
                         },
                         {
                             iconProps: {

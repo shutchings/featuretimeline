@@ -6,7 +6,6 @@ import { ProgressTrackingCriteria, ITimelineItem } from "../../Contracts";
 export interface IPlanConfigurationProps {
     selectedItem: ITimelineItem;
     progressTrackingCriteria: ProgressTrackingCriteria;
-    onRemoveSelectedItemClick: () => void;
     onProgressTrackingCriteriaChanged: (item: { key: string; text: string }) => void;
 }
 
@@ -36,13 +35,6 @@ export const PlanConfiguration = (props: IPlanConfigurationProps) => {
                     onChanged={props.onProgressTrackingCriteriaChanged}
                 />
             </div>
-            <button
-                className="remove-item-button"
-                disabled={!props.selectedItem}
-                onClick={props.onRemoveSelectedItemClick}
-            >
-                Remove selected epic from plan
-            </button>
         </div>
     );
 };

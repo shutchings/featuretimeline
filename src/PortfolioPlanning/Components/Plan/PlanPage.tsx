@@ -40,7 +40,9 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                     id={this.props.plan.id}
                     name={this.props.plan.name}
                     description={this.props.plan.description}
+                    itemIsSelected={!!this.props.selectedItem}
                     onAddItemClicked={this.props.onOpenAddItemPanel}
+                    onRemoveSelectedItemClicked={this._onRemoveSelectedEpicClick}
                     onBackButtonClicked={this._backButtonClicked}
                     onDeleteButtonClicked={this._deletePlanButtonClicked}
                 />
@@ -54,7 +56,6 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                         selectedItem={this.props.selectedItem}
                         progressTrackingCriteria={this.props.progressTrackingCriteria}
                         onProgressTrackingCriteriaChanged={this._onProgressTrackingCriteriaChanged}
-                        onRemoveSelectedItemClick={this._onRemoveSelectedEpicClick}
                     />
                     <ConnectedPlanTimeline />
                 </div>
@@ -109,7 +110,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
     };
 
     private _onRemoveSelectedEpicClick = (): void => {
-        this.props.onRemoveSelectedEpic({
+        this.props.onRemoveSelectedItem({
             planId: this.props.plan.id,
             itemIdToRemove: this.props.selectedItem.id
         });
@@ -144,7 +145,7 @@ const Actions = {
     toggleSelectedPlanId: PlanDirectoryActions.toggleSelectedPlanId,
     resetPlanState: EpicTimelineActions.resetPlanState,
     onOpenAddItemPanel: EpicTimelineActions.openAddItemPanel,
-    onRemoveSelectedEpic: EpicTimelineActions.removeItems,
+    onRemoveSelectedItem: EpicTimelineActions.removeItems,
     onToggleProgressTrackingCriteria: EpicTimelineActions.toggleProgressTrackingCriteria,
     onCloseAddItemPanel: EpicTimelineActions.closeAddItemPanel,
     onAddItems: EpicTimelineActions.addItems,
