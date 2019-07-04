@@ -111,7 +111,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
         }
     }
 
-    // This method is necessary to support the scroll when there is visibleTimeStart and visibleTimeEnd
+    // Update the visibleTimeStart and visibleTimeEnd when user scroll or zoom the timeline.
     private _handleTimeChange = (visibleTimeStart, visibleTimeEnd, updateScrollCanvas): void => {
         this.props.onUpdateVisibleTimeStart(visibleTimeStart);
         this.props.onUpdateVisibleTimeEnd(visibleTimeEnd);
