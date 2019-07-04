@@ -17,6 +17,8 @@ export interface IEpicTimelineState {
     setDatesDialogHidden: boolean;
     selectedItemId: number;
     progressTrackingCriteria: ProgressTrackingCriteria;
+    visibleTimeStart: number;
+    visibleTimeEnd: number;
 }
 
 export interface IPlanDirectoryState {

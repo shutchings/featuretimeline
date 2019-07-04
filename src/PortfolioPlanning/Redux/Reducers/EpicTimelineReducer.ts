@@ -1,3 +1,4 @@
+import * as moment from "moment";
 import { IEpicTimelineState } from "../Contracts";
 import {
     EpicTimelineActions,
@@ -94,6 +95,14 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
 
                 break;
             }
+            case EpicTimelineActionTypes.UpdateVisibleTimeStart: {
+                draft.visibleTimeStart = action.payload.visibleTimeStart;
+                break;
+            }
+            case EpicTimelineActionTypes.UpdateVisibleTimeEnd: {
+                draft.visibleTimeEnd = action.payload.visibleTimeEnd;
+                break;
+            }
         }
     });
 }
@@ -109,7 +118,9 @@ export function getDefaultState(): IEpicTimelineState {
         addEpicDialogOpen: false,
         setDatesDialogHidden: true,
         selectedItemId: null,
-        progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount
+        progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount,
+        visibleTimeStart: null,
+        visibleTimeEnd: null,
     };
 }
 
@@ -206,6 +217,16 @@ function handlePortfolioItemsReceived(
                         storyPointsProgress: newItemInfo.StoryPointsProgress,
                         countProgress: newItemInfo.CountProgress
                     });
+
+                    // Add auto scroll to put newly added epic in view.
+                    const newItemStartDate: number = moment(newItemInfo.StartDate).valueOf();
+                    const newItemTargetDate: number = moment(newItemInfo.TargetDate).valueOf();
+                    if(newItemStartDate < draft.visibleTimeStart) {
+                        draft.visibleTimeStart = moment(newItemStartDate).add(-1, "months").valueOf();
+                    }
+                    if(newItemTargetDate > draft.visibleTimeEnd) {
+                        draft.visibleTimeEnd = moment(newItemTargetDate).add(1, "months").valueOf();;
+                    }
                 }
             });
 

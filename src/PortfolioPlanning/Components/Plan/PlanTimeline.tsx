@@ -24,6 +24,8 @@ interface IPlanTimelineMappedProps {
     selectedItemId: number;
     planLoadingStatus: LoadingStatus;
     planOwner: IdentityRef;
+    visibleTimeStart: number;
+    visibleTimeEnd: number;
 }
 
 export type IPlanTimelineProps = IPlanTimelineMappedProps & typeof Actions;
@@ -47,8 +49,9 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                 <Timeline
                     groups={this.props.groups}
                     items={this.props.items}
-                    defaultTimeStart={defaultTimeStart}
-                    defaultTimeEnd={defaultTimeEnd}
+                    visibleTimeStart={this.props.visibleTimeStart || defaultTimeStart}
+                    visibleTimeEnd={this.props.visibleTimeEnd || defaultTimeEnd}
+                    onTimeChange={this._handleTimeChange}
                     canChangeGroup={false}
                     stackItems={true}
                     dragSnap={day}
@@ -107,6 +110,12 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
             );
         }
     }
+
+    // This method is necessary to support the scroll when there is visibleTimeStart and visibleTimeEnd
+    private _handleTimeChange = (visibleTimeStart, visibleTimeEnd, updateScrollCanvas): void => {
+        this.props.onUpdateVisibleTimeStart(visibleTimeStart);
+        this.props.onUpdateVisibleTimeEnd(visibleTimeEnd);
+    };
 
     private _validateResize(action: string, item: ITimelineItem, time: number, resizeEdge: string) {
         if (action === "resize") {
@@ -183,7 +192,9 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanTimelineMappedPro
         items: getTimelineItems(state.epicTimelineState),
         selectedItemId: state.epicTimelineState.selectedItemId,
         planOwner: getSelectedPlanOwner(state),
-        planLoadingStatus: state.epicTimelineState.planLoadingStatus
+        planLoadingStatus: state.epicTimelineState.planLoadingStatus,
+        visibleTimeStart: state.epicTimelineState.visibleTimeStart,
+        visibleTimeEnd: state.epicTimelineState.visibleTimeEnd
     };
 }
 
@@ -192,7 +203,9 @@ const Actions = {
     onUpdateEndDate: EpicTimelineActions.updateEndDate,
     onShiftItem: EpicTimelineActions.shiftItem,
     onToggleSetDatesDialogHidden: EpicTimelineActions.toggleItemDetailsDialogHidden,
-    onSetSelectedItemId: EpicTimelineActions.setSelectedItemId
+    onSetSelectedItemId: EpicTimelineActions.setSelectedItemId,
+    onUpdateVisibleTimeStart: EpicTimelineActions.updateVisibleTimeStart,
+    onUpdateVisibleTimeEnd: EpicTimelineActions.updateVisibleTimeEnd
 };
 
 export const ConnectedPlanTimeline = connect(
