@@ -25,6 +25,7 @@ interface IPlanPageMappedProps {
     addItemPanelOpen: boolean;
     setDatesDialogHidden: boolean;
     planSettingsPanelOpen: boolean;
+    exceptionMessage: string;
 }
 
 export type IPlanPageProps = IPlanPageMappedProps & typeof Actions;
@@ -41,6 +42,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                     id={this.props.plan.id}
                     name={this.props.plan.name}
                     description={this.props.plan.description}
+                    disabled={!!this.props.exceptionMessage}
                     itemIsSelected={!!this.props.selectedItem}
                     onAddItemClicked={this.props.onOpenAddItemPanel}
                     onRemoveSelectedItemClicked={this._onRemoveSelectedEpicClick}
@@ -154,7 +156,8 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanPageMappedProps {
         progressTrackingCriteria: state.epicTimelineState.progressTrackingCriteria,
         addItemPanelOpen: state.epicTimelineState.addEpicDialogOpen,
         setDatesDialogHidden: state.epicTimelineState.setDatesDialogHidden,
-        planSettingsPanelOpen: state.epicTimelineState.planSettingsPanelOpen
+        planSettingsPanelOpen: state.epicTimelineState.planSettingsPanelOpen,
+        exceptionMessage: state.epicTimelineState.exceptionMessage
     };
 }
 
