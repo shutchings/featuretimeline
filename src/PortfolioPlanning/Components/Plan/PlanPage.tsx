@@ -16,6 +16,7 @@ import { ProgressTrackingCriteria, ITimelineItem, LoadingStatus } from "../../Co
 import { AddItemPanel } from "./AddItemPanel";
 import { DetailsDialog } from "./DetailsDialog";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
+import { Link } from "azure-devops-ui/Link";
 
 interface IPlanPageMappedProps {
     plan: PortfolioPlanningMetadata;
@@ -67,10 +68,20 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
         } else if (this.props.exceptionMessage) {
             let errorMessage = this.props.exceptionMessage;
             if (this.props.exceptionMessage.includes("VS403496")) {
+                const helpLink = "https://go.microsoft.com/fwlink/?LinkId=786441";
                 errorMessage =
-                    "This plan includes projects that you do not have access to. Update your permissions to view this plan. More information can be found here: https://go.microsoft.com/fwlink/?LinkId=786441.";
+                    "This plan includes projects that you do not have access to. Update your permissions to view this plan. More information can be found here: ";
+                planContent = (
+                    <div>
+                        {errorMessage}
+                        <Link href={helpLink} target="_blank">
+                            {helpLink}
+                        </Link>
+                    </div>
+                );
+            } else {
+                planContent = <div>{errorMessage}</div>;
             }
-            planContent = <div>{errorMessage}</div>;
         } else {
             planContent = (
                 <>
