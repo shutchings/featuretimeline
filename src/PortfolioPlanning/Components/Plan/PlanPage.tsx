@@ -12,9 +12,10 @@ import { PlanDirectoryActions } from "../../Redux/Actions/PlanDirectoryActions";
 import { EpicTimelineActions } from "../../Redux/Actions/EpicTimelineActions";
 import { PortfolioPlanningMetadata } from "../../Models/PortfolioPlanningQueryModels";
 import { PlanSettingsPanel } from "./PlanSettingsPanel";
-import { ProgressTrackingCriteria, ITimelineItem } from "../../Contracts";
+import { ProgressTrackingCriteria, ITimelineItem, LoadingStatus } from "../../Contracts";
 import { AddItemPanel } from "./AddItemPanel";
 import { DetailsDialog } from "./DetailsDialog";
+import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 
 interface IPlanPageMappedProps {
     plan: PortfolioPlanningMetadata;
@@ -26,6 +27,7 @@ interface IPlanPageMappedProps {
     setDatesDialogHidden: boolean;
     planSettingsPanelOpen: boolean;
     exceptionMessage: string;
+    planLoadingStatus: LoadingStatus;
 }
 
 export type IPlanPageProps = IPlanPageMappedProps & typeof Actions;
@@ -58,16 +60,26 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
     }
 
     private _renderPlanContent = (): JSX.Element => {
-        return (
-            <div className="page-content page-content-top">
-                <PlanSummary
-                    projectNames={this.props.projectNames}
-                    teamNames={this.props.teamNames}
-                    owner={this.props.plan.owner}
-                />
-                <ConnectedPlanTimeline />
-            </div>
-        );
+        let planContent: JSX.Element;
+
+        if (this.props.planLoadingStatus === LoadingStatus.NotLoaded) {
+            planContent = <Spinner className="plan-spinner" label="Loading..." size={SpinnerSize.large} />;
+        } else if (this.props.exceptionMessage) {
+            planContent = <div>{this.props.exceptionMessage}</div>;
+        } else {
+            planContent = (
+                <>
+                    <PlanSummary
+                        projectNames={this.props.projectNames}
+                        teamNames={this.props.teamNames}
+                        owner={this.props.plan.owner}
+                    />
+                    <ConnectedPlanTimeline />
+                </>
+            );
+        }
+
+        return <div className="page-content page-content-top plan-content">{planContent}</div>;
     };
 
     private _renderAddItemPanel = (): JSX.Element => {
@@ -163,7 +175,8 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanPageMappedProps {
         addItemPanelOpen: state.epicTimelineState.addEpicDialogOpen,
         setDatesDialogHidden: state.epicTimelineState.setDatesDialogHidden,
         planSettingsPanelOpen: state.epicTimelineState.planSettingsPanelOpen,
-        exceptionMessage: state.epicTimelineState.exceptionMessage
+        exceptionMessage: state.epicTimelineState.exceptionMessage,
+        planLoadingStatus: state.epicTimelineState.planLoadingStatus
     };
 }
 
