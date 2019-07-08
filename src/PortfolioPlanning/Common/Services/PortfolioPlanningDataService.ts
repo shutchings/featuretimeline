@@ -429,7 +429,7 @@ export class PortfolioPlanningDataService {
             const start = responseString.indexOf('{"@odata.context"');
             const end = responseString.lastIndexOf("}");
 
-            if (start != -1) {
+            if (start !== -1) {
                 const jsonString = responseString.substring(start, end + 1);
                 const jsonObject = JSON.parse(jsonString);
 
