@@ -11,7 +11,7 @@ import { connect } from "react-redux";
 import { PlanDirectoryActions } from "../../Redux/Actions/PlanDirectoryActions";
 import { EpicTimelineActions } from "../../Redux/Actions/EpicTimelineActions";
 import { PortfolioPlanningMetadata } from "../../Models/PortfolioPlanningQueryModels";
-import { PlanConfiguration } from "./PlanConfiguration";
+import { PlanSettingsPanel } from "./PlanSettingsPanel";
 import { ProgressTrackingCriteria, ITimelineItem } from "../../Contracts";
 import { AddItemPanel } from "./AddItemPanel";
 import { DetailsDialog } from "./DetailsDialog";
@@ -24,6 +24,7 @@ interface IPlanPageMappedProps {
     progressTrackingCriteria: ProgressTrackingCriteria;
     addItemPanelOpen: boolean;
     setDatesDialogHidden: boolean;
+    planSettingsPanelOpen: boolean;
 }
 
 export type IPlanPageProps = IPlanPageMappedProps & typeof Actions;
@@ -44,7 +45,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                     onAddItemClicked={this.props.onOpenAddItemPanel}
                     onRemoveSelectedItemClicked={this._onRemoveSelectedEpicClick}
                     onBackButtonClicked={this._backButtonClicked}
-                    onDeleteButtonClicked={this._deletePlanButtonClicked}
+                    onSettingsButtonClicked={this._settingsButtonClicked}
                 />
                 <div className="page-content page-content-top">
                     <PlanSummary
@@ -52,15 +53,11 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                         teamNames={this.props.teamNames}
                         owner={this.props.plan.owner}
                     />
-                    <PlanConfiguration
-                        selectedItem={this.props.selectedItem}
-                        progressTrackingCriteria={this.props.progressTrackingCriteria}
-                        onProgressTrackingCriteriaChanged={this._onProgressTrackingCriteriaChanged}
-                    />
                     <ConnectedPlanTimeline />
                 </div>
                 {this._renderAddItemPanel()}
                 {this._renderItemDetailsDialog()}
+                {this._renderPlanSettingsPanel()}
             </Page>
         );
     }
@@ -99,13 +96,29 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
         }
     };
 
+    private _renderPlanSettingsPanel = (): JSX.Element => {
+        if (this.props.planSettingsPanelOpen) {
+            return (
+                <PlanSettingsPanel
+                    selectedItem={this.props.selectedItem}
+                    progressTrackingCriteria={this.props.progressTrackingCriteria}
+                    onProgressTrackingCriteriaChanged={this._onProgressTrackingCriteriaChanged}
+                    onDeletePlanClicked={this._deletePlanButtonClicked}
+                    onClosePlanSettingsPanel={() => {
+                        this.props.onTogglePlanSettingsPanelOpen(false);
+                    }}
+                />
+            );
+        }
+    };
+
     private _backButtonClicked = (): void => {
         this.props.toggleSelectedPlanId(undefined);
         this.props.resetPlanState();
     };
 
-    private _deletePlanButtonClicked = (id: string): void => {
-        this.props.deletePlan(id);
+    private _deletePlanButtonClicked = (): void => {
+        this.props.deletePlan(this.props.plan.id);
         this.props.resetPlanState();
     };
 
@@ -114,6 +127,10 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
             planId: this.props.plan.id,
             itemIdToRemove: this.props.selectedItem.id
         });
+    };
+
+    private _settingsButtonClicked = (): void => {
+        this.props.onTogglePlanSettingsPanelOpen(true);
     };
 
     private _onProgressTrackingCriteriaChanged = (item: { key: string; text: string }) => {
@@ -136,7 +153,8 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanPageMappedProps {
         selectedItem: getSelectedItem(state.epicTimelineState),
         progressTrackingCriteria: state.epicTimelineState.progressTrackingCriteria,
         addItemPanelOpen: state.epicTimelineState.addEpicDialogOpen,
-        setDatesDialogHidden: state.epicTimelineState.setDatesDialogHidden
+        setDatesDialogHidden: state.epicTimelineState.setDatesDialogHidden,
+        planSettingsPanelOpen: state.epicTimelineState.planSettingsPanelOpen
     };
 }
 
@@ -151,7 +169,8 @@ const Actions = {
     onAddItems: EpicTimelineActions.addItems,
     onToggleSetDatesDialogHidden: EpicTimelineActions.toggleItemDetailsDialogHidden,
     onUpdateStartDate: EpicTimelineActions.updateStartDate,
-    onUpdateEndDate: EpicTimelineActions.updateEndDate
+    onUpdateEndDate: EpicTimelineActions.updateEndDate,
+    onTogglePlanSettingsPanelOpen: EpicTimelineActions.togglePlanSettingsPanelOpen
 };
 
 export const ConnectedPlanPage = connect(

@@ -10,7 +10,7 @@ export interface PlanHeaderProps {
     onBackButtonClicked: () => void;
     onAddItemClicked: () => void;
     onRemoveSelectedItemClicked: () => void;
-    onDeleteButtonClicked: (id: string) => void;
+    onSettingsButtonClicked: () => void;
 }
 
 export default class PlanHeader extends React.Component<PlanHeaderProps> {
@@ -41,7 +41,10 @@ export default class PlanHeader extends React.Component<PlanHeaderProps> {
                                 iconName: "Settings"
                             },
                             important: true,
-                            subtle: true
+                            subtle: true,
+                            onActivate: () => {
+                                this.props.onSettingsButtonClicked();
+                            }
                         },
                         {
                             id: "remove-item",
@@ -54,18 +57,6 @@ export default class PlanHeader extends React.Component<PlanHeaderProps> {
                             disabled: !this.props.itemIsSelected,
                             onActivate: () => {
                                 this.props.onRemoveSelectedItemClicked();
-                            }
-                        },
-                        {
-                            id: "delete-plan",
-                            iconProps: {
-                                iconName: "Delete"
-                            },
-                            text: "Delete plan",
-                            important: false,
-                            subtle: true,
-                            onActivate: () => {
-                                this.props.onDeleteButtonClicked(this.props.id);
                             }
                         }
                     ]}

@@ -89,9 +89,17 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 draft.selectedItemId = undefined;
                 draft.setDatesDialogHidden = true;
                 draft.addEpicDialogOpen = false;
+                draft.planSettingsPanelOpen = false;
                 draft.epics = [];
                 draft.projects = [];
                 draft.teams = {};
+
+                break;
+            }
+            case EpicTimelineActionTypes.TogglePlanSettingsPanelOpen: {
+                const { isOpen } = action.payload;
+
+                draft.planSettingsPanelOpen = isOpen;
 
                 break;
             }
@@ -118,6 +126,7 @@ export function getDefaultState(): IEpicTimelineState {
         message: "Initial message",
         addEpicDialogOpen: false,
         setDatesDialogHidden: true,
+        planSettingsPanelOpen: false,
         selectedItemId: null,
         progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount,
         visibleTimeStart: null,

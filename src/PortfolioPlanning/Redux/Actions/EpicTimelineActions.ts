@@ -20,6 +20,7 @@ export const enum EpicTimelineActionTypes {
     ToggleProgressTrackingCriteria = "EpicTimeline/ToggleProgressTrackingCriteria",
     ToggleLoadingStatus = "EpicTimeline/ToggleLoadingStatus",
     ResetPlanState = "EpicTimeline/ResetPlanState",
+    TogglePlanSettingsPanelOpen = "EpicTimeline/TogglePlanSettingsPanelOpen",
     UpdateVisibleTimeStart = "EpicTimeline/UpdateVisibleTimeStart",
     UpdateVisibleTimeEnd = "EpicTimeline/UpdateVisibleTimeEnd"
 }
@@ -57,6 +58,8 @@ export const EpicTimelineActions = {
     toggleLoadingStatus: (status: LoadingStatus) =>
         createAction(EpicTimelineActionTypes.ToggleLoadingStatus, { status }),
     resetPlanState: () => createAction(EpicTimelineActionTypes.ResetPlanState),
+    togglePlanSettingsPanelOpen: (isOpen: boolean) =>
+        createAction(EpicTimelineActionTypes.TogglePlanSettingsPanelOpen, { isOpen }),
     updateVisibleTimeStart: (visibleTimeStart: number) =>
         createAction(EpicTimelineActionTypes.UpdateVisibleTimeStart, {
             visibleTimeStart
