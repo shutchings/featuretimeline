@@ -19,7 +19,9 @@ export const enum EpicTimelineActionTypes {
     RemoveItems = "EpicTimeline/RemoveItems",
     ToggleProgressTrackingCriteria = "EpicTimeline/ToggleProgressTrackingCriteria",
     ToggleLoadingStatus = "EpicTimeline/ToggleLoadingStatus",
-    ResetPlanState = "EpicTimeline/ResetPlanState"
+    ResetPlanState = "EpicTimeline/ResetPlanState",
+    UpdateVisibleTimeStart = "EpicTimeline/UpdateVisibleTimeStart",
+    UpdateVisibleTimeEnd = "EpicTimeline/UpdateVisibleTimeEnd"
 }
 
 export const EpicTimelineActions = {
@@ -54,7 +56,15 @@ export const EpicTimelineActions = {
         }),
     toggleLoadingStatus: (status: LoadingStatus) =>
         createAction(EpicTimelineActionTypes.ToggleLoadingStatus, { status }),
-    resetPlanState: () => createAction(EpicTimelineActionTypes.ResetPlanState)
+    resetPlanState: () => createAction(EpicTimelineActionTypes.ResetPlanState),
+    updateVisibleTimeStart: (visibleTimeStart: number) =>
+        createAction(EpicTimelineActionTypes.UpdateVisibleTimeStart, {
+            visibleTimeStart
+        }),
+    updateVisibleTimeEnd: (visibleTimeEnd: number) =>
+        createAction(EpicTimelineActionTypes.UpdateVisibleTimeEnd, {
+            visibleTimeEnd
+        })
 };
 
 export type EpicTimelineActions = ActionsUnion<typeof EpicTimelineActions>;
