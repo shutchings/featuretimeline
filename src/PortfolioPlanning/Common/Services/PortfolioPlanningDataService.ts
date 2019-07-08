@@ -456,7 +456,7 @@ export class PortfolioPlanningDataService {
             console.log(error);
 
             return {
-                exceptionMessage: error.message,
+                exceptionMessage: error,
                 items: []
             };
         }
