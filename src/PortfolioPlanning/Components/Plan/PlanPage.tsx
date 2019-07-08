@@ -49,20 +49,26 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                     onBackButtonClicked={this._backButtonClicked}
                     onSettingsButtonClicked={this._settingsButtonClicked}
                 />
-                <div className="page-content page-content-top">
-                    <PlanSummary
-                        projectNames={this.props.projectNames}
-                        teamNames={this.props.teamNames}
-                        owner={this.props.plan.owner}
-                    />
-                    <ConnectedPlanTimeline />
-                </div>
+                {this._renderPlanContent()}
                 {this._renderAddItemPanel()}
                 {this._renderItemDetailsDialog()}
                 {this._renderPlanSettingsPanel()}
             </Page>
         );
     }
+
+    private _renderPlanContent = (): JSX.Element => {
+        return (
+            <div className="page-content page-content-top">
+                <PlanSummary
+                    projectNames={this.props.projectNames}
+                    teamNames={this.props.teamNames}
+                    owner={this.props.plan.owner}
+                />
+                <ConnectedPlanTimeline />
+            </div>
+        );
+    };
 
     private _renderAddItemPanel = (): JSX.Element => {
         if (this.props.addItemPanelOpen) {
