@@ -422,9 +422,10 @@ export class PortfolioPlanningDataService {
             return null;
         }
 
+        const responseString: string = results;
+
         try {
             //  TODO hack hack ... Look for start of JSON response "{"@odata.context""
-            const responseString: string = results;
             const start = responseString.indexOf('{"@odata.context"');
             const end = responseString.lastIndexOf("}");
             const jsonString = responseString.substring(start, end + 1);
@@ -441,8 +442,13 @@ export class PortfolioPlanningDataService {
         } catch (error) {
             console.log(error);
 
+            const start = responseString.indexOf('{"error"');
+            const end = responseString.lastIndexOf("}");
+            const jsonString = responseString.substring(start, end + 1);
+            const jsonObject = JSON.parse(jsonString);
+
             return {
-                exceptionMessage: "Could not retrieve work item data.",
+                exceptionMessage: jsonObject.error.message,
                 items: []
             };
         }

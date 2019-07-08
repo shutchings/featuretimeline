@@ -26,6 +26,7 @@ interface IPlanTimelineMappedProps {
     planOwner: IdentityRef;
     visibleTimeStart: number;
     visibleTimeEnd: number;
+    exceptionMessage: string;
 }
 
 export type IPlanTimelineProps = IPlanTimelineMappedProps & typeof Actions;
@@ -39,6 +40,10 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
         if (this.props.planLoadingStatus === LoadingStatus.NotLoaded) {
             return <Spinner label="Loading..." size={SpinnerSize.large} />;
         } else {
+            if (this.props.exceptionMessage) {
+                return <div>{this.props.exceptionMessage}</div>;
+            }
+
             const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(this.props.items);
 
             const forwardCircleStyle = {
@@ -194,7 +199,8 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanTimelineMappedPro
         planOwner: getSelectedPlanOwner(state),
         planLoadingStatus: state.epicTimelineState.planLoadingStatus,
         visibleTimeStart: state.epicTimelineState.visibleTimeStart,
-        visibleTimeEnd: state.epicTimelineState.visibleTimeEnd
+        visibleTimeEnd: state.epicTimelineState.visibleTimeEnd,
+        exceptionMessage: state.epicTimelineState.exceptionMessage
     };
 }
 

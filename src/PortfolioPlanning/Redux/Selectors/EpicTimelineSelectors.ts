@@ -102,3 +102,7 @@ export function getAddEpicPanelOpen(state: IEpicTimelineState): boolean {
 export function getProgressTrackingCriteria(state: IEpicTimelineState): ProgressTrackingCriteria {
     return state.progressTrackingCriteria;
 }
+
+export function getExceptionMessage(state: IPortfolioPlanningState): string {
+    return state.epicTimelineState.exceptionMessage;
+}
