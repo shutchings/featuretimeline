@@ -65,7 +65,12 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
         if (this.props.planLoadingStatus === LoadingStatus.NotLoaded) {
             planContent = <Spinner className="plan-spinner" label="Loading..." size={SpinnerSize.large} />;
         } else if (this.props.exceptionMessage) {
-            planContent = <div>{this.props.exceptionMessage}</div>;
+            let errorMessage = this.props.exceptionMessage;
+            if (this.props.exceptionMessage.includes("VS403496")) {
+                errorMessage =
+                    "This plan includes projects that you do not have access to. Update your permissions to view this plan. More information can be found here: https://go.microsoft.com/fwlink/?LinkId=786441.";
+            }
+            planContent = <div>{errorMessage}</div>;
         } else {
             planContent = (
                 <>
