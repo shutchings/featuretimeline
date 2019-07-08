@@ -428,27 +428,35 @@ export class PortfolioPlanningDataService {
             //  TODO hack hack ... Look for start of JSON response "{"@odata.context""
             const start = responseString.indexOf('{"@odata.context"');
             const end = responseString.lastIndexOf("}");
-            const jsonString = responseString.substring(start, end + 1);
-            const jsonObject = JSON.parse(jsonString);
 
-            if (!jsonObject || !jsonObject["value"]) {
-                return null;
+            if (start != -1) {
+                const jsonString = responseString.substring(start, end + 1);
+                const jsonObject = JSON.parse(jsonString);
+
+                if (!jsonObject || !jsonObject["value"]) {
+                    return null;
+                }
+
+                return {
+                    exceptionMessage: null,
+                    items: this.PortfolioPlanningQueryResultItems(jsonObject.value, aggregationClauses)
+                };
+            } else {
+                const start = responseString.indexOf('{"error"');
+                const end = responseString.lastIndexOf("}");
+                const jsonString = responseString.substring(start, end + 1);
+                const jsonObject = JSON.parse(jsonString);
+
+                return {
+                    exceptionMessage: jsonObject.error.message,
+                    items: []
+                };
             }
-
-            return {
-                exceptionMessage: null,
-                items: this.PortfolioPlanningQueryResultItems(jsonObject.value, aggregationClauses)
-            };
         } catch (error) {
             console.log(error);
 
-            const start = responseString.indexOf('{"error"');
-            const end = responseString.lastIndexOf("}");
-            const jsonString = responseString.substring(start, end + 1);
-            const jsonObject = JSON.parse(jsonString);
-
             return {
-                exceptionMessage: jsonObject.error.message,
+                exceptionMessage: error.message,
                 items: []
             };
         }
