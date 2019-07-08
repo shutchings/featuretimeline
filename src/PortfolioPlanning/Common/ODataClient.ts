@@ -41,7 +41,7 @@ export class ODataClient {
 
         if (
             collectionUri.toLowerCase().indexOf("localhost") !== -1 ||
-            collectionUri.toLowerCase().indexOf("DefaultCollection") !== -1
+            collectionUri.toLowerCase().indexOf("defaultcollection") !== -1
         ) {
             //  Hack to construct OData endpoint based on deployment type (hosted vs onprem).
             return `${collectionUri}${projectSegment}_odata/${ODataClient.oDataVersion}/`;
