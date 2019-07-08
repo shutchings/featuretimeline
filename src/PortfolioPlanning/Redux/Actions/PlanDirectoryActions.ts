@@ -1,10 +1,11 @@
 import { createAction, ActionsUnion } from "../Helpers";
-import { PortfolioPlanningDirectory } from "../../Models/PortfolioPlanningQueryModels";
-import { IdentityRef } from "VSS/WebApi/Contracts";
+import { PortfolioPlanningDirectory, PortfolioPlanning } from "../../Models/PortfolioPlanningQueryModels";
 
 export const enum PlanDirectoryActionTypes {
     Initialize = "PlanDirectory/Initialize",
     CreatePlan = "PlanDirectory/CreatePlan",
+    CreatePlanSucceeded = "PlanDirectory/CreatePlanSucceeded",
+    CreatePlanFailed = "PlanDirectory/CreatePlanFailed",
     DeletePlan = "PlanDirectory/DeletePlan",
     UpdateProjectsAndTeamsMetadata = "PlanDirectory/UpdateProjectsAndTeamsMetadata",
     ToggleSelectedPlanId = "PlanDirectory/SelectPlan",
@@ -14,12 +15,18 @@ export const enum PlanDirectoryActionTypes {
 export const PlanDirectoryActions = {
     initialize: (directoryData: PortfolioPlanningDirectory) =>
         createAction(PlanDirectoryActionTypes.Initialize, { directoryData }),
-    createPlan: (id: string, name: string, description: string, owner: IdentityRef) =>
+    createPlan: (name: string, description: string) =>
         createAction(PlanDirectoryActionTypes.CreatePlan, {
-            id,
             name,
-            description,
-            owner
+            description
+        }),
+    createPlanSucceeded: (newPlan: PortfolioPlanning) =>
+        createAction(PlanDirectoryActionTypes.CreatePlanSucceeded, {
+            newPlan
+        }),
+    createPlanFailed: (message: string) =>
+        createAction(PlanDirectoryActionTypes.CreatePlanFailed, {
+            message
         }),
     deletePlan: (id: string) => createAction(PlanDirectoryActionTypes.DeletePlan, { id }),
     updateProjectsAndTeamsMetadata: (projectNames: string[], teamNames: string[]) =>

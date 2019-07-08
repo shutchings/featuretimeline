@@ -20,10 +20,10 @@ import { ActionsOfType } from "../Helpers";
 export function* epicTimelineSaga(): SagaIterator {
     yield takeEvery(EpicTimelineActionTypes.UpdateStartDate, onUpdateStartDate);
     yield takeEvery(EpicTimelineActionTypes.UpdateEndDate, onUpdateEndDate);
-    yield takeEvery(EpicTimelineActionTypes.ShiftEpic, onShiftEpic);
-    yield takeEvery(EpicTimelineActionTypes.AddEpics, onAddEpics);
+    yield takeEvery(EpicTimelineActionTypes.ShiftItem, onShiftEpic);
+    yield takeEvery(EpicTimelineActionTypes.AddItems, onAddEpics);
     yield takeEvery(PlanDirectoryActionTypes.ToggleSelectedPlanId, onToggleSelectedPlanId);
-    yield takeEvery(EpicTimelineActionTypes.RemoveEpic, onRemoveEpic);
+    yield takeEvery(EpicTimelineActionTypes.RemoveItems, onRemoveEpic);
 }
 
 function* onUpdateStartDate(
@@ -40,8 +40,8 @@ function* onUpdateEndDate(
     yield effects.call(saveDatesToServer, epicId);
 }
 
-function* onShiftEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.ShiftEpic>): SagaIterator {
-    const epicId = action.payload.epicId;
+function* onShiftEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.ShiftItem>): SagaIterator {
+    const epicId = action.payload.itemId;
     yield effects.call(saveDatesToServer, epicId);
 }
 
@@ -88,7 +88,7 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
     const {
         planId,
         projectId,
-        epicsToAdd,
+        itemIdsToAdd: epicsToAdd,
         //  TODO    Once "Add Epic Dialog" uses redux, project configuration will be available in the state,
         //          so there won't be a need to pass these values when adding epics.
         workItemType,
@@ -187,10 +187,10 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
     yield put(EpicTimelineActions.portfolioItemsReceived(queryResult));
 }
 
-function* onRemoveEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.RemoveEpic>): SagaIterator {
-    const { planId, epicToRemove } = action.payload;
+function* onRemoveEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.RemoveItems>): SagaIterator {
+    const { planId, itemIdToRemove } = action.payload;
 
-    const epic: IEpic = yield effects.select(getEpicById, epicToRemove);
+    const epic: IEpic = yield effects.select(getEpicById, itemIdToRemove);
 
     const portfolioService = PortfolioPlanningDataService.getInstance();
     const projectIdLowerCase = epic.project.toLowerCase();
@@ -202,7 +202,7 @@ function* onRemoveEpic(action: ActionsOfType<EpicTimelineActions, EpicTimelineAc
 
     if (storedPlan.projects[projectIdLowerCase]) {
         const updatedEpics = storedPlan.projects[projectIdLowerCase].WorkItemIds.filter(
-            current => current !== epicToRemove
+            current => current !== itemIdToRemove
         );
 
         if (updatedEpics.length > 0) {

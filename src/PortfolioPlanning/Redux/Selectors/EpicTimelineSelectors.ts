@@ -13,6 +13,16 @@ export function getProjects(state: IEpicTimelineState): IProject[] {
     return state.projects;
 }
 
+export function getProjectNames(state: IPortfolioPlanningState): string[] {
+    return state.epicTimelineState.projects.map(project => project.title);
+}
+
+export function getTeamNames(state: IPortfolioPlanningState): string[] {
+    return Object.keys(state.epicTimelineState.teams)
+        .map(teamId => state.epicTimelineState.teams[teamId])
+        .map(team => team.teamName);
+}
+
 export function getTimelineGroups(state: IEpicTimelineState): ITimelineGroup[] {
     return state.projects.map(project => {
         return {
@@ -56,6 +66,10 @@ export function getTimelineItems(state: IEpicTimelineState): ITimelineItem[] {
             }
         };
     });
+}
+
+export function getSelectedItem(state: IEpicTimelineState): ITimelineItem {
+    return getTimelineItems(state).find(item => item.id === state.selectedItemId);
 }
 
 export function getMessage(state: IEpicTimelineState): string {

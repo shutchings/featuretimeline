@@ -45,18 +45,18 @@ export interface IEpic {
     countProgress: number;
 }
 
-export interface IAddEpics {
+export interface IAddItems {
     planId: string;
     projectId: string;
-    epicsToAdd: number[];
+    itemIdsToAdd: number[];
     workItemType: string;
     requirementWorkItemType: string;
     effortWorkItemFieldRefName: string;
 }
 
-export interface IRemoveEpic {
+export interface IRemoveItem {
     planId: string;
-    epicToRemove: number;
+    itemIdToRemove: number;
 }
 
 export interface ITimelineGroup {
