@@ -1,4 +1,5 @@
 import * as React from "react";
+import "./AddItemPanel.scss";
 import { Project, WorkItem } from "../../Models/PortfolioPlanningQueryModels";
 import { IEpic, IProject, IAddItems } from "../../Contracts";
 import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
@@ -8,8 +9,8 @@ import { Location } from "azure-devops-ui/Utilities/Position";
 import { IListBoxItem } from "azure-devops-ui/ListBox";
 import { ListSelection, ScrollableList, ListItem, IListItemDetails, IListRow } from "azure-devops-ui/List";
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
-import { ProjectBacklogConfiguration } from "../Models/ProjectBacklogModels";
-import { BacklogConfigurationDataService } from "../../Services/BacklogConfigurationDataService";
+import { ProjectBacklogConfiguration } from "../../Models/ProjectBacklogModels";
+import { BacklogConfigurationDataService } from "../../../Services/BacklogConfigurationDataService";
 
 export interface IAddItemPanelProps {
     planId: string;

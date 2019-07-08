@@ -84,7 +84,7 @@ function* saveDatesToServer(epicId: number, defaultStartDate?: Date, defaultEndD
     // TODO: Error experience
 }
 
-function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.AddEpics>): SagaIterator {
+function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.AddItems>): SagaIterator {
     const {
         planId,
         projectId,
