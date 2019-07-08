@@ -7,20 +7,14 @@ export interface ODataWorkItemQueryResult {
     TargetDate: Date;
     ProjectSK: string;
     AreaSK: string;
-    Descendants: ODataWorkItemDescendants[];
-}
-
-export interface ODataWorkItemDescendants {
-    StoryPointsProgress: number;
-    CountProgress: number;
-    CompletedStoryPoints: number;
-    TotalStoryPoints: number;
-    CompletedCount: number;
-    TotalCount: number;
 }
 
 export interface ODataQueryProjectInput {
     projectId: string;
+    WorkItemTypeFilter: string;
+    DescendantsWorkItemTypeFilter: string;
+    EffortODataColumnName: string;
+    EffortWorkItemFieldRefName: string;
     workItemIds: number[];
 }
 
@@ -33,4 +27,29 @@ export interface ODataAreaQueryResult {
 export interface ODataTeamResult {
     TeamSK: string;
     TeamName: string;
+}
+
+export enum WellKnownEffortODataColumnNames {
+    Size = "Size",
+    StoryPoints = "StoryPoints",
+    Effort = "Effort"
+}
+
+export interface WorkItemTypeAggregationClauses {
+    aliasMap: {
+        [projectId: string]: {
+            [portfolioWorkItemType: string]: {
+                totalEffortAlias: string;
+                completedEffortAlias: string;
+            };
+        };
+    };
+    allClauses: { [clause: string]: string };
+    allDescendantsWorkItemTypes: { [workItemType: string]: string };
+}
+
+export enum ODataConstants {
+    Descendants = "Descendants",
+    TotalCount = "TotalCount",
+    CompletedCount = "CompletedCount"
 }

@@ -1,4 +1,5 @@
 import * as React from "react";
+import "./AddItemPanel.scss";
 import { Project, WorkItem } from "../../Models/PortfolioPlanningQueryModels";
 import { IEpic, IProject, IAddItems } from "../../Contracts";
 import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
@@ -8,7 +9,8 @@ import { Location } from "azure-devops-ui/Utilities/Position";
 import { IListBoxItem } from "azure-devops-ui/ListBox";
 import { ListSelection, ScrollableList, ListItem, IListItemDetails, IListRow } from "azure-devops-ui/List";
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
-import "./AddItemPanel.scss";
+import { ProjectBacklogConfiguration } from "../../Models/ProjectBacklogModels";
+import { BacklogConfigurationDataService } from "../../../Services/BacklogConfigurationDataService";
 
 export interface IAddItemPanelProps {
     planId: string;
@@ -20,6 +22,7 @@ interface IAddItemPanelState {
     epicsToAdd: IEpic[];
     projects: IListBoxItem[];
     selectedProject: IProject;
+    selectedProjectBacklogConfiguration: ProjectBacklogConfiguration;
     epics: IListBoxItem[];
     selectedEpics: number[];
     epicsLoaded: boolean;
@@ -35,6 +38,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             epicsToAdd: [],
             projects: [],
             selectedProject: null,
+            selectedProjectBacklogConfiguration: null,
             epics: [],
             selectedEpics: [],
             epicsLoaded: false
@@ -110,13 +114,17 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
 
         this._getEpicsInProject(item.id).then(epics => {
             const allEpics: IListBoxItem[] = [];
-            epics.forEach(epic => {
+            epics.workItems.forEach(epic => {
                 allEpics.push({
                     id: epic.WorkItemId.toString(),
                     text: epic.Title
                 });
             });
-            this.setState({ epics: allEpics, epicsLoaded: true });
+            this.setState({
+                epics: allEpics,
+                epicsLoaded: true,
+                selectedProjectBacklogConfiguration: epics.projectBacklogConfig
+            });
         });
     };
 
@@ -170,8 +178,9 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             planId: this.props.planId,
             projectId: this.state.selectedProject.id,
             itemIdsToAdd: this.state.selectedEpics,
-            workItemType: "Epic", // TODO get from state
-            requirementWorkItemType: "User story" // TODO get from state
+            workItemType: this.state.selectedProjectBacklogConfiguration.defaultEpicWorkItemType,
+            requirementWorkItemType: this.state.selectedProjectBacklogConfiguration.defaultRequirementWorkItemType,
+            effortWorkItemFieldRefName: this.state.selectedProjectBacklogConfiguration.effortFieldRefName
         });
 
         this.props.onCloseAddItemPanel();
@@ -182,11 +191,21 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         return projects.projects;
     };
 
-    private _getEpicsInProject = async (projectId: string, workItemType?: string): Promise<WorkItem[]> => {
+    private _getEpicsInProject = async (
+        projectId: string
+    ): Promise<{ workItems: WorkItem[]; projectBacklogConfig: ProjectBacklogConfiguration }> => {
+        const projectConfig = await BacklogConfigurationDataService.getInstance().getProjectBacklogConfiguration(
+            projectId
+        );
+
         const epics = await PortfolioPlanningDataService.getInstance().getAllWorkItemsOfTypeInProject(
             projectId,
-            workItemType || "Epic"
+            projectConfig.defaultEpicWorkItemType
         );
-        return epics.workItems;
+
+        return {
+            workItems: epics.workItems,
+            projectBacklogConfig: projectConfig
+        };
     };
 }

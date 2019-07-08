@@ -5,6 +5,23 @@ export interface IProject {
     title: string;
 }
 
+export interface IProjectConfiguration {
+    id: string;
+    /**
+     * Default work item type associated to the Microsoft.EpicCategory portfolio backlog level for the project.
+     */
+    defaultEpicWorkItemType: string;
+
+    /**
+     * Default work item type associated to the Microsoft.RequirementCategory backlog level for the project.
+     */
+    defaultRequirementWorkItemType: string;
+
+    effortWorkItemFieldRefName: string;
+
+    effortODataColumnName: string;
+}
+
 export interface ITeam {
     teamId: string;
     teamName: string;
@@ -34,6 +51,7 @@ export interface IAddItems {
     itemIdsToAdd: number[];
     workItemType: string;
     requirementWorkItemType: string;
+    effortWorkItemFieldRefName: string;
 }
 
 export interface IRemoveItem {

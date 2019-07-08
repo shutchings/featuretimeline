@@ -14,15 +14,21 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
         super(props);
 
         const initialTestData: PortfolioModels.PortfolioPlanningQueryInput = {
-            PortfolioWorkItemType: "Epic",
-            RequirementWorkItemTypes: ["User Story"],
             WorkItems: [
                 {
                     projectId: "FBED1309-56DB-44DB-9006-24AD73EEE785",
+                    WorkItemTypeFilter: "Epic",
+                    DescendantsWorkItemTypeFilter: "User Story",
+                    EffortODataColumnName: "StoryPoints",
+                    EffortWorkItemFieldRefName: "Microsoft.VSTS.Scheduling.StoryPoints",
                     workItemIds: [5250, 5251]
                 },
                 {
                     projectId: "6974D8FE-08C8-4123-AD1D-FB830A098DFB",
+                    WorkItemTypeFilter: "Epic",
+                    DescendantsWorkItemTypeFilter: "User Story",
+                    EffortODataColumnName: "StoryPoints",
+                    EffortWorkItemFieldRefName: "Microsoft.VSTS.Scheduling.StoryPoints",
                     workItemIds: [5249]
                 }
             ]
@@ -135,6 +141,8 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
                                             ProjectId: "FBED1309-56DB-44DB-9006-24AD73EEE785",
                                             PortfolioWorkItemType: "Epic",
                                             RequirementWorkItemType: "User Story",
+                                            EffortODataColumnName: "StoryPoints",
+                                            EffortWorkItemFieldRefName: "Microsoft.VSTS.Scheduling.StoryPoints",
                                             WorkItemIds: [5250, 5251]
                                         };
 
@@ -142,6 +150,8 @@ export class ODataTest extends React.Component<{}, ODataTestState> {
                                             ProjectId: "6974D8FE-08C8-4123-AD1D-FB830A098DFB",
                                             PortfolioWorkItemType: "Epic",
                                             RequirementWorkItemType: "User Story",
+                                            EffortODataColumnName: "StoryPoints",
+                                            EffortWorkItemFieldRefName: "Microsoft.VSTS.Scheduling.StoryPoints",
                                             WorkItemIds: [5249]
                                         };
                                     });

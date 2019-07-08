@@ -1,17 +1,8 @@
 import { ODataQueryProjectInput } from "./ODataQueryModels";
+import { ProjectConfiguration } from "./ProjectBacklogModels";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 
 export interface PortfolioPlanningQueryInput {
-    /**
-     * TODO Supporting one work item type for now (e.g. 'Epic').
-     */
-    PortfolioWorkItemType: string;
-
-    /**
-     * Requirement level work item types. e.g. User Story, Task, etc...
-     */
-    RequirementWorkItemTypes: string[];
-
     /**
      * Work item ids and their projects.
      */
@@ -51,6 +42,7 @@ export interface PortfolioPlanningProjectQueryInput {
 
 export interface PortfolioPlanningProjectQueryResult extends IQueryResultError {
     projects: Project[];
+    projectConfigurations: { [projectId: string]: ProjectConfiguration };
 }
 
 export interface PortfolioPlanningWorkItemQueryResult extends IQueryResultError {
@@ -92,6 +84,8 @@ export interface ProjectPortfolioPlanning {
     ProjectId: string;
     PortfolioWorkItemType: string;
     RequirementWorkItemType: string;
+    EffortODataColumnName: string;
+    EffortWorkItemFieldRefName: string;
     WorkItemIds: number[];
 }
 
@@ -138,4 +132,15 @@ export interface PortfolioPlanningFullContentQueryResult {
 export enum MergeType {
     Add,
     Replace
+}
+
+export interface PortfolioPlanningWorkitemTypeFieldNameQueryInput {
+    ProjectSK: string;
+    FieldReferenceName: string;
+    WorkItemType: string;
+}
+
+export interface PortfolioPlanningWorkItemTypeFieldNameQueryResult extends IQueryResultError {
+    FieldType: string;
+    FieldName: string;
 }

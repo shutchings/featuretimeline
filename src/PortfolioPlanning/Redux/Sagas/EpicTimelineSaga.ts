@@ -1,8 +1,8 @@
 import { takeEvery, put } from "redux-saga/effects";
 import { SagaIterator, effects } from "redux-saga";
 import { EpicTimelineActionTypes, EpicTimelineActions } from "../Actions/EpicTimelineActions";
-import { getEpicById } from "../Selectors/EpicTimelineSelectors";
-import { IEpic } from "../../Contracts";
+import { getEpicById, getProjectConfigurationById } from "../Selectors/EpicTimelineSelectors";
+import { IEpic, IProjectConfiguration } from "../../Contracts";
 import * as VSS_Service from "VSS/Service";
 import { WorkItemTrackingHttpClient } from "TFS/WorkItemTracking/RestClient";
 import { JsonPatchDocument } from "VSS/WebApi/Contracts";
@@ -85,14 +85,44 @@ function* saveDatesToServer(epicId: number, defaultStartDate?: Date, defaultEndD
 }
 
 function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActionTypes.AddItems>): SagaIterator {
-    const { planId, projectId, itemIdsToAdd: epicsToAdd, workItemType, requirementWorkItemType } = action.payload;
+    const {
+        planId,
+        projectId,
+        itemIdsToAdd: epicsToAdd,
+        //  TODO    Once "Add Epic Dialog" uses redux, project configuration will be available in the state,
+        //          so there won't be a need to pass these values when adding epics.
+        workItemType,
+        requirementWorkItemType,
+        effortWorkItemFieldRefName
+        //  END of TODO
+    } = action.payload;
 
     //  TODO    sanitize input epics ids (unique ids only)
 
-    //  Updating plan data first.
     const portfolioService = PortfolioPlanningDataService.getInstance();
     const projectIdLowerCase = projectId.toLowerCase();
 
+    //  Check if we have project configuration information from this project already.
+    let projectConfig: IProjectConfiguration = yield effects.select(getProjectConfigurationById, projectIdLowerCase);
+
+    if (!projectConfig) {
+        //  Find out OData column name for this project. We don't have the project config in the state, which means
+        //  this is the first time we see this project.
+        const effortODataColumnName = yield effects.call(
+            [portfolioService, portfolioService.getODataColumnNameFromWorkItemFieldReferenceName],
+            effortWorkItemFieldRefName
+        );
+
+        projectConfig = {
+            id: projectIdLowerCase,
+            defaultEpicWorkItemType: workItemType,
+            defaultRequirementWorkItemType: requirementWorkItemType,
+            effortWorkItemFieldRefName: effortWorkItemFieldRefName,
+            effortODataColumnName: effortODataColumnName
+        };
+    }
+
+    //  Updating plan data first.
     const storedPlan: PortfolioPlanning = yield effects.call(
         [portfolioService, portfolioService.GetPortfolioPlanById],
         planId
@@ -100,12 +130,15 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
 
     if (!storedPlan.projects[projectIdLowerCase]) {
         storedPlan.projects[projectIdLowerCase] = {
-            ProjectId: projectIdLowerCase,
-            PortfolioWorkItemType: workItemType,
-            RequirementWorkItemType: requirementWorkItemType,
+            ProjectId: projectConfig.id,
+            PortfolioWorkItemType: projectConfig.defaultEpicWorkItemType,
+            RequirementWorkItemType: projectConfig.defaultRequirementWorkItemType,
+            EffortWorkItemFieldRefName: projectConfig.effortWorkItemFieldRefName,
+            EffortODataColumnName: projectConfig.effortODataColumnName,
             WorkItemIds: epicsToAdd
         };
     } else {
+        //  TODO    Check work item ids are not duplicated.
         storedPlan.projects[projectIdLowerCase].WorkItemIds.push(...epicsToAdd);
     }
 
@@ -113,12 +146,13 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
     yield effects.call([portfolioService, portfolioService.UpdatePortfolioPlan], storedPlan);
 
     const portfolioQueryInput: PortfolioPlanningQueryInput = {
-        PortfolioWorkItemType: workItemType,
-        RequirementWorkItemTypes: [requirementWorkItemType],
-
         WorkItems: [
             {
                 projectId: projectId,
+                WorkItemTypeFilter: projectConfig.defaultEpicWorkItemType,
+                DescendantsWorkItemTypeFilter: projectConfig.defaultRequirementWorkItemType,
+                EffortWorkItemFieldRefName: projectConfig.effortWorkItemFieldRefName,
+                EffortODataColumnName: projectConfig.effortODataColumnName,
                 workItemIds: epicsToAdd
             }
         ]

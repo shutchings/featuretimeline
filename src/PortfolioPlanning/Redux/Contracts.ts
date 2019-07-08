@@ -1,4 +1,4 @@
-import { IProject, IEpic, ProgressTrackingCriteria, ITeam, LoadingStatus } from "../Contracts";
+import { IProject, IEpic, ProgressTrackingCriteria, ITeam, IProjectConfiguration, LoadingStatus } from "../Contracts";
 import { PortfolioPlanningMetadata } from "../Models/PortfolioPlanningQueryModels";
 
 export interface IPortfolioPlanningState {
@@ -10,6 +10,7 @@ export interface IEpicTimelineState {
     planLoadingStatus: LoadingStatus;
     exceptionMessage: string;
     projects: IProject[];
+    projectConfiguration: { [projectId: string]: IProjectConfiguration };
     teams: { [teamId: string]: ITeam };
     epics: IEpic[];
     message: string;

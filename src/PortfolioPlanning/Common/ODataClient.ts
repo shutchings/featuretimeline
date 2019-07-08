@@ -5,8 +5,8 @@ import { GUIDUtil } from "./Utilities/GUIDUtil";
 
 /**Responsiblities:
  * 1-Provides methods for determining Analytics Service OData endpoint address.
- * 2-Constructs OData HTTP requests via GET and POST method  
- * 
+ * 2-Constructs OData HTTP requests via GET and POST method
+ *
  * Note: VSTS Reporting team intends to provide a generated OData Client API from Analytics service, on a similar pattern to VSTS REST API's,
  * however client generation for OData is not a ready capability at the time this sample was authored.
  **/
@@ -27,7 +27,7 @@ export class ODataClient {
         if (ODataClient.instance) {
             return ODataClient.instance;
         } else {
-            ODataClient.instance = VSS.getAccessToken().then((token) => {
+            ODataClient.instance = VSS.getAccessToken().then(token => {
                 let authToken = authTokenManager.getAuthorizationHeader(token);
                 return new ODataClient(authToken);
             });
@@ -39,15 +39,16 @@ export class ODataClient {
         const collectionUri = VSS.getWebContext().collection.uri;
         const projectSegment = projectName != null ? `${projectName}/` : "";
 
-        if(collectionUri.toLowerCase().indexOf("localhost") !== -1 || 
-            collectionUri.toLowerCase().indexOf("DefaultCollection") !== -1)
-        {
+        if (
+            collectionUri.toLowerCase().indexOf("localhost") !== -1 ||
+            collectionUri.toLowerCase().indexOf("DefaultCollection") !== -1
+        ) {
             //  Hack to construct OData endpoint based on deployment type (hosted vs onprem).
             return `${collectionUri}${projectSegment}_odata/${ODataClient.oDataVersion}/`;
-        }
-        else
-        {
-            return `https://analytics.dev.azure.com/${accountName}/${projectSegment}_odata/${ODataClient.oDataVersion}/`;
+        } else {
+            return `https://analytics.dev.azure.com/${accountName}/${projectSegment}_odata/${
+                ODataClient.oDataVersion
+            }/`;
         }
     }
 
@@ -57,10 +58,10 @@ export class ODataClient {
             url: url,
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader('Authorization', authToken);
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("Authorization", authToken);
             }
-        }
+        };
     }
 
     private constructXmlRequest(authToken: string, type: string, url: string): JQueryAjaxSettings {
@@ -69,10 +70,10 @@ export class ODataClient {
             url: url,
             contentType: "application/json; charset=utf-8",
             dataType: "xml",
-            beforeSend: function (xhr) {
-                xhr.setRequestHeader('Authorization', authToken);
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("Authorization", authToken);
             }
-        }
+        };
     }
 
     /* Generates an account scoped odata url, which spans across projects.*/
@@ -86,7 +87,7 @@ export class ODataClient {
      */
     public generateProjectLink(project: string, oDataQuery: string) {
         var accountName = VSS.getWebContext().account.name;
-       return this.getODataEndpoint(accountName, project) + oDataQuery;
+        return this.getODataEndpoint(accountName, project) + oDataQuery;
     }
 
     /**
@@ -116,8 +117,12 @@ export class ODataClient {
         contentRequest.processData = false; // payload is already a string
         contentRequest.headers = {
             "Content-Type": `multipart/mixed; boundary=batch_${batchIdentifier}`,
-            "Accept": `text/plain;api-version=${ODataClient.oDataVersion}`
+            Accept: `text/plain;api-version=${ODataClient.oDataVersion}`
         };
+
+        //  TODO    Hack, sending JSON type in request causes parsing error, xhr tries to parse it as JSON, but since it has the
+        //          batch boundaries, parsing fails.
+        contentRequest.dataType = undefined;
 
         return $.ajax(contentRequest);
     }
@@ -129,18 +134,75 @@ export class ODataClient {
      */
     private generateODataPostPayload(getUrl: string, batchIdentifier: string): string {
         let newLine = "\n";
-        return `--batch_${batchIdentifier}` + newLine +
-            "Content-Type: application/http" + newLine +
-            "Content-Transfer-Encoding: binary" + newLine + newLine +
-            `GET ${getUrl} HTTP/1.1` + newLine + newLine +
-            `--batch_${batchIdentifier}`;
+        return (
+            `--batch_${batchIdentifier}` +
+            newLine +
+            "Content-Type: application/http" +
+            newLine +
+            "Content-Transfer-Encoding: binary" +
+            newLine +
+            newLine +
+            `GET ${getUrl} HTTP/1.1` +
+            newLine +
+            newLine +
+            `--batch_${batchIdentifier}`
+        );
     }
 
     /**
      * Handles Requests for Metadata Queries on Entities.
      */
-    public runMetadataQuery(projectName:string, entityName: string): IPromise<any> {        
-        return $.ajax(this.constructXmlRequest(this.authToken, "GET", this.generateProjectLink(projectName, entityName)));
+    public runMetadataQuery(projectName: string): IPromise<any> {
+        return $.ajax(
+            this.constructXmlRequest(this.authToken, "GET", this.generateProjectLink(projectName, "$metadata"))
+        );
     }
 
+    public runMetadataWorkItemReferenceNameQuery(referenceName: string): IPromise<string> {
+        return this.runMetadataQuery(undefined).then(rawXml => {
+            //  All of this because IE doesn't support Xpath evaluate :(
+            const analyticsModels = Array.from<HTMLElement>(
+                rawXml.documentElement.getElementsByTagName("Schema")
+            ).filter(s =>
+                this.compareAttributeValue(s, "Namespace", "Microsoft.VisualStudio.Services.Analytics.Model")
+            );
+
+            if (analyticsModels && analyticsModels.length === 1) {
+                const entityTypes = Array.from<Element>(analyticsModels[0].getElementsByTagName("EntityType")).filter(
+                    e => this.compareAttributeValue(e, "Name", "WorkItem")
+                );
+
+                if (entityTypes && entityTypes.length === 1) {
+                    const workItems = Array.from<Element>(entityTypes[0].getElementsByTagName("Annotation")).filter(
+                        annotation =>
+                            this.compareAttributeValue(annotation, "Term", "Ref.ReferenceName") &&
+                            this.compareAttributeValue(annotation, "String", referenceName)
+                    );
+
+                    if (workItems && workItems.length === 1) {
+                        const fieldProperty: HTMLElement = workItems[0].parentElement;
+
+                        //  Verify this is the node we are looking for.
+                        if (fieldProperty.tagName.toLowerCase() === "property") {
+                            return fieldProperty.getAttribute("Name");
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private compareAttributeValue(element: Element, attributeName: string, expectedValue: string): boolean {
+        if (!element) {
+            return false;
+        }
+
+        const observedAttrValue = element.getAttribute(attributeName);
+
+        if (observedAttrValue) {
+            return observedAttrValue.toLowerCase() === expectedValue.toLowerCase();
+        }
+
+        return false;
+    }
 }
