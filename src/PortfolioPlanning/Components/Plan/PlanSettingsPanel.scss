@@ -4,8 +4,7 @@
 .settings-container {
     display: flex;
     flex-direction: column;
-    // justify-content: flex-end;
-    // align-items: center;
+    justify-content: space-between;
 
     .settings-item {
         margin-bottom: $spacing-16;

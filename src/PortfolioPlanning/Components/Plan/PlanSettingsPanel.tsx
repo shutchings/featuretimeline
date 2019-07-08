@@ -18,11 +18,7 @@ export const PlanSettingsPanel = (props: IPlanSettingsProps) => {
         props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount ? "completedCount" : "storyPoints";
 
     return (
-        <Panel
-            onDismiss={props.onClosePlanSettingsPanel}
-            titleProps={{ text: "Settings" }}
-            footerButtonProps={[{ text: "Close", primary: true, onClick: props.onClosePlanSettingsPanel }]}
-        >
+        <Panel onDismiss={props.onClosePlanSettingsPanel} titleProps={{ text: "Settings" }}>
             <div className="settings-container">
                 <div className="progress-options settings-item">
                     <div className="progress-options-label">Track Progress Using: </div>
