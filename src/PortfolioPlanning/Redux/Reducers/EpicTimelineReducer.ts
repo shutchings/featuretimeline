@@ -58,10 +58,10 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 break;
             }
             case EpicTimelineActionTypes.PortfolioItemsReceived:
-                const { items } = action.payload;
+                const { items, projects } = action.payload;
 
                 draft.planLoadingStatus = LoadingStatus.Loaded;
-                draft.exceptionMessage = items.exceptionMessage;
+                draft.exceptionMessage = items.exceptionMessage || projects.exceptionMessage;
 
                 return handlePortfolioItemsReceived(draft, action as PortfolioItemsReceivedAction);
 
