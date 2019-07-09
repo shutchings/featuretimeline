@@ -36,6 +36,18 @@ export function getEpics(state: IEpicTimelineState): IEpic[] {
     return state.epics;
 }
 
+export function getEpicIds(state: IEpicTimelineState): { [epicId: number]: number } {
+    const result: { [epicId: number]: number } = {};
+
+    state.epics.map(epic => {
+        if (!result[epic.id]) {
+            result[epic.id] = epic.id;
+        }
+    });
+
+    return result;
+}
+
 export function getTimelineItems(state: IEpicTimelineState): ITimelineItem[] {
     return state.epics.map(epic => {
         let completed: number;

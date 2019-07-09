@@ -11,9 +11,12 @@ import { ListSelection, ScrollableList, ListItem, IListItemDetails, IListRow } f
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
 import { ProjectBacklogConfiguration } from "../../Models/ProjectBacklogModels";
 import { BacklogConfigurationDataService } from "../../../Services/BacklogConfigurationDataService";
+import { FormItem } from "azure-devops-ui/FormItem";
+import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 
 export interface IAddItemPanelProps {
     planId: string;
+    epicsInPlan: { [epicId: number]: number };
     onCloseAddItemPanel: () => void;
     onAddItems: (itemsToAdd: IAddItems) => void;
 }
@@ -26,6 +29,9 @@ interface IAddItemPanelState {
     epics: IListBoxItem[];
     selectedEpics: number[];
     epicsLoaded: boolean;
+    loadingProjects: boolean;
+    loadingEpics: boolean;
+    errorMessage: string;
 }
 
 export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPanelState> {
@@ -41,28 +47,45 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             selectedProjectBacklogConfiguration: null,
             epics: [],
             selectedEpics: [],
-            epicsLoaded: false
+            epicsLoaded: false,
+            loadingProjects: true,
+            loadingEpics: false,
+            errorMessage: ""
         };
 
-        this._getAllProjects().then(projects => {
-            const allProjects = [...this.state.projects];
-            projects.forEach(project => {
-                allProjects.push({
-                    id: project.ProjectSK,
-                    text: project.ProjectName
+        this._getAllProjects().then(
+            projects => {
+                const allProjects = [...this.state.projects];
+                projects.forEach(project => {
+                    allProjects.push({
+                        id: project.ProjectSK,
+                        text: project.ProjectName
+                    });
                 });
-            });
-            this.setState({ projects: allProjects });
-        });
+                this.setState({
+                    projects: allProjects,
+                    loadingProjects: false
+                });
+            },
+            error =>
+                this.setState({
+                    errorMessage: JSON.stringify(error),
+                    loadingProjects: false
+                })
+        );
     }
 
     public render() {
         return (
             <Panel
                 onDismiss={() => this.props.onCloseAddItemPanel()}
+                showSeparator={true}
                 titleProps={{ text: "Add items" }}
                 footerButtonProps={[
-                    { text: "Cancel", onClick: () => this.props.onCloseAddItemPanel() },
+                    {
+                        text: "Cancel",
+                        onClick: () => this.props.onCloseAddItemPanel()
+                    },
                     {
                         text: "Add",
                         primary: true,
@@ -80,28 +103,36 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
     }
 
     private _renderProjectPicker = () => {
-        return (
-            <Dropdown
-                className="project-picker"
-                placeholder="Select a project"
-                width={200}
-                items={this.state.projects}
-                onSelect={this.onSelect}
-                renderCallout={props => (
-                    <DropdownCallout
-                        {...props}
-                        dropdownOrigin={{
-                            horizontal: Location.start,
-                            vertical: Location.start
-                        }}
-                        anchorOrigin={{
-                            horizontal: Location.start,
-                            vertical: Location.start
-                        }}
+        const { loadingProjects } = this.state;
+
+        if (loadingProjects) {
+            return <Spinner label="Loading Projects..." size={SpinnerSize.large} className="loading-projects" />;
+        } else {
+            return (
+                <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
+                    <div className="projects-label">Projects</div>
+                    <Dropdown
+                        className="project-picker"
+                        placeholder="Select a project"
+                        items={this.state.projects}
+                        onSelect={this.onSelect}
+                        renderCallout={props => (
+                            <DropdownCallout
+                                {...props}
+                                dropdownOrigin={{
+                                    horizontal: Location.start,
+                                    vertical: Location.start
+                                }}
+                                anchorOrigin={{
+                                    horizontal: Location.start,
+                                    vertical: Location.start
+                                }}
+                            />
+                        )}
                     />
-                )}
-            />
-        );
+                </FormItem>
+            );
+        }
     };
 
     private onSelect = (event: React.SyntheticEvent<HTMLElement>, item: IListBoxItem<{}>) => {
@@ -109,35 +140,57 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             selectedProject: {
                 id: item.id,
                 title: item.text
-            }
+            },
+            loadingEpics: true
         });
 
-        this._getEpicsInProject(item.id).then(epics => {
-            const allEpics: IListBoxItem[] = [];
-            epics.workItems.forEach(epic => {
-                allEpics.push({
-                    id: epic.WorkItemId.toString(),
-                    text: epic.Title
+        this._getEpicsInProject(item.id).then(
+            epics => {
+                const allEpics: IListBoxItem[] = [];
+                epics.workItems.forEach(epic => {
+                    //  Only show Epics not yet included in the plan.
+                    if (!this.props.epicsInPlan[epic.WorkItemId]) {
+                        allEpics.push({
+                            id: epic.WorkItemId.toString(),
+                            text: epic.Title
+                        });
+                    }
                 });
-            });
-            this.setState({
-                epics: allEpics,
-                epicsLoaded: true,
-                selectedProjectBacklogConfiguration: epics.projectBacklogConfig
-            });
-        });
+                this.setState({
+                    epics: allEpics,
+                    epicsLoaded: true,
+                    loadingEpics: false,
+                    selectedProjectBacklogConfiguration: epics.projectBacklogConfig,
+                    errorMessage: ""
+                });
+            },
+            error =>
+                this.setState({
+                    errorMessage: JSON.stringify(error, null, "   "),
+                    loadingEpics: false
+                })
+        );
     };
 
     private _renderEpics = () => {
-        return (
-            <ScrollableList
-                className="item-list"
-                itemProvider={new ArrayItemProvider<IListBoxItem>(this.state.epics)}
-                renderRow={this.renderRow}
-                selection={this.selection}
-                onSelect={this._onSelectionChanged}
-            />
-        );
+        const { loadingEpics, epicsLoaded } = this.state;
+
+        if (loadingEpics) {
+            return <Spinner label="Loading Epics..." size={SpinnerSize.large} className="loading-epics" />;
+        } else if (epicsLoaded) {
+            return (
+                <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
+                    <div className="epics-label">Epics</div>
+                    <ScrollableList
+                        className="item-list"
+                        itemProvider={new ArrayItemProvider<IListBoxItem>(this.state.epics)}
+                        renderRow={this.renderRow}
+                        selection={this.selection}
+                        onSelect={this._onSelectionChanged}
+                    />
+                </FormItem>
+            );
+        }
     };
 
     private renderRow = (
@@ -149,7 +202,9 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         this._indexToWorkItemIdMap[index] = Number(epic.id);
         return (
             <ListItem key={key || "list-item" + index} index={index} details={details}>
-                <div className="item-list-row">{epic.text}</div>
+                <div className="item-list-row">
+                    {epic.id} - {epic.text}
+                </div>
             </ListItem>
         );
     };

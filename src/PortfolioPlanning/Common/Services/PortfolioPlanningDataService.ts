@@ -600,8 +600,16 @@ export class PortfolioPlanningDataService {
     }
 
     private ParseODataErrorResponse(results: any): IQueryResultError {
+        let errorMessage: string = "Unknown Error";
+
+        if (results && results.responseJSON && results.responseJSON.error && results.responseJSON.error.message) {
+            errorMessage = results.responseJSON.error.message;
+        } else if (results) {
+            errorMessage = JSON.stringify(results, null, "    ");
+        }
+
         return {
-            exceptionMessage: results.responseJSON.error.message
+            exceptionMessage: errorMessage
         };
     }
 }

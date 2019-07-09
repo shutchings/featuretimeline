@@ -5,7 +5,12 @@ import PlanHeader from "./PlanHeader";
 import { ConnectedPlanTimeline } from "./PlanTimeline";
 import { PlanSummary } from "./PlanSummary";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
-import { getProjectNames, getTeamNames, getSelectedItem } from "../../Redux/Selectors/EpicTimelineSelectors";
+import {
+    getProjectNames,
+    getTeamNames,
+    getSelectedItem,
+    getEpicIds
+} from "../../Redux/Selectors/EpicTimelineSelectors";
 import { getSelectedPlanMetadata } from "../../Redux/Selectors/PlanDirectorySelectors";
 import { connect } from "react-redux";
 import { PlanDirectoryActions } from "../../Redux/Actions/PlanDirectoryActions";
@@ -22,6 +27,7 @@ interface IPlanPageMappedProps {
     plan: PortfolioPlanningMetadata;
     projectNames: string[];
     teamNames: string[];
+    epicIds: { [epicId: number]: number };
     selectedItem: ITimelineItem;
     progressTrackingCriteria: ProgressTrackingCriteria;
     addItemPanelOpen: boolean;
@@ -103,6 +109,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
             return (
                 <AddItemPanel
                     planId={this.props.plan.id}
+                    epicsInPlan={this.props.epicIds}
                     onCloseAddItemPanel={this.props.onCloseAddItemPanel}
                     onAddItems={this.props.onAddItems}
                 />
@@ -186,6 +193,7 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanPageMappedProps {
         plan: getSelectedPlanMetadata(state),
         projectNames: getProjectNames(state),
         teamNames: getTeamNames(state),
+        epicIds: getEpicIds(state.epicTimelineState),
         selectedItem: getSelectedItem(state.epicTimelineState),
         progressTrackingCriteria: state.epicTimelineState.progressTrackingCriteria,
         addItemPanelOpen: state.epicTimelineState.addEpicDialogOpen,
