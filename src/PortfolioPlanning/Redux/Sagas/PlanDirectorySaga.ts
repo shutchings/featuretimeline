@@ -10,7 +10,7 @@ import {
 import { EpicTimelineActionTypes } from "../Actions/EpicTimelineActions";
 import { getSelectedPlanId } from "../Selectors/PlanDirectorySelectors";
 import { getCurrentUser } from "../../Common/Utilities/Identity";
-import { getProjectNames, getTeamNames } from "../Selectors/EpicTimelineSelectors";
+import { getProjectNames, getTeamNames, getExceptionMessage } from "../Selectors/EpicTimelineSelectors";
 
 export function* planDirectorySaga(): SagaIterator {
     yield effects.call(initializePlanDirectory);
@@ -59,23 +59,27 @@ function* deletePlan(action: ActionsOfType<PlanDirectoryActions, PlanDirectoryAc
 }
 
 function* updateProjectsAndTeamsMetadata(): SagaIterator {
-    const planId = yield effects.select(getSelectedPlanId);
-    const projectNames = yield effects.select(getProjectNames);
-    const teamNames = yield effects.select(getTeamNames);
+    const exceptionMessage = yield effects.select(getExceptionMessage);
 
-    const service = PortfolioPlanningDataService.getInstance();
+    if (!exceptionMessage) {
+        const planId = yield effects.select(getSelectedPlanId);
+        const projectNames = yield effects.select(getProjectNames);
+        const teamNames = yield effects.select(getTeamNames);
 
-    const planToUpdate: PortfolioPlanningMetadata = yield effects.call(
-        [service, service.GetPortfolioPlanDirectoryEntry],
-        planId
-    );
+        const service = PortfolioPlanningDataService.getInstance();
 
-    planToUpdate.projectNames = projectNames;
-    planToUpdate.teamNames = teamNames;
+        const planToUpdate: PortfolioPlanningMetadata = yield effects.call(
+            [service, service.GetPortfolioPlanDirectoryEntry],
+            planId
+        );
 
-    yield effects.call([service, service.UpdatePortfolioPlanDirectoryEntry], planToUpdate);
+        planToUpdate.projectNames = projectNames;
+        planToUpdate.teamNames = teamNames;
 
-    yield effects.put(
-        PlanDirectoryActions.updateProjectsAndTeamsMetadata(planToUpdate.projectNames, planToUpdate.teamNames)
-    );
+        yield effects.call([service, service.UpdatePortfolioPlanDirectoryEntry], planToUpdate);
+
+        yield effects.put(
+            PlanDirectoryActions.updateProjectsAndTeamsMetadata(planToUpdate.projectNames, planToUpdate.teamNames)
+        );
+    }
 }

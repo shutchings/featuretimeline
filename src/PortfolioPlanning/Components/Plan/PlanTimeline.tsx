@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as moment from "moment";
-import { ITimelineGroup, ITimelineItem, ITeam, LoadingStatus } from "../../Contracts";
+import { ITimelineGroup, ITimelineItem, ITeam } from "../../Contracts";
 import Timeline from "react-calendar-timeline";
 import "./PlanTimeline.scss";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
@@ -9,7 +9,6 @@ import { EpicTimelineActions } from "../../Redux/Actions/EpicTimelineActions";
 import { connect } from "react-redux";
 import { ProgressDetails } from "../../Common/Components/ProgressDetails";
 import { InfoIcon } from "../../Common/Components/InfoIcon";
-import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { getSelectedPlanOwner } from "../../Redux/Selectors/PlanDirectorySelectors";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 
@@ -22,10 +21,10 @@ interface IPlanTimelineMappedProps {
     teams: { [teamId: string]: ITeam };
     items: ITimelineItem[];
     selectedItemId: number;
-    planLoadingStatus: LoadingStatus;
     planOwner: IdentityRef;
     visibleTimeStart: number;
     visibleTimeEnd: number;
+    exceptionMessage: string;
 }
 
 export type IPlanTimelineProps = IPlanTimelineMappedProps & typeof Actions;
@@ -36,79 +35,75 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
     }
 
     public render(): JSX.Element {
-        if (this.props.planLoadingStatus === LoadingStatus.NotLoaded) {
-            return <Spinner label="Loading..." size={SpinnerSize.large} />;
-        } else {
-            const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(this.props.items);
+        const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(this.props.items);
 
-            const forwardCircleStyle = {
-                padding: "0px 0px 0px 10px"
-            };
+        const forwardCircleStyle = {
+            padding: "0px 0px 0px 10px"
+        };
 
-            return (
-                <Timeline
-                    groups={this.props.groups}
-                    items={this.props.items}
-                    visibleTimeStart={this.props.visibleTimeStart || defaultTimeStart}
-                    visibleTimeEnd={this.props.visibleTimeEnd || defaultTimeEnd}
-                    onTimeChange={this._handleTimeChange}
-                    canChangeGroup={false}
-                    stackItems={true}
-                    dragSnap={day}
-                    minZoom={week}
-                    canResize={"both"}
-                    minResizeWidth={50}
-                    onItemResize={this._onItemResize}
-                    onItemMove={this._onItemMove}
-                    moveResizeValidator={this._validateResize}
-                    selecte={[this.props.selectedItemId]}
-                    onItemSelect={itemId => this.props.onSetSelectedItemId(itemId)}
-                    onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
-                    itemRenderer={({ item, itemContext, getItemProps }) => {
-                        return (
-                            <div {...getItemProps(item.itemProps)}>
+        return (
+            <Timeline
+                groups={this.props.groups}
+                items={this.props.items}
+                visibleTimeStart={this.props.visibleTimeStart || defaultTimeStart}
+                visibleTimeEnd={this.props.visibleTimeEnd || defaultTimeEnd}
+                onTimeChange={this._handleTimeChange}
+                canChangeGroup={false}
+                stackItems={true}
+                dragSnap={day}
+                minZoom={week}
+                canResize={"both"}
+                minResizeWidth={50}
+                onItemResize={this._onItemResize}
+                onItemMove={this._onItemMove}
+                moveResizeValidator={this._validateResize}
+                selecte={[this.props.selectedItemId]}
+                onItemSelect={itemId => this.props.onSetSelectedItemId(itemId)}
+                onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
+                itemRenderer={({ item, itemContext, getItemProps }) => {
+                    return (
+                        <div {...getItemProps(item.itemProps)}>
+                            <div
+                                style={{
+                                    maxHeight: `${itemContext.dimensions.height}`,
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    overflow: "hidden",
+                                    marginRight: "5px",
+                                    alignItems: "baseline",
+                                    whiteSpace: "nowrap"
+                                }}
+                            >
+                                {itemContext.title}
                                 <div
                                     style={{
-                                        maxHeight: `${itemContext.dimensions.height}`,
                                         display: "flex",
-                                        justifyContent: "space-between",
-                                        overflow: "hidden",
-                                        marginRight: "5px",
-                                        alignItems: "baseline",
-                                        whiteSpace: "nowrap"
+                                        justifyContent: "flex-end"
                                     }}
                                 >
-                                    {itemContext.title}
+                                    <InfoIcon
+                                        id={item.id}
+                                        onClick={() => this.props.onToggleSetDatesDialogHidden(false)}
+                                    />
+                                    <ProgressDetails
+                                        completed={item.itemProps.completed}
+                                        total={item.itemProps.total}
+                                        onClick={() => {}}
+                                    />
                                     <div
-                                        style={{
-                                            display: "flex",
-                                            justifyContent: "flex-end"
-                                        }}
+                                        className="bowtie-icon bowtie-navigate-forward-circle"
+                                        style={forwardCircleStyle}
+                                        onClick={() => this.navigateToEpicRoadmap(item)}
                                     >
-                                        <InfoIcon
-                                            id={item.id}
-                                            onClick={() => this.props.onToggleSetDatesDialogHidden(false)}
-                                        />
-                                        <ProgressDetails
-                                            completed={item.itemProps.completed}
-                                            total={item.itemProps.total}
-                                            onClick={() => {}}
-                                        />
-                                        <div
-                                            className="bowtie-icon bowtie-navigate-forward-circle"
-                                            style={forwardCircleStyle}
-                                            onClick={() => this.navigateToEpicRoadmap(item)}
-                                        >
-                                            &nbsp;
-                                        </div>
+                                        &nbsp;
                                     </div>
                                 </div>
                             </div>
-                        );
-                    }}
-                />
-            );
-        }
+                        </div>
+                    );
+                }}
+            />
+        );
     }
 
     // Update the visibleTimeStart and visibleTimeEnd when user scroll or zoom the timeline.
@@ -192,9 +187,9 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanTimelineMappedPro
         items: getTimelineItems(state.epicTimelineState),
         selectedItemId: state.epicTimelineState.selectedItemId,
         planOwner: getSelectedPlanOwner(state),
-        planLoadingStatus: state.epicTimelineState.planLoadingStatus,
         visibleTimeStart: state.epicTimelineState.visibleTimeStart,
-        visibleTimeEnd: state.epicTimelineState.visibleTimeEnd
+        visibleTimeEnd: state.epicTimelineState.visibleTimeEnd,
+        exceptionMessage: state.epicTimelineState.exceptionMessage
     };
 }
 

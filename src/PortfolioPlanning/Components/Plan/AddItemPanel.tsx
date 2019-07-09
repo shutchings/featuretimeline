@@ -107,7 +107,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             return (
                 <Dropdown
                     className="project-picker"
-                    placeholder="Select an option"
+                    placeholder="Select a project"
                     width={200}
                     items={this.state.projects}
                     onSelect={this.onSelect}
