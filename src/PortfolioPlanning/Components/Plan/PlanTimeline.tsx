@@ -72,14 +72,10 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
     }
 
     private _renderItem = (item, itemContext, getItemProps) => {
-        const forwardCircleStyle = {
-            padding: "0px 0px 0px 10px"
-        };
-
         let borderStyle = {};
         if (itemContext.selected) {
             borderStyle = {
-                borderWidth: "1px",
+                borderWidth: "2px",
                 borderStyle: "solid",
                 borderColor: "#106ebe"
             };
@@ -108,19 +104,18 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                             justifyContent: "flex-end"
                         }}
                     >
-                        <InfoIcon
-                            className="show-on-hover"
-                            id={item.id}
-                            onClick={() => this.props.onToggleSetDatesDialogHidden(false)}
-                        />
                         <ProgressDetails
                             completed={item.itemProps.completed}
                             total={item.itemProps.total}
                             onClick={() => {}}
                         />
+                        <InfoIcon
+                            className="show-on-hover"
+                            id={item.id}
+                            onClick={() => this.props.onToggleSetDatesDialogHidden(false)}
+                        />
                         <div
                             className="bowtie-icon bowtie-navigate-forward-circle show-on-hover to-epic-roadmap"
-                            style={forwardCircleStyle}
                             onClick={() => this.navigateToEpicRoadmap(item)}
                         >
                             &nbsp;
