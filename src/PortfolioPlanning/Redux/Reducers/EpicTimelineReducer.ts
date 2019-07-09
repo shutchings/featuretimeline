@@ -58,7 +58,10 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 break;
             }
             case EpicTimelineActionTypes.PortfolioItemsReceived:
+                const { items, projects } = action.payload;
+
                 draft.planLoadingStatus = LoadingStatus.Loaded;
+                draft.exceptionMessage = items.exceptionMessage || projects.exceptionMessage;
 
                 return handlePortfolioItemsReceived(draft, action as PortfolioItemsReceivedAction);
 
@@ -130,7 +133,7 @@ export function getDefaultState(): IEpicTimelineState {
         selectedItemId: null,
         progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount,
         visibleTimeStart: null,
-        visibleTimeEnd: null,
+        visibleTimeEnd: null
     };
 }
 
@@ -140,8 +143,6 @@ function handlePortfolioItemsReceived(
 ): IEpicTimelineState {
     return produce(state, draft => {
         const { items, projects, teamAreas, mergeStrategy } = action.payload;
-
-        //  TODO    Handle exception message from OData query results.
 
         if (mergeStrategy === MergeType.Replace) {
             draft.projects = projects.projects.map(project => {
@@ -264,11 +265,15 @@ function handlePortfolioItemsReceived(
                     // Add auto scroll to put newly added epic in view.
                     const newItemStartDate: number = moment(newItemInfo.StartDate).valueOf();
                     const newItemTargetDate: number = moment(newItemInfo.TargetDate).valueOf();
-                    if(newItemStartDate < draft.visibleTimeStart) {
-                        draft.visibleTimeStart = moment(newItemStartDate).add(-1, "months").valueOf();
+                    if (newItemStartDate < draft.visibleTimeStart) {
+                        draft.visibleTimeStart = moment(newItemStartDate)
+                            .add(-1, "months")
+                            .valueOf();
                     }
-                    if(newItemTargetDate > draft.visibleTimeEnd) {
-                        draft.visibleTimeEnd = moment(newItemTargetDate).add(1, "months").valueOf();;
+                    if (newItemTargetDate > draft.visibleTimeEnd) {
+                        draft.visibleTimeEnd = moment(newItemTargetDate)
+                            .add(1, "months")
+                            .valueOf();
                     }
                 }
             });

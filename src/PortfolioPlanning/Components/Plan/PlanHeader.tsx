@@ -7,6 +7,7 @@ export interface PlanHeaderProps {
     name: string;
     description: string;
     itemIsSelected: boolean;
+    disabled: boolean;
     onBackButtonClicked: () => void;
     onAddItemClicked: () => void;
     onRemoveSelectedItemClicked: () => void;
@@ -31,6 +32,7 @@ export default class PlanHeader extends React.Component<PlanHeaderProps> {
                             },
                             important: true,
                             subtle: true,
+                            disabled: this.props.disabled,
                             onActivate: () => {
                                 this.props.onAddItemClicked();
                             }
@@ -42,6 +44,7 @@ export default class PlanHeader extends React.Component<PlanHeaderProps> {
                             },
                             important: true,
                             subtle: true,
+                            disabled: this.props.disabled,
                             onActivate: () => {
                                 this.props.onSettingsButtonClicked();
                             }
@@ -54,7 +57,7 @@ export default class PlanHeader extends React.Component<PlanHeaderProps> {
                             text: "Remove selected epic",
                             important: false,
                             subtle: true,
-                            disabled: !this.props.itemIsSelected,
+                            disabled: this.props.disabled || !this.props.itemIsSelected,
                             onActivate: () => {
                                 this.props.onRemoveSelectedItemClicked();
                             }
