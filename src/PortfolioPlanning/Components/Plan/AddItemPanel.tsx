@@ -16,6 +16,7 @@ import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 
 export interface IAddItemPanelProps {
     planId: string;
+    epicsInPlan: { [epicId: number]: number };
     onCloseAddItemPanel: () => void;
     onAddItems: (itemsToAdd: IAddItems) => void;
 }
@@ -29,6 +30,7 @@ interface IAddItemPanelState {
     selectedEpics: number[];
     epicsLoaded: boolean;
     loadingProjects: boolean;
+    loadingEpics: boolean;
     errorMessage: string;
 }
 
@@ -47,6 +49,7 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             selectedEpics: [],
             epicsLoaded: false,
             loadingProjects: true,
+            loadingEpics: false,
             errorMessage: ""
         };
 
@@ -74,27 +77,28 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
 
     public render() {
         return (
-            <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
-                <Panel
-                    onDismiss={() => this.props.onCloseAddItemPanel()}
-                    showSeparator={true}
-                    titleProps={{ text: "Add items" }}
-                    footerButtonProps={[
-                        { text: "Cancel", onClick: () => this.props.onCloseAddItemPanel() },
-                        {
-                            text: "Add",
-                            primary: true,
-                            onClick: () => this._onAddEpics(),
-                            disabled: this.state.selectedEpics.length === 0
-                        }
-                    ]}
-                >
-                    <div className="add-item-panel-container">
-                        {this._renderProjectPicker()}
-                        {this._renderEpics()}
-                    </div>
-                </Panel>
-            </FormItem>
+            <Panel
+                onDismiss={() => this.props.onCloseAddItemPanel()}
+                showSeparator={true}
+                titleProps={{ text: "Add items" }}
+                footerButtonProps={[
+                    {
+                        text: "Cancel",
+                        onClick: () => this.props.onCloseAddItemPanel()
+                    },
+                    {
+                        text: "Add",
+                        primary: true,
+                        onClick: () => this._onAddEpics(),
+                        disabled: this.state.selectedEpics.length === 0
+                    }
+                ]}
+            >
+                <div className="add-item-panel-container">
+                    {this._renderProjectPicker()}
+                    {this._renderEpics()}
+                </div>
+            </Panel>
         );
     }
 
@@ -102,29 +106,31 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         const { loadingProjects } = this.state;
 
         if (loadingProjects) {
-            return <Spinner label="Loading Projects..." size={SpinnerSize.large} />;
+            return <Spinner label="Loading Projects..." size={SpinnerSize.large} className="loading-projects" />;
         } else {
             return (
-                <Dropdown
-                    className="project-picker"
-                    placeholder="Select a project"
-                    width={200}
-                    items={this.state.projects}
-                    onSelect={this.onSelect}
-                    renderCallout={props => (
-                        <DropdownCallout
-                            {...props}
-                            dropdownOrigin={{
-                                horizontal: Location.start,
-                                vertical: Location.start
-                            }}
-                            anchorOrigin={{
-                                horizontal: Location.start,
-                                vertical: Location.start
-                            }}
-                        />
-                    )}
-                />
+                <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
+                    <div className="projects-label">Projects</div>
+                    <Dropdown
+                        className="project-picker"
+                        placeholder="Select a project"
+                        items={this.state.projects}
+                        onSelect={this.onSelect}
+                        renderCallout={props => (
+                            <DropdownCallout
+                                {...props}
+                                dropdownOrigin={{
+                                    horizontal: Location.start,
+                                    vertical: Location.start
+                                }}
+                                anchorOrigin={{
+                                    horizontal: Location.start,
+                                    vertical: Location.start
+                                }}
+                            />
+                        )}
+                    />
+                </FormItem>
             );
         }
     };
@@ -134,35 +140,57 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             selectedProject: {
                 id: item.id,
                 title: item.text
-            }
+            },
+            loadingEpics: true
         });
 
-        this._getEpicsInProject(item.id).then(epics => {
-            const allEpics: IListBoxItem[] = [];
-            epics.workItems.forEach(epic => {
-                allEpics.push({
-                    id: epic.WorkItemId.toString(),
-                    text: epic.Title
+        this._getEpicsInProject(item.id).then(
+            epics => {
+                const allEpics: IListBoxItem[] = [];
+                epics.workItems.forEach(epic => {
+                    //  Only show Epics not yet included in the plan.
+                    if (!this.props.epicsInPlan[epic.WorkItemId]) {
+                        allEpics.push({
+                            id: epic.WorkItemId.toString(),
+                            text: epic.Title
+                        });
+                    }
                 });
-            });
-            this.setState({
-                epics: allEpics,
-                epicsLoaded: true,
-                selectedProjectBacklogConfiguration: epics.projectBacklogConfig
-            });
-        });
+                this.setState({
+                    epics: allEpics,
+                    epicsLoaded: true,
+                    loadingEpics: false,
+                    selectedProjectBacklogConfiguration: epics.projectBacklogConfig,
+                    errorMessage: ""
+                });
+            },
+            error =>
+                this.setState({
+                    errorMessage: JSON.stringify(error, null, "   "),
+                    loadingEpics: false
+                })
+        );
     };
 
     private _renderEpics = () => {
-        return (
-            <ScrollableList
-                className="item-list"
-                itemProvider={new ArrayItemProvider<IListBoxItem>(this.state.epics)}
-                renderRow={this.renderRow}
-                selection={this.selection}
-                onSelect={this._onSelectionChanged}
-            />
-        );
+        const { loadingEpics, epicsLoaded } = this.state;
+
+        if (loadingEpics) {
+            return <Spinner label="Loading Epics..." size={SpinnerSize.large} className="loading-epics" />;
+        } else if (epicsLoaded) {
+            return (
+                <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
+                    <div className="epics-label">Epics</div>
+                    <ScrollableList
+                        className="item-list"
+                        itemProvider={new ArrayItemProvider<IListBoxItem>(this.state.epics)}
+                        renderRow={this.renderRow}
+                        selection={this.selection}
+                        onSelect={this._onSelectionChanged}
+                    />
+                </FormItem>
+            );
+        }
     };
 
     private renderRow = (
@@ -174,7 +202,9 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
         this._indexToWorkItemIdMap[index] = Number(epic.id);
         return (
             <ListItem key={key || "list-item" + index} index={index} details={details}>
-                <div className="item-list-row">{epic.text}</div>
+                <div className="item-list-row">
+                    {epic.id} - {epic.text}
+                </div>
             </ListItem>
         );
     };

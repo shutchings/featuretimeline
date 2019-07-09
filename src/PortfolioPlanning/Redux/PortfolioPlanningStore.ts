@@ -41,9 +41,5 @@ export default function configurePortfolioPlanningStore(
     sagaMiddleWare.run(epicTimelineSaga);
     sagaMiddleWare.run(planDirectorySaga);
 
-    //  Comment out 'LoadPortfolio' to use OData service to retrieve items information.
-    //  TODO    User Story 1559920: Load epics and project information from extension storage
-    // sagaMiddleWare.run(LoadPortfolio);
-
     return store;
 }
