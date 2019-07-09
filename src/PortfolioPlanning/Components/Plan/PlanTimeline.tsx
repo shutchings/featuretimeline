@@ -104,9 +104,14 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                             </div>
                         );
                     }}
+                    groupRenderer={group => this._renderGroup(group.group)}
                 />
             </div>
         );
+    }
+
+    private _renderGroup(group: ITimelineGroup) {
+        return <div className="plan-timeline-group">{group.title}</div>;
     }
 
     // Update the visibleTimeStart and visibleTimeEnd when user scroll or zoom the timeline.
