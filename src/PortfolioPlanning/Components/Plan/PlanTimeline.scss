@@ -38,13 +38,19 @@
             color: $communication-foreground;
         }
 
-        .to-epic-roadmap {
-            color: $communication-foreground;
+        .progress-indicator {
+            padding-right: $spacing-4;
         }
     }
 
     &:hover .show-on-hover {
         display: inherit;
+    }
+
+    .to-epic-roadmap {
+        color: $communication-foreground;
+        display: flex;
+        align-items: center;
     }
 
     .show-on-hover {
