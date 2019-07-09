@@ -20,14 +20,20 @@
 }
 
 .plan-timeline-item {
-    display: flex;
-    justify-content: space-between;
-    overflow: hidden;
-    align-items: baseline;
-    white-space: nowrap;
-
     @extend .depth-8;
-    border: none;
+    @extend .font-weight-semibold;
+
+    .details {
+        display: flex;
+        justify-content: space-between;
+        overflow: hidden;
+        align-items: baseline;
+        white-space: nowrap;
+
+        .title {
+            margin-left: $spacing-8;
+        }
+    }
 }
 
 // Copied from react-calendar-timeline //

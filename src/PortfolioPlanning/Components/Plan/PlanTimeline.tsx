@@ -37,10 +37,6 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
     public render(): JSX.Element {
         const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(this.props.items);
 
-        const forwardCircleStyle = {
-            padding: "0px 0px 0px 10px"
-        };
-
         return (
             <div className="plan-timeline-container">
                 <Timeline
@@ -62,51 +58,9 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                     lineHeight={50}
                     onItemSelect={itemId => this.props.onSetSelectedItemId(itemId)}
                     onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
-                    itemRenderer={({ item, itemContext, getItemProps }) => {
-                        return (
-                            <div
-                                {...getItemProps({
-                                    className: "plan-timeline-item",
-                                    style: {
-                                        background: "white",
-                                        color: "black",
-                                        border: "none"
-                                    }
-                                })}
-                            >
-                                <div
-                                    style={{
-                                        maxHeight: `${itemContext.dimensions.height}`
-                                    }}
-                                >
-                                    {itemContext.title}
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            justifyContent: "flex-end"
-                                        }}
-                                    >
-                                        <InfoIcon
-                                            id={item.id}
-                                            onClick={() => this.props.onToggleSetDatesDialogHidden(false)}
-                                        />
-                                        <ProgressDetails
-                                            completed={item.itemProps.completed}
-                                            total={item.itemProps.total}
-                                            onClick={() => {}}
-                                        />
-                                        <div
-                                            className="bowtie-icon bowtie-navigate-forward-circle"
-                                            style={forwardCircleStyle}
-                                            onClick={() => this.navigateToEpicRoadmap(item)}
-                                        >
-                                            &nbsp;
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    }}
+                    itemRenderer={({ item, itemContext, getItemProps }) =>
+                        this._renderItem(item, itemContext, getItemProps)
+                    }
                     groupRenderer={group => this._renderGroup(group.group)}
                 />
             </div>
@@ -116,6 +70,62 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
     private _renderGroup(group: ITimelineGroup) {
         return <div className="plan-timeline-group">{group.title}</div>;
     }
+
+    private _renderItem = (item, itemContext, getItemProps) => {
+        const forwardCircleStyle = {
+            padding: "0px 0px 0px 10px"
+        };
+
+        let borderStyle = {};
+        if (itemContext.selected) {
+            borderStyle = {
+                borderWidth: "1px",
+                borderStyle: "solid",
+                borderColor: "#106ebe"
+            };
+        } else {
+            borderStyle = {
+                border: "none"
+            };
+        }
+        return (
+            <div
+                {...getItemProps({
+                    className: "plan-timeline-item",
+                    style: {
+                        background: "white",
+                        color: "black",
+                        ...borderStyle,
+                        borderRadius: "4px"
+                    }
+                })}
+            >
+                <div className="details">
+                    <div className="title">{itemContext.title}</div>
+                    <div
+                        style={{
+                            display: "flex",
+                            justifyContent: "flex-end"
+                        }}
+                    >
+                        <InfoIcon id={item.id} onClick={() => this.props.onToggleSetDatesDialogHidden(false)} />
+                        <ProgressDetails
+                            completed={item.itemProps.completed}
+                            total={item.itemProps.total}
+                            onClick={() => {}}
+                        />
+                        <div
+                            className="bowtie-icon bowtie-navigate-forward-circle"
+                            style={forwardCircleStyle}
+                            onClick={() => this.navigateToEpicRoadmap(item)}
+                        >
+                            &nbsp;
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     // Update the visibleTimeStart and visibleTimeEnd when user scroll or zoom the timeline.
     private _handleTimeChange = (visibleTimeStart, visibleTimeEnd, updateScrollCanvas): void => {
