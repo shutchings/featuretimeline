@@ -11,6 +11,8 @@ import { ListSelection, ScrollableList, ListItem, IListItemDetails, IListRow } f
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
 import { ProjectBacklogConfiguration } from "../../Models/ProjectBacklogModels";
 import { BacklogConfigurationDataService } from "../../../Services/BacklogConfigurationDataService";
+import { FormItem } from "azure-devops-ui/FormItem";
+import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 
 export interface IAddItemPanelProps {
     planId: string;
@@ -26,6 +28,8 @@ interface IAddItemPanelState {
     epics: IListBoxItem[];
     selectedEpics: number[];
     epicsLoaded: boolean;
+    loadingProjects: boolean;
+    errorMessage: string;
 }
 
 export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPanelState> {
@@ -41,67 +45,88 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             selectedProjectBacklogConfiguration: null,
             epics: [],
             selectedEpics: [],
-            epicsLoaded: false
+            epicsLoaded: false,
+            loadingProjects: true,
+            errorMessage: ""
         };
 
-        this._getAllProjects().then(projects => {
-            const allProjects = [...this.state.projects];
-            projects.forEach(project => {
-                allProjects.push({
-                    id: project.ProjectSK,
-                    text: project.ProjectName
+        this._getAllProjects().then(
+            projects => {
+                const allProjects = [...this.state.projects];
+                projects.forEach(project => {
+                    allProjects.push({
+                        id: project.ProjectSK,
+                        text: project.ProjectName
+                    });
                 });
-            });
-            this.setState({ projects: allProjects });
-        });
+                this.setState({
+                    projects: allProjects,
+                    loadingProjects: false
+                });
+            },
+            error =>
+                this.setState({
+                    errorMessage: JSON.stringify(error),
+                    loadingProjects: false
+                })
+        );
     }
 
     public render() {
         return (
-            <Panel
-                onDismiss={() => this.props.onCloseAddItemPanel()}
-                titleProps={{ text: "Add items" }}
-                footerButtonProps={[
-                    { text: "Cancel", onClick: () => this.props.onCloseAddItemPanel() },
-                    {
-                        text: "Add",
-                        primary: true,
-                        onClick: () => this._onAddEpics(),
-                        disabled: this.state.selectedEpics.length === 0
-                    }
-                ]}
-            >
-                <div className="add-item-panel-container">
-                    {this._renderProjectPicker()}
-                    {this._renderEpics()}
-                </div>
-            </Panel>
+            <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
+                <Panel
+                    onDismiss={() => this.props.onCloseAddItemPanel()}
+                    showSeparator={true}
+                    titleProps={{ text: "Add items" }}
+                    footerButtonProps={[
+                        { text: "Cancel", onClick: () => this.props.onCloseAddItemPanel() },
+                        {
+                            text: "Add",
+                            primary: true,
+                            onClick: () => this._onAddEpics(),
+                            disabled: this.state.selectedEpics.length === 0
+                        }
+                    ]}
+                >
+                    <div className="add-item-panel-container">
+                        {this._renderProjectPicker()}
+                        {this._renderEpics()}
+                    </div>
+                </Panel>
+            </FormItem>
         );
     }
 
     private _renderProjectPicker = () => {
-        return (
-            <Dropdown
-                className="project-picker"
-                placeholder="Select an option"
-                width={200}
-                items={this.state.projects}
-                onSelect={this.onSelect}
-                renderCallout={props => (
-                    <DropdownCallout
-                        {...props}
-                        dropdownOrigin={{
-                            horizontal: Location.start,
-                            vertical: Location.start
-                        }}
-                        anchorOrigin={{
-                            horizontal: Location.start,
-                            vertical: Location.start
-                        }}
-                    />
-                )}
-            />
-        );
+        const { loadingProjects } = this.state;
+
+        if (loadingProjects) {
+            return <Spinner label="Loading Projects..." size={SpinnerSize.large} />;
+        } else {
+            return (
+                <Dropdown
+                    className="project-picker"
+                    placeholder="Select an option"
+                    width={200}
+                    items={this.state.projects}
+                    onSelect={this.onSelect}
+                    renderCallout={props => (
+                        <DropdownCallout
+                            {...props}
+                            dropdownOrigin={{
+                                horizontal: Location.start,
+                                vertical: Location.start
+                            }}
+                            anchorOrigin={{
+                                horizontal: Location.start,
+                                vertical: Location.start
+                            }}
+                        />
+                    )}
+                />
+            );
+        }
     };
 
     private onSelect = (event: React.SyntheticEvent<HTMLElement>, item: IListBoxItem<{}>) => {
