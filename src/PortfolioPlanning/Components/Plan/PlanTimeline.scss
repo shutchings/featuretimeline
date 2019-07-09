@@ -1,3 +1,10 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+@import "node_modules/azure-devops-ui/Core/core.scss";
+
+.plan-timeline-container {
+    margin-top: $spacing-16;
+}
+
 // Copied from react-calendar-timeline //
 .react-calendar-timeline * {
     box-sizing: border-box;

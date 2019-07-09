@@ -42,67 +42,69 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
         };
 
         return (
-            <Timeline
-                groups={this.props.groups}
-                items={this.props.items}
-                visibleTimeStart={this.props.visibleTimeStart || defaultTimeStart}
-                visibleTimeEnd={this.props.visibleTimeEnd || defaultTimeEnd}
-                onTimeChange={this._handleTimeChange}
-                canChangeGroup={false}
-                stackItems={true}
-                dragSnap={day}
-                minZoom={week}
-                canResize={"both"}
-                minResizeWidth={50}
-                onItemResize={this._onItemResize}
-                onItemMove={this._onItemMove}
-                moveResizeValidator={this._validateResize}
-                selecte={[this.props.selectedItemId]}
-                onItemSelect={itemId => this.props.onSetSelectedItemId(itemId)}
-                onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
-                itemRenderer={({ item, itemContext, getItemProps }) => {
-                    return (
-                        <div {...getItemProps(item.itemProps)}>
-                            <div
-                                style={{
-                                    maxHeight: `${itemContext.dimensions.height}`,
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    overflow: "hidden",
-                                    marginRight: "5px",
-                                    alignItems: "baseline",
-                                    whiteSpace: "nowrap"
-                                }}
-                            >
-                                {itemContext.title}
+            <div className="plan-timeline-container">
+                <Timeline
+                    groups={this.props.groups}
+                    items={this.props.items}
+                    visibleTimeStart={this.props.visibleTimeStart || defaultTimeStart}
+                    visibleTimeEnd={this.props.visibleTimeEnd || defaultTimeEnd}
+                    onTimeChange={this._handleTimeChange}
+                    canChangeGroup={false}
+                    stackItems={true}
+                    dragSnap={day}
+                    minZoom={week}
+                    canResize={"both"}
+                    minResizeWidth={50}
+                    onItemResize={this._onItemResize}
+                    onItemMove={this._onItemMove}
+                    moveResizeValidator={this._validateResize}
+                    selecte={[this.props.selectedItemId]}
+                    onItemSelect={itemId => this.props.onSetSelectedItemId(itemId)}
+                    onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
+                    itemRenderer={({ item, itemContext, getItemProps }) => {
+                        return (
+                            <div {...getItemProps(item.itemProps)}>
                                 <div
                                     style={{
+                                        maxHeight: `${itemContext.dimensions.height}`,
                                         display: "flex",
-                                        justifyContent: "flex-end"
+                                        justifyContent: "space-between",
+                                        overflow: "hidden",
+                                        marginRight: "5px",
+                                        alignItems: "baseline",
+                                        whiteSpace: "nowrap"
                                     }}
                                 >
-                                    <InfoIcon
-                                        id={item.id}
-                                        onClick={() => this.props.onToggleSetDatesDialogHidden(false)}
-                                    />
-                                    <ProgressDetails
-                                        completed={item.itemProps.completed}
-                                        total={item.itemProps.total}
-                                        onClick={() => {}}
-                                    />
+                                    {itemContext.title}
                                     <div
-                                        className="bowtie-icon bowtie-navigate-forward-circle"
-                                        style={forwardCircleStyle}
-                                        onClick={() => this.navigateToEpicRoadmap(item)}
+                                        style={{
+                                            display: "flex",
+                                            justifyContent: "flex-end"
+                                        }}
                                     >
-                                        &nbsp;
+                                        <InfoIcon
+                                            id={item.id}
+                                            onClick={() => this.props.onToggleSetDatesDialogHidden(false)}
+                                        />
+                                        <ProgressDetails
+                                            completed={item.itemProps.completed}
+                                            total={item.itemProps.total}
+                                            onClick={() => {}}
+                                        />
+                                        <div
+                                            className="bowtie-icon bowtie-navigate-forward-circle"
+                                            style={forwardCircleStyle}
+                                            onClick={() => this.navigateToEpicRoadmap(item)}
+                                        >
+                                            &nbsp;
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    );
-                }}
-            />
+                        );
+                    }}
+                />
+            </div>
         );
     }
 
