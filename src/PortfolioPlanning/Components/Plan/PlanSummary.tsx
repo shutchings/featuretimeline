@@ -14,7 +14,7 @@ export const PlanSummary = (props: IPlanSummaryProps) => {
     const teamNameList = props.teamNames.join(", ");
 
     return (
-        <div className="plan-summary">
+        <div className="page-content page-content-top plan-summary">
             <IdentityView className="owner" value={props.owner} />
             {projectNameList && (
                 <div className="summary-item">

@@ -3,6 +3,9 @@
 
 .plan-timeline-container {
     margin-top: $spacing-16;
+    height: 100%;
+
+    background-color: $neutral-2;
 }
 
 // Copied from react-calendar-timeline //
