@@ -59,6 +59,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                     onItemMove={this._onItemMove}
                     moveResizeValidator={this._validateResize}
                     selected={[this.props.selectedItemId]}
+                    lineHeight={50}
                     onItemSelect={itemId => this.props.onSetSelectedItemId(itemId)}
                     onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
                     itemRenderer={({ item, itemContext, getItemProps }) => {
