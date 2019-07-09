@@ -33,6 +33,22 @@
         .title {
             margin-left: $spacing-8;
         }
+
+        .info-icon {
+            color: $communication-foreground;
+        }
+
+        .to-epic-roadmap {
+            color: $communication-foreground;
+        }
+    }
+
+    &:hover .show-on-hover {
+        display: inherit;
+    }
+
+    .show-on-hover {
+        display: none;
     }
 }
 

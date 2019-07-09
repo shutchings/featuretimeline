@@ -108,14 +108,18 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                             justifyContent: "flex-end"
                         }}
                     >
-                        <InfoIcon id={item.id} onClick={() => this.props.onToggleSetDatesDialogHidden(false)} />
+                        <InfoIcon
+                            className="show-on-hover"
+                            id={item.id}
+                            onClick={() => this.props.onToggleSetDatesDialogHidden(false)}
+                        />
                         <ProgressDetails
                             completed={item.itemProps.completed}
                             total={item.itemProps.total}
                             onClick={() => {}}
                         />
                         <div
-                            className="bowtie-icon bowtie-navigate-forward-circle"
+                            className="bowtie-icon bowtie-navigate-forward-circle show-on-hover to-epic-roadmap"
                             style={forwardCircleStyle}
                             onClick={() => this.navigateToEpicRoadmap(item)}
                         >
