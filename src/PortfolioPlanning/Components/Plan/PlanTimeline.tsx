@@ -35,36 +35,44 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
     }
 
     public render(): JSX.Element {
-        const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(this.props.items);
+        if (this.props.items.length > 0) {
+            const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(this.props.items);
 
-        return (
-            <div className="plan-timeline-container">
-                <Timeline
-                    groups={this.props.groups}
-                    items={this.props.items}
-                    visibleTimeStart={this.props.visibleTimeStart || defaultTimeStart}
-                    visibleTimeEnd={this.props.visibleTimeEnd || defaultTimeEnd}
-                    onTimeChange={this._handleTimeChange}
-                    canChangeGroup={false}
-                    stackItems={true}
-                    dragSnap={day}
-                    minZoom={week}
-                    canResize={"both"}
-                    minResizeWidth={50}
-                    onItemResize={this._onItemResize}
-                    onItemMove={this._onItemMove}
-                    moveResizeValidator={this._validateResize}
-                    selected={[this.props.selectedItemId]}
-                    lineHeight={50}
-                    onItemSelect={itemId => this.props.onSetSelectedItemId(itemId)}
-                    onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
-                    itemRenderer={({ item, itemContext, getItemProps }) =>
-                        this._renderItem(item, itemContext, getItemProps)
-                    }
-                    groupRenderer={group => this._renderGroup(group.group)}
-                />
-            </div>
-        );
+            return (
+                <div className="plan-timeline-container">
+                    <Timeline
+                        groups={this.props.groups}
+                        items={this.props.items}
+                        visibleTimeStart={this.props.visibleTimeStart || defaultTimeStart}
+                        visibleTimeEnd={this.props.visibleTimeEnd || defaultTimeEnd}
+                        onTimeChange={this._handleTimeChange}
+                        canChangeGroup={false}
+                        stackItems={true}
+                        dragSnap={day}
+                        minZoom={week}
+                        canResize={"both"}
+                        minResizeWidth={50}
+                        onItemResize={this._onItemResize}
+                        onItemMove={this._onItemMove}
+                        moveResizeValidator={this._validateResize}
+                        selected={[this.props.selectedItemId]}
+                        lineHeight={50}
+                        onItemSelect={itemId => this.props.onSetSelectedItemId(itemId)}
+                        onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
+                        itemRenderer={({ item, itemContext, getItemProps }) =>
+                            this._renderItem(item, itemContext, getItemProps)
+                        }
+                        groupRenderer={group => this._renderGroup(group.group)}
+                    />
+                </div>
+            );
+        } else {
+            return (
+                <div className="plan-timeline-container">
+                    <div>Add an item...</div>
+                </div>
+            );
+        }
     }
 
     private _renderGroup(group: ITimelineGroup) {
