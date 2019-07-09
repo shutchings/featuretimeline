@@ -19,6 +19,17 @@
     justify-content: center;
 }
 
+.plan-timeline-item {
+    display: flex;
+    justify-content: space-between;
+    overflow: hidden;
+    align-items: baseline;
+    white-space: nowrap;
+
+    @extend .depth-8;
+    border: none;
+}
+
 // Copied from react-calendar-timeline //
 .react-calendar-timeline * {
     box-sizing: border-box;

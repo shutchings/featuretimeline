@@ -64,16 +64,19 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                     onCanvasClick={() => this.props.onSetSelectedItemId(undefined)}
                     itemRenderer={({ item, itemContext, getItemProps }) => {
                         return (
-                            <div {...getItemProps(item.itemProps)}>
+                            <div
+                                {...getItemProps({
+                                    className: "plan-timeline-item",
+                                    style: {
+                                        background: "white",
+                                        color: "black",
+                                        border: "none"
+                                    }
+                                })}
+                            >
                                 <div
                                     style={{
-                                        maxHeight: `${itemContext.dimensions.height}`,
-                                        display: "flex",
-                                        justifyContent: "space-between",
-                                        overflow: "hidden",
-                                        marginRight: "5px",
-                                        alignItems: "baseline",
-                                        whiteSpace: "nowrap"
+                                        maxHeight: `${itemContext.dimensions.height}`
                                     }}
                                 >
                                     {itemContext.title}
