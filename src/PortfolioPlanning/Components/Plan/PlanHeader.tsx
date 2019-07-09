@@ -44,7 +44,6 @@ export default class PlanHeader extends React.Component<PlanHeaderProps> {
                             },
                             important: true,
                             subtle: true,
-                            disabled: this.props.disabled,
                             onActivate: () => {
                                 this.props.onSettingsButtonClicked();
                             }
