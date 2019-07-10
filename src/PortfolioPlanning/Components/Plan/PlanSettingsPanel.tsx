@@ -15,7 +15,7 @@ export interface IPlanSettingsProps {
 
 export const PlanSettingsPanel = (props: IPlanSettingsProps) => {
     const completedCountKey = "completedCount";
-    const effortKey = "storyPoints";
+    const effortKey = "effort";
 
     const selectedProgressCriteriaKey =
         props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount ? completedCountKey : effortKey;
