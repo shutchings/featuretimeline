@@ -47,6 +47,18 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
     public render() {
         return (
             <Page className="plan-page">
+                {this._renderPlanHeader()}
+                {this._renderPlanContent()}
+                {this._renderAddItemPanel()}
+                {this._renderItemDetailsDialog()}
+                {this._renderPlanSettingsPanel()}
+            </Page>
+        );
+    }
+
+    private _renderPlanHeader = (): JSX.Element => {
+        return (
+            <>
                 <PlanHeader
                     id={this.props.plan.id}
                     name={this.props.plan.name}
@@ -58,13 +70,14 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                     onBackButtonClicked={this._backButtonClicked}
                     onSettingsButtonClicked={this._settingsButtonClicked}
                 />
-                {this._renderPlanContent()}
-                {this._renderAddItemPanel()}
-                {this._renderItemDetailsDialog()}
-                {this._renderPlanSettingsPanel()}
-            </Page>
+                <PlanSummary
+                    projectNames={this.props.projectNames}
+                    teamNames={this.props.teamNames}
+                    owner={this.props.plan.owner}
+                />
+            </>
         );
-    }
+    };
 
     private _renderPlanContent = (): JSX.Element => {
         let planContent: JSX.Element;
@@ -91,11 +104,6 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
         } else {
             planContent = (
                 <>
-                    <PlanSummary
-                        projectNames={this.props.projectNames}
-                        teamNames={this.props.teamNames}
-                        owner={this.props.plan.owner}
-                    />
                     <ConnectedPlanTimeline />
                 </>
             );
