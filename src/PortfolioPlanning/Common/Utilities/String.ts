@@ -1,4 +1,4 @@
-function convertToString(value: any, upperCase: boolean, useLocale: boolean): string {
+export function convertToString(value: any, upperCase: boolean, useLocale: boolean): string {
     let result: string;
 
     if (value === null || value === undefined) {
