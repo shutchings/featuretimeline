@@ -43,12 +43,10 @@ export const PlanSettingsPanel = (props: IPlanSettingsProps) => {
                         onChanged={(item: { key: string; text: string }) => {
                             switch (item.key) {
                                 case completedCountKey:
-                                    this.props.onProgressTrackingCriteriaChanged(
-                                        ProgressTrackingCriteria.CompletedCount
-                                    );
+                                    props.onProgressTrackingCriteriaChanged(ProgressTrackingCriteria.CompletedCount);
                                     break;
                                 case effortKey:
-                                    this.props.onProgressTrackingCriteriaChanged(ProgressTrackingCriteria.Effort);
+                                    props.onProgressTrackingCriteriaChanged(ProgressTrackingCriteria.Effort);
                                     break;
                             }
                         }}

@@ -38,10 +38,10 @@ export interface IEpic {
     completedCount: number;
     totalCount: number;
 
-    completedStoryPoints: number;
-    totalStoryPoints: number;
+    completedEffort: number;
+    totalEffort: number;
 
-    storyPointsProgress: number;
+    effortProgress: number;
     countProgress: number;
 }
 
