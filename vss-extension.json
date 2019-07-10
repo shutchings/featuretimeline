@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
     "id": "workitem-portfolio-planning-extension",
-    "version": "0.0.4",
+    "version": "0.0.6",
     "name": "Portfolio Plans",
     "description": "Portfolio level plans across projects and teams.",
     "publisher": "sthutchi",
