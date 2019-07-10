@@ -101,7 +101,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
             );
         }
 
-        return <div className="page-content page-content-top plan-content">{planContent}</div>;
+        return <div className="plan-content">{planContent}</div>;
     };
 
     private _renderAddItemPanel = (): JSX.Element => {

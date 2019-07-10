@@ -1,3 +1,63 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+@import "node_modules/azure-devops-ui/Core/core.scss";
+
+.plan-timeline-container {
+    margin-top: $spacing-16;
+    height: 100%;
+
+    background-color: $neutral-2;
+    padding-left: $spacing-32;
+    padding-right: $spacing-32;
+}
+
+.plan-timeline-group {
+    @extend .title-xs;
+
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.plan-timeline-item {
+    @extend .depth-8;
+    @extend .font-weight-semibold;
+
+    .details {
+        display: flex;
+        justify-content: space-between;
+        overflow: hidden;
+        align-items: baseline;
+        white-space: nowrap;
+
+        .title {
+            margin-left: $spacing-8;
+        }
+
+        .info-icon {
+            color: $communication-foreground;
+        }
+
+        .progress-indicator {
+            padding-right: $spacing-4;
+        }
+    }
+
+    &:hover .show-on-hover {
+        display: inherit;
+    }
+
+    .to-epic-roadmap {
+        color: $communication-foreground;
+        display: flex;
+        align-items: center;
+    }
+
+    .show-on-hover {
+        display: none;
+    }
+}
+
 // Copied from react-calendar-timeline //
 .react-calendar-timeline * {
     box-sizing: border-box;
@@ -41,7 +101,7 @@
     vertical-align: top;
     position: relative;
     box-sizing: border-box;
-    border-right: 1px solid #bbb;
+    // border-right: 1px solid #bbb;
 }
 .react-calendar-timeline .rct-sidebar.rct-sidebar-right {
     border-right: 0;
@@ -57,10 +117,10 @@
     border-bottom: 1px solid #bbb;
 }
 .react-calendar-timeline .rct-sidebar .rct-sidebar-row.rct-sidebar-row-odd {
-    background: rgba(0, 0, 0, 0.05);
+    // background: rgba(0, 0, 0, 0.05);
 }
 .react-calendar-timeline .rct-sidebar .rct-sidebar-row.rct-sidebar-row-even {
-    background: transparent;
+    // background: transparent;
 }
 
 .react-calendar-timeline .rct-vertical-lines .rct-vl {
@@ -69,7 +129,7 @@
     z-index: 30;
 }
 .react-calendar-timeline .rct-vertical-lines .rct-vl.rct-vl-first {
-    border-left-width: 2px;
+    // border-left-width: 2px;
 }
 .react-calendar-timeline .rct-vertical-lines .rct-vl.rct-day-6,
 .react-calendar-timeline .rct-vertical-lines .rct-vl.rct-day-0 {
@@ -84,11 +144,11 @@
 }
 
 .react-calendar-timeline .rct-horizontal-lines .rct-hl-odd {
-    background: rgba(0, 0, 0, 0.05);
+    // background: rgba(0, 0, 0, 0.05);
 }
 
 .react-calendar-timeline .rct-horizontal-lines .rct-hl-even {
-    background: transparent;
+    // background: transparent;
 }
 
 .react-calendar-timeline .rct-cursor-line {
@@ -115,27 +175,33 @@
     align-items: center;
     justify-content: center;
     height: 100%;
-    border-bottom: 1px solid #bbb;
+    // border-bottom: 1px solid #bbb;
     cursor: pointer;
-    font-size: 14px;
-    background-color: #f0f0f0;
-    border-left: 2px solid #bbb;
+    // font-size: 14px;
+    // background-color: #f0f0f0;
+    // border-left: 2px solid transparent;
+
+    @extend .font-weight-semibold;
+    color: $secondary-text;
+    border-right: 1px solid #bbb;
 }
 
 .react-calendar-timeline .rct-dateHeader-primary {
-    background-color: initial;
-    border-left: 1px solid #bbb;
-    border-right: 1px solid #bbb;
-    color: #fff;
+    // background-color: initial;
+    // border-left: 1px solid #bbb;
+    // border-right: 1px solid #bbb;
+    // color: #fff;
+
+    // display: none;
 }
 
 .react-calendar-timeline .rct-header-root {
-    background: #c52020;
+    // background: #c52020;
     border-bottom: 1px solid #bbb;
 }
 
 .react-calendar-timeline .rct-calendar-header {
-    border: 1px solid #bbb;
+    // border: 1px solid #bbb;
 }
 
 // End copy from react-calendar-timeline //
