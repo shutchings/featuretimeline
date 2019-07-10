@@ -59,9 +59,9 @@ export function getTimelineItems(state: IEpicTimelineState): ITimelineItem[] {
             total = epic.totalCount;
             progress = epic.countProgress;
         } else {
-            completed = epic.completedStoryPoints;
-            total = epic.totalStoryPoints;
-            progress = epic.storyPointsProgress;
+            completed = epic.completedEffort;
+            total = epic.totalEffort;
+            progress = epic.effortProgress;
         }
 
         return {

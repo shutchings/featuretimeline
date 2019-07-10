@@ -38,10 +38,10 @@ export interface IEpic {
     completedCount: number;
     totalCount: number;
 
-    completedStoryPoints: number;
-    totalStoryPoints: number;
+    completedEffort: number;
+    totalEffort: number;
 
-    storyPointsProgress: number;
+    effortProgress: number;
     countProgress: number;
 }
 
@@ -75,7 +75,7 @@ export interface ITimelineItem {
 
 export enum ProgressTrackingCriteria {
     CompletedCount = "Completed Count",
-    StoryPoints = "Story Points"
+    Effort = "Effort"
 }
 
 export enum LoadingStatus {

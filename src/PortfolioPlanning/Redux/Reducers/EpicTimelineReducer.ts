@@ -191,9 +191,9 @@ function handlePortfolioItemsReceived(
                     endDate: item.TargetDate,
                     completedCount: item.CompletedCount,
                     totalCount: item.TotalCount,
-                    completedStoryPoints: item.CompletedStoryPoints,
-                    totalStoryPoints: item.TotalStoryPoints,
-                    storyPointsProgress: item.StoryPointsProgress,
+                    completedEffort: item.CompletedEffort,
+                    totalEffort: item.TotalEffort,
+                    effortProgress: item.EffortProgress,
                     countProgress: item.CountProgress
                 };
             });
@@ -257,9 +257,9 @@ function handlePortfolioItemsReceived(
                         endDate: newItemInfo.TargetDate,
                         completedCount: newItemInfo.CompletedCount,
                         totalCount: newItemInfo.TotalCount,
-                        completedStoryPoints: newItemInfo.CompletedStoryPoints,
-                        totalStoryPoints: newItemInfo.TotalStoryPoints,
-                        storyPointsProgress: newItemInfo.StoryPointsProgress,
+                        completedEffort: newItemInfo.CompletedEffort,
+                        totalEffort: newItemInfo.TotalEffort,
+                        effortProgress: newItemInfo.EffortProgress,
                         countProgress: newItemInfo.CountProgress
                     });
 

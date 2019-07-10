@@ -29,10 +29,10 @@ export interface PortfolioPlanningQueryResultItem {
     CompletedCount: number;
     TotalCount: number;
 
-    CompletedStoryPoints: number;
-    TotalStoryPoints: number;
+    CompletedEffort: number;
+    TotalEffort: number;
 
-    StoryPointsProgress: number;
+    EffortProgress: number;
     CountProgress: number;
 }
 

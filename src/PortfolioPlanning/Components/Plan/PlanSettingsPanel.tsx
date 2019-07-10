@@ -8,14 +8,17 @@ import { Button } from "azure-devops-ui/Button";
 export interface IPlanSettingsProps {
     selectedItem: ITimelineItem;
     progressTrackingCriteria: ProgressTrackingCriteria;
-    onProgressTrackingCriteriaChanged: (item: { key: string; text: string }) => void;
+    onProgressTrackingCriteriaChanged: (criteria: ProgressTrackingCriteria) => void;
     onDeletePlanClicked: () => void;
     onClosePlanSettingsPanel: () => void;
 }
 
 export const PlanSettingsPanel = (props: IPlanSettingsProps) => {
+    const completedCountKey = "completedCount";
+    const effortKey = "effort";
+
     const selectedProgressCriteriaKey =
-        props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount ? "completedCount" : "storyPoints";
+        props.progressTrackingCriteria === ProgressTrackingCriteria.CompletedCount ? completedCountKey : effortKey;
 
     return (
         <Panel onDismiss={props.onClosePlanSettingsPanel} titleProps={{ text: "Settings" }}>
@@ -29,15 +32,24 @@ export const PlanSettingsPanel = (props: IPlanSettingsProps) => {
                         autoComplete="off"
                         options={[
                             {
-                                key: "completedCount",
+                                key: completedCountKey,
                                 text: ProgressTrackingCriteria.CompletedCount
                             },
                             {
-                                key: "storyPoints",
-                                text: ProgressTrackingCriteria.StoryPoints
+                                key: effortKey,
+                                text: ProgressTrackingCriteria.Effort
                             }
                         ]}
-                        onChanged={props.onProgressTrackingCriteriaChanged}
+                        onChanged={(item: { key: string; text: string }) => {
+                            switch (item.key) {
+                                case completedCountKey:
+                                    props.onProgressTrackingCriteriaChanged(ProgressTrackingCriteria.CompletedCount);
+                                    break;
+                                case effortKey:
+                                    props.onProgressTrackingCriteriaChanged(ProgressTrackingCriteria.Effort);
+                                    break;
+                            }
+                        }}
                     />
                 </div>
                 <div className="delete-plan settings-item">

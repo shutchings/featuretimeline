@@ -181,13 +181,17 @@ export class AddItemPanel extends React.Component<IAddItemPanelProps, IAddItemPa
             return (
                 <FormItem message={this.state.errorMessage} error={this.state.errorMessage !== ""}>
                     <div className="epics-label">Epics</div>
-                    <ScrollableList
-                        className="item-list"
-                        itemProvider={new ArrayItemProvider<IListBoxItem>(this.state.epics)}
-                        renderRow={this.renderRow}
-                        selection={this.selection}
-                        onSelect={this._onSelectionChanged}
-                    />
+                    {this.state.epics.length > 0 ? (
+                        <ScrollableList
+                            className="item-list"
+                            itemProvider={new ArrayItemProvider<IListBoxItem>(this.state.epics)}
+                            renderRow={this.renderRow}
+                            selection={this.selection}
+                            onSelect={this._onSelectionChanged}
+                        />
+                    ) : (
+                        <div>All epics are already added to plan.</div>
+                    )}
                 </FormItem>
             );
         }

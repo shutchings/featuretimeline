@@ -516,9 +516,9 @@ export class PortfolioPlanningDataService {
                 TeamId: null, //  Will be assigned when teams in areas data is retrieved.
                 CompletedCount: 0,
                 TotalCount: 0,
-                CompletedStoryPoints: 0,
-                TotalStoryPoints: 0,
-                StoryPointsProgress: 0.0,
+                CompletedEffort: 0,
+                TotalEffort: 0,
+                EffortProgress: 0.0,
                 CountProgress: 0.0
             };
 
@@ -566,10 +566,9 @@ export class PortfolioPlanningDataService {
             effortProgress = totalEffort && completedEffort && totalEffort > 0 ? completedEffort / totalEffort : 0;
         }
 
-        //  TODO    UI models need to be updated with "Effort" instead of hard-coding "Story points"
-        resultItem.TotalStoryPoints = totalEffort;
-        resultItem.CompletedStoryPoints = completedEffort;
-        resultItem.StoryPointsProgress = effortProgress;
+        resultItem.TotalEffort = totalEffort;
+        resultItem.CompletedEffort = completedEffort;
+        resultItem.EffortProgress = effortProgress;
     }
 
     private PortfolioPlanningAreaQueryResultItems(rawItems: ODataAreaQueryResult[]): TeamsInArea {
