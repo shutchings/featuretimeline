@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as moment from "moment";
 import { ITimelineGroup, ITimelineItem, ITeam } from "../../Contracts";
-import Timeline, { TimelineHeaders, SidebarHeader, DateHeader } from "react-calendar-timeline";
+import Timeline from "react-calendar-timeline";
 import "./PlanTimeline.scss";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
 import { getTimelineGroups, getTimelineItems } from "../../Redux/Selectors/EpicTimelineSelectors";
@@ -63,17 +63,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                             this._renderItem(item, itemContext, getItemProps)
                         }
                         groupRenderer={group => this._renderGroup(group.group)}
-                    >
-                        <TimelineHeaders className="sticky">
-                            <SidebarHeader>
-                                {({ getRootProps }) => {
-                                    return <div {...getRootProps()} />;
-                                }}
-                            </SidebarHeader>
-                            <DateHeader unit="primaryHeader" />
-                            <DateHeader />
-                        </TimelineHeaders>
-                    </Timeline>
+                    />
                 </div>
             );
         } else {
