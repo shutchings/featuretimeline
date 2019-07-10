@@ -2,9 +2,7 @@
 @import "node_modules/azure-devops-ui/Core/core.scss";
 
 .plan-timeline-container {
-    margin-top: $spacing-16;
     height: 100%;
-
     background-color: $neutral-2;
 }
 
@@ -15,6 +13,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    white-space: normal;
+    text-align: center;
 }
 
 .plan-timeline-item {
