@@ -75,7 +75,7 @@ export interface ITimelineItem {
 
 export enum ProgressTrackingCriteria {
     CompletedCount = "Completed Count",
-    StoryPoints = "Story Points"
+    Effort = "Effort"
 }
 
 export enum LoadingStatus {

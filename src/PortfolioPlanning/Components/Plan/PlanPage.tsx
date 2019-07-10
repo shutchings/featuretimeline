@@ -145,7 +145,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                 <PlanSettingsPanel
                     selectedItem={this.props.selectedItem}
                     progressTrackingCriteria={this.props.progressTrackingCriteria}
-                    onProgressTrackingCriteriaChanged={this._onProgressTrackingCriteriaChanged}
+                    onProgressTrackingCriteriaChanged={this.props.onToggleProgressTrackingCriteria}
                     onDeletePlanClicked={this._deletePlanButtonClicked}
                     onClosePlanSettingsPanel={() => {
                         this.props.onTogglePlanSettingsPanelOpen(false);
@@ -174,17 +174,6 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
 
     private _settingsButtonClicked = (): void => {
         this.props.onTogglePlanSettingsPanelOpen(true);
-    };
-
-    private _onProgressTrackingCriteriaChanged = (item: { key: string; text: string }) => {
-        switch (item.key) {
-            case "completedCount":
-                this.props.onToggleProgressTrackingCriteria(ProgressTrackingCriteria.CompletedCount);
-                break;
-            case "storyPoints":
-                this.props.onToggleProgressTrackingCriteria(ProgressTrackingCriteria.StoryPoints);
-                break;
-        }
     };
 }
 
