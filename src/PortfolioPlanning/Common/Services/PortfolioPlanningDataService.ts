@@ -28,6 +28,7 @@ import {
 import { GUIDUtil } from "../Utilities/GUIDUtil";
 import { ProjectConfiguration } from "../../../PortfolioPlanning/Models/ProjectBacklogModels";
 import { IdentityRef } from "VSS/WebApi/Contracts";
+import { defaultProjectComparer } from "../Utilities/Comparers";
 
 export class PortfolioPlanningDataService {
     private static _instance: PortfolioPlanningDataService;
@@ -399,21 +400,6 @@ export class PortfolioPlanningDataService {
         };
     }
 
-    /*
-    private ParseODataPortfolioPlanningQueryResultResponse(results: any): PortfolioPlanningQueryResult {
-        if (!results || !results["value"]) {
-            return null;
-        }
-
-        const rawResult: ODataWorkItemQueryResult[] = results.value;
-
-        return {
-            exceptionMessage: null,
-            items: this.PortfolioPlanningQueryResultItems(rawResult)
-        };
-    }
-    */
-
     private ParseODataPortfolioPlanningQueryResultResponseAsBatch(
         results: any,
         aggregationClauses: WorkItemTypeAggregationClauses
@@ -494,6 +480,9 @@ export class PortfolioPlanningDataService {
         }
 
         const rawResult: Project[] = results.value;
+
+        //  Sort results by project name.
+        rawResult.sort(defaultProjectComparer);
 
         return {
             exceptionMessage: null,

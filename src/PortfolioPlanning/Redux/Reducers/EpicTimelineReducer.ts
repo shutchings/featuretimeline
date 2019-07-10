@@ -9,6 +9,7 @@ import {
 import produce from "immer";
 import { ProgressTrackingCriteria, LoadingStatus } from "../../Contracts";
 import { MergeType } from "../../Models/PortfolioPlanningQueryModels";
+import { defaultIProjectComparer } from "../../Common/Utilities/Comparers";
 
 export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimelineActions): IEpicTimelineState {
     return produce(state || getDefaultState(), (draft: IEpicTimelineState) => {
@@ -292,6 +293,9 @@ function handlePortfolioItemsReceived(
                     });
                 });
             }
+
+            //  Sort projects by name for displaying in the timeline.
+            draft.projects.sort(defaultIProjectComparer);
         }
     });
 }
