@@ -67,11 +67,8 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                 </div>
             );
         } else {
-            return (
-                <div className="plan-timeline-container">
-                    <div>Add an item...</div>
-                </div>
-            );
+            // TODO: Zero data
+            return <div className="plan-timeline-container" />;
         }
     }
 
