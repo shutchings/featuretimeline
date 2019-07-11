@@ -83,7 +83,13 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
         let planContent: JSX.Element;
 
         if (this.props.planLoadingStatus === LoadingStatus.NotLoaded) {
-            planContent = <Spinner className="plan-spinner" label="Loading..." size={SpinnerSize.large} />;
+            let loadingLabel = "Loading...";
+            if (this.props.plan && this.props.plan.name) {
+                const suffix = this.props.plan.name.toLowerCase().endsWith("plan") ? "..." : " plan...";
+                loadingLabel = `Loading ${this.props.plan.name}${suffix}`;
+            }
+
+            planContent = <Spinner className="plan-spinner" label={loadingLabel} size={SpinnerSize.large} />;
         } else if (this.props.exceptionMessage) {
             let errorMessage = this.props.exceptionMessage;
             if (this.props.exceptionMessage.includes("VS403496")) {
