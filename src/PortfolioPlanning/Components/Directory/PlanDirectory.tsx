@@ -67,17 +67,19 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
 
             let content =
                 this.props.plans.length > 0 ? (
-                    this.props.plans.map(plan => (
-                        <PlanCard
-                            planId={plan.id}
-                            name={plan.name}
-                            description={plan.description}
-                            teams={plan.teamNames}
-                            projects={plan.projectNames}
-                            owner={plan.owner}
-                            onClick={id => this.props.toggleSelectedPlanId(id)}
-                        />
-                    ))
+                    <div className="plan-cards-container">
+                        {this.props.plans.map(plan => (
+                            <PlanCard
+                                planId={plan.id}
+                                name={plan.name}
+                                description={plan.description}
+                                teams={plan.teamNames}
+                                projects={plan.projectNames}
+                                owner={plan.owner}
+                                onClick={id => this.props.toggleSelectedPlanId(id)}
+                            />
+                        ))}
+                    </div>
                 ) : (
                     // TODO: Add zero data images
                     <ZeroData
@@ -94,7 +96,7 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
             return (
                 <div className="page-content plan-directory-page-content">
                     {this.props.exceptionMessage && exceptionMessageCard}
-                    <div className="plan-cards-container">{content}</div>
+                    {content}
                 </div>
             );
         }
