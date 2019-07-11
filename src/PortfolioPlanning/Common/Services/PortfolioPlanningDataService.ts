@@ -377,6 +377,11 @@ export class PortfolioPlanningDataService {
         }
 
         const directory: PortfolioPlanningDirectory = doc;
+
+        for (const entry of directory.entries) {
+            entry.createdOn = new Date(entry.createdOn);
+        }
+
         return directory;
     }
 
