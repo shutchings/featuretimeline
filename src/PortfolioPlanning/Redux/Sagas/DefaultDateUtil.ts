@@ -36,7 +36,7 @@ This method is called from two places:
 2. set default dates for newly added epic.
 In second case, epic is not saved into state yet.
 */
-function* saveDatesToServer(epicId: number, defaultStartDate?: Date, defaultEndDate?: Date): SagaIterator {
+export function* saveDatesToServer(epicId: number, defaultStartDate?: Date, defaultEndDate?: Date): SagaIterator {
     const epic: IEpic = yield effects.select(getEpicById, epicId);
     let startDate: Date = defaultStartDate;
     let endDate: Date = defaultEndDate;
