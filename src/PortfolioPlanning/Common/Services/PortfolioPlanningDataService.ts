@@ -32,6 +32,9 @@ import { defaultProjectComparer } from "../Utilities/Comparers";
 
 export class PortfolioPlanningDataService {
     private static _instance: PortfolioPlanningDataService;
+    private static readonly DirectoryDocumentId: string = "Default";
+    private static readonly DirectoryCollectionName: string = "Directory";
+    private static readonly PortfolioPlansCollectionName: string = "PortfolioPlans";
 
     public static getInstance(): PortfolioPlanningDataService {
         if (!PortfolioPlanningDataService._instance) {
@@ -47,20 +50,16 @@ export class PortfolioPlanningDataService {
         const client = await ODataClient.getInstance();
         const fullQueryUrl = client.generateProjectLink(undefined, workItemsQuery.queryString);
 
-        return (
-            client
-                //.runGetQuery(fullQueryUrl)
-                .runPostQuery(fullQueryUrl)
-                .then(
-                    //(results: any) => this.ParseODataPortfolioPlanningQueryResultResponse(results),
-                    (results: any) =>
-                        this.ParseODataPortfolioPlanningQueryResultResponseAsBatch(
-                            results,
-                            workItemsQuery.aggregationClauses
-                        ),
-                    error => this.ParseODataErrorResponse(error)
-                )
-        );
+        return client
+            .runPostQuery(fullQueryUrl)
+            .then(
+                (results: any) =>
+                    this.ParseODataPortfolioPlanningQueryResultResponseAsBatch(
+                        results,
+                        workItemsQuery.aggregationClauses
+                    ),
+                error => this.ParseODataErrorResponse(error)
+            );
     }
 
     public async runProjectQuery(
@@ -113,24 +112,6 @@ export class PortfolioPlanningDataService {
 
         return Promise.resolve(columnName);
     }
-
-    private GetODataColumnNameFromFieldRefName(fieldReferenceName: string): WellKnownEffortODataColumnNames {
-        if (!fieldReferenceName) {
-            return null;
-        }
-
-        return PortfolioPlanningDataService.WellKnownODataColumnNamesByWorkItemRefName[
-            fieldReferenceName.toLowerCase()
-        ];
-    }
-
-    private static readonly WellKnownODataColumnNamesByWorkItemRefName: {
-        [fieldReferenceName: string]: WellKnownEffortODataColumnNames;
-    } = {
-        "microsoft.vsts.scheduling.effort": WellKnownEffortODataColumnNames.Effort,
-        "microsoft.vsts.scheduling.storypoints": WellKnownEffortODataColumnNames.StoryPoints,
-        "microsoft.vsts.scheduling.size": WellKnownEffortODataColumnNames.Size
-    };
 
     public async loadPortfolioContent(
         portfolioQueryInput: PortfolioPlanningQueryInput
@@ -270,10 +251,6 @@ export class PortfolioPlanningDataService {
         await client.updateDocument(PortfolioPlanningDataService.DirectoryCollectionName, allPlans);
     }
 
-    private static readonly DirectoryDocumentId: string = "Default";
-    private static readonly DirectoryCollectionName: string = "Directory";
-    private static readonly PortfolioPlansCollectionName: string = "PortfolioPlans";
-
     public async AddPortfolioPlan(
         newPlanName: string,
         newPlanDescription: string,
@@ -368,6 +345,24 @@ export class PortfolioPlanningDataService {
         return totalThatWillBeDeleted;
     }
 
+    private GetODataColumnNameFromFieldRefName(fieldReferenceName: string): WellKnownEffortODataColumnNames {
+        if (!fieldReferenceName) {
+            return null;
+        }
+
+        return PortfolioPlanningDataService.WellKnownODataColumnNamesByWorkItemRefName[
+            fieldReferenceName.toLowerCase()
+        ];
+    }
+
+    private static readonly WellKnownODataColumnNamesByWorkItemRefName: {
+        [fieldReferenceName: string]: WellKnownEffortODataColumnNames;
+    } = {
+        "microsoft.vsts.scheduling.effort": WellKnownEffortODataColumnNames.Effort,
+        "microsoft.vsts.scheduling.storypoints": WellKnownEffortODataColumnNames.StoryPoints,
+        "microsoft.vsts.scheduling.size": WellKnownEffortODataColumnNames.Size
+    };
+
     private async GetStorageClient(): Promise<IExtensionDataService> {
         return VSS.getService<IExtensionDataService>(VSS.ServiceIds.ExtensionData);
     }
@@ -428,6 +423,7 @@ export class PortfolioPlanningDataService {
                     items: this.PortfolioPlanningQueryResultItems(jsonObject.value, aggregationClauses)
                 };
             } else {
+                //  TODO hack hack ... Didn't find OData success response, let's see if there was an OData error.
                 const start = responseString.indexOf('{"error"');
                 const end = responseString.lastIndexOf("}");
                 const jsonString = responseString.substring(start, end + 1);
@@ -763,28 +759,6 @@ export class ODataQueryBuilder {
         queryString: string;
         aggregationClauses: WorkItemTypeAggregationClauses;
     } {
-        /*
-        const descendantsTypesSet: {
-            [workItemType: string]: {
-                effortODataColumnName: string;
-                portfolioWorkItemType: string;
-            };
-        } = {};
-        const requirementWiTypes: string[] = [];
-
-        input.WorkItems.forEach(wi => {
-            const wiTypeKey = wi.DescendantsWorkItemTypeFilter.toLowerCase();
-
-            if (!descendantsTypesSet[wiTypeKey]) {
-                descendantsTypesSet[wiTypeKey] = {
-                    effortODataColumnName: wi.EffortODataColumnName,
-                    portfolioWorkItemType: wi.WorkItemTypeFilter
-                };
-                requirementWiTypes.push(`WorkItemType eq '${wiTypeKey}'`);
-            }
-        });
-        */
-
         const aggregationClauses = this.BuildEffortSelectionConditional(input);
 
         const descendantsWorkItemTypeFilters = Object.keys(aggregationClauses.allDescendantsWorkItemTypes).map(

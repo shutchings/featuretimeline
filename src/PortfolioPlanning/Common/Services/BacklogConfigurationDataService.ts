@@ -2,7 +2,7 @@ import { TeamContext } from "TFS/Core/Contracts";
 import { BacklogConfiguration } from "TFS/Work/Contracts";
 import { getClient } from "VSS/Service";
 import { WorkHttpClient } from "TFS/Work/RestClient";
-import { ProjectBacklogConfiguration } from "../PortfolioPlanning/Models/ProjectBacklogModels";
+import { ProjectBacklogConfiguration } from "../../Models/ProjectBacklogModels";
 
 export class BacklogConfigurationDataService {
     private static readonly EffortTypeField: string = "Effort";
