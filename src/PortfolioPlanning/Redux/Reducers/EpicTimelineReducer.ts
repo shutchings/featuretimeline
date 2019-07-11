@@ -20,6 +20,7 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 const epicToUpdate = draft.epics.find(epic => epic.id === epicId);
 
                 epicToUpdate.startDate = startDate.toDate();
+                epicToUpdate.startDate.setHours(0, 0, 0, 0);
 
                 break;
             }
@@ -29,6 +30,7 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 const epicToUpdate = draft.epics.find(epic => epic.id === epicId);
 
                 epicToUpdate.endDate = endDate.toDate();
+                epicToUpdate.endDate.setHours(0, 0, 0, 0);
 
                 break;
             }
@@ -40,7 +42,9 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 const epicDuration = epicToUpdate.endDate.getTime() - epicToUpdate.startDate.getTime();
 
                 epicToUpdate.startDate = startDate.toDate();
+                epicToUpdate.startDate.setHours(0, 0, 0, 0);
                 epicToUpdate.endDate = startDate.add(epicDuration, "milliseconds").toDate();
+                epicToUpdate.endDate.setHours(0, 0, 0, 0);
 
                 break;
             }

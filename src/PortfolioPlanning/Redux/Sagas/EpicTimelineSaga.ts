@@ -169,7 +169,9 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
     queryResult.items.items.map(item => {
         if (!item.StartDate || !item.TargetDate) {
             now = new Date();
+            now.setHours(0, 0, 0, 0);
             oneMonthFromNow = new Date();
+            oneMonthFromNow.setHours(0, 0, 0, 0);
             oneMonthFromNow.setDate(now.getDate() + 30);
             epicsWithoutDates.push(item.WorkItemId);
             item.StartDate = now;
