@@ -8,7 +8,6 @@ import {
     IProjectConfiguration
 } from "../../Contracts";
 import moment = require("moment");
-import { getSelectedPlanMetadata } from "./PlanDirectorySelectors";
 
 export function getProjects(state: IEpicTimelineState): IProject[] {
     return state.projects;
@@ -109,7 +108,7 @@ export function getSetDatesDialogHidden(state: IEpicTimelineState): boolean {
 }
 
 export function getAddEpicPanelOpen(state: IEpicTimelineState): boolean {
-    return state.addEpicDialogOpen;
+    return state.addItemsPanelOpen;
 }
 
 export function getProgressTrackingCriteria(state: IEpicTimelineState): ProgressTrackingCriteria {
@@ -118,18 +117,4 @@ export function getProgressTrackingCriteria(state: IEpicTimelineState): Progress
 
 export function getExceptionMessage(state: IPortfolioPlanningState): string {
     return state.epicTimelineState.exceptionMessage;
-}
-
-export function isNewPlan(state: IPortfolioPlanningState): boolean {
-    const selectedPlan = getSelectedPlanMetadata(state);
-
-    if (
-        selectedPlan &&
-        Date.now() - selectedPlan.createdOn.getTime() < 5 * 1000 &&
-        selectedPlan.projectNames.length == 0
-    ) {
-        return true;
-    } else {
-        return false;
-    }
 }

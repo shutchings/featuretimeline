@@ -7,7 +7,7 @@ import {
     PortfolioPlanningMetadata,
     PortfolioPlanning
 } from "../../Models/PortfolioPlanningQueryModels";
-import { EpicTimelineActionTypes } from "../Actions/EpicTimelineActions";
+import { EpicTimelineActionTypes, EpicTimelineActions } from "../Actions/EpicTimelineActions";
 import { getSelectedPlanId } from "../Selectors/PlanDirectorySelectors";
 import { getCurrentUser } from "../../Common/Utilities/Identity";
 import { getProjectNames, getTeamNames, getExceptionMessage } from "../Selectors/EpicTimelineSelectors";
@@ -45,6 +45,7 @@ function* createPlan(action: ActionsOfType<PlanDirectoryActions, PlanDirectoryAc
         );
         yield effects.put(PlanDirectoryActions.createPlanSucceeded(newPlan));
         yield effects.put(PlanDirectoryActions.toggleSelectedPlanId(newPlan.id));
+        yield effects.put(EpicTimelineActions.toggleIsNewPlanExperience(true));
     } catch (exception) {
         yield effects.put(PlanDirectoryActions.createPlanFailed(exception));
     }

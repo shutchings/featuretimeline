@@ -22,7 +22,8 @@ export const enum EpicTimelineActionTypes {
     ResetPlanState = "EpicTimeline/ResetPlanState",
     TogglePlanSettingsPanelOpen = "EpicTimeline/TogglePlanSettingsPanelOpen",
     UpdateVisibleTimeStart = "EpicTimeline/UpdateVisibleTimeStart",
-    UpdateVisibleTimeEnd = "EpicTimeline/UpdateVisibleTimeEnd"
+    UpdateVisibleTimeEnd = "EpicTimeline/UpdateVisibleTimeEnd",
+    ToggleIsNewPlanExperience = "EpicTimeline/IsNewPlanExperience"
 }
 
 export const EpicTimelineActions = {
@@ -67,7 +68,9 @@ export const EpicTimelineActions = {
     updateVisibleTimeEnd: (visibleTimeEnd: number) =>
         createAction(EpicTimelineActionTypes.UpdateVisibleTimeEnd, {
             visibleTimeEnd
-        })
+        }),
+    toggleIsNewPlanExperience: (isNewPlanExperience: boolean) =>
+        createAction(EpicTimelineActionTypes.ToggleIsNewPlanExperience, { isNewPlanExperience })
 };
 
 export type EpicTimelineActions = ActionsUnion<typeof EpicTimelineActions>;
