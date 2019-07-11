@@ -16,7 +16,7 @@ import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPla
 import { PlanDirectoryActionTypes, PlanDirectoryActions } from "../Actions/PlanDirectoryActions";
 import { LoadPortfolio } from "./LoadPortfolio";
 import { ActionsOfType } from "../Helpers";
-import { AssignDefaultDates } from "./DefaultDateUtil";
+import { SetEpicDefaultDates } from "./DefaultDateUtil";
 
 export function* epicTimelineSaga(): SagaIterator {
     yield takeEvery(EpicTimelineActionTypes.UpdateStartDate, onUpdateStartDate);
@@ -164,7 +164,7 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
         portfolioQueryInput
     );
 
-    yield effects.call(AssignDefaultDates, queryResult);
+    yield effects.call(SetEpicDefaultDates, queryResult);
 
     //  Add new epics selected by customer to existing ones in the plan.
     queryResult.mergeStrategy = MergeType.Add;
