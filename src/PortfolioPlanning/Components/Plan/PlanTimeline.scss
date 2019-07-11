@@ -2,9 +2,7 @@
 @import "node_modules/azure-devops-ui/Core/core.scss";
 
 .plan-timeline-container {
-    margin-top: $spacing-16;
     height: 100%;
-
     background-color: $neutral-2;
 }
 
@@ -15,6 +13,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    white-space: normal;
+    text-align: center;
 }
 
 .plan-timeline-item {
@@ -105,11 +105,11 @@
     vertical-align: top;
     position: relative;
     box-sizing: border-box;
-    // border-right: 1px solid #bbb;
+    border-right: 1px solid $neutral-10;
 }
 .react-calendar-timeline .rct-sidebar.rct-sidebar-right {
     border-right: 0;
-    border-left: 1px solid #bbb;
+    border-left: 1px solid $neutral-10;
 }
 .react-calendar-timeline .rct-sidebar .rct-sidebar-row {
     padding: 0 4px;
@@ -118,7 +118,7 @@
     text-overflow: ellipsis;
     box-sizing: content-box;
     margin: 0;
-    border-bottom: 1px solid #bbb;
+    border-bottom: 1px solid $neutral-10;
 }
 .react-calendar-timeline .rct-sidebar .rct-sidebar-row.rct-sidebar-row-odd {
     // background: rgba(0, 0, 0, 0.05);
@@ -131,7 +131,7 @@
 
 .react-calendar-timeline .rct-vertical-lines .rct-vl {
     position: absolute;
-    border-left: 1px solid #bbb;
+    border-right: 1px dashed $neutral-10;
     z-index: 30;
 }
 .react-calendar-timeline .rct-vertical-lines .rct-vl.rct-vl-first {
@@ -144,7 +144,7 @@
 
 .react-calendar-timeline .rct-horizontal-lines .rct-hl-even,
 .react-calendar-timeline .rct-horizontal-lines .rct-hl-odd {
-    border-bottom: 1px solid #bbb;
+    border-bottom: 1px solid $neutral-10;
     box-sizing: content-box;
     z-index: 40;
 }
@@ -191,7 +191,7 @@
 
     @extend .font-weight-semibold;
     color: $secondary-text;
-    border-right: 1px solid #bbb;
+    border-right: 1px solid $neutral-10;
 }
 
 .react-calendar-timeline .rct-dateHeader-primary {
@@ -205,7 +205,7 @@
 
 .react-calendar-timeline .rct-header-root {
     // background: #c52020;
-    border-bottom: 1px solid #bbb;
+    border-bottom: 1px solid $neutral-10;
 }
 
 .react-calendar-timeline .rct-calendar-header {

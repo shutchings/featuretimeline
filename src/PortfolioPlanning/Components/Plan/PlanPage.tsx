@@ -47,6 +47,18 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
     public render() {
         return (
             <Page className="plan-page">
+                {this._renderPlanHeader()}
+                {this._renderPlanContent()}
+                {this._renderAddItemPanel()}
+                {this._renderItemDetailsDialog()}
+                {this._renderPlanSettingsPanel()}
+            </Page>
+        );
+    }
+
+    private _renderPlanHeader = (): JSX.Element => {
+        return (
+            <>
                 <PlanHeader
                     id={this.props.plan.id}
                     name={this.props.plan.name}
@@ -58,19 +70,26 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
                     onBackButtonClicked={this._backButtonClicked}
                     onSettingsButtonClicked={this._settingsButtonClicked}
                 />
-                {this._renderPlanContent()}
-                {this._renderAddItemPanel()}
-                {this._renderItemDetailsDialog()}
-                {this._renderPlanSettingsPanel()}
-            </Page>
+                <PlanSummary
+                    projectNames={this.props.projectNames}
+                    teamNames={this.props.teamNames}
+                    owner={this.props.plan.owner}
+                />
+            </>
         );
-    }
+    };
 
     private _renderPlanContent = (): JSX.Element => {
         let planContent: JSX.Element;
 
         if (this.props.planLoadingStatus === LoadingStatus.NotLoaded) {
-            planContent = <Spinner className="plan-spinner" label="Loading..." size={SpinnerSize.large} />;
+            let loadingLabel = "Loading...";
+            if (this.props.plan && this.props.plan.name) {
+                const suffix = this.props.plan.name.toLowerCase().endsWith("plan") ? "..." : " plan...";
+                loadingLabel = `Loading ${this.props.plan.name}${suffix}`;
+            }
+
+            planContent = <Spinner className="plan-spinner" label={loadingLabel} size={SpinnerSize.large} />;
         } else if (this.props.exceptionMessage) {
             let errorMessage = this.props.exceptionMessage;
             if (this.props.exceptionMessage.includes("VS403496")) {
@@ -91,11 +110,6 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
         } else {
             planContent = (
                 <>
-                    <PlanSummary
-                        projectNames={this.props.projectNames}
-                        teamNames={this.props.teamNames}
-                        owner={this.props.plan.owner}
-                    />
                     <ConnectedPlanTimeline />
                 </>
             );

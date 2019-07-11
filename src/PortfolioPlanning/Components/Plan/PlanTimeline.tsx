@@ -30,21 +30,26 @@ interface IPlanTimelineMappedProps {
 export type IPlanTimelineProps = IPlanTimelineMappedProps & typeof Actions;
 
 export class PlanTimeline extends React.Component<IPlanTimelineProps> {
+    private defaultTimeStart: moment.Moment;
+    private defaultTimeEnd: moment.Moment;
+
     constructor() {
         super();
     }
 
     public render(): JSX.Element {
         if (this.props.items.length > 0) {
-            const [defaultTimeStart, defaultTimeEnd] = this._getDefaultTimes(this.props.items);
+            if (!this.defaultTimeStart || !this.defaultTimeEnd) {
+                [this.defaultTimeStart, this.defaultTimeEnd] = this._getDefaultTimes(this.props.items);
+            }
 
             return (
                 <div className="plan-timeline-container">
                     <Timeline
                         groups={this.props.groups}
                         items={this.props.items}
-                        visibleTimeStart={this.props.visibleTimeStart || defaultTimeStart}
-                        visibleTimeEnd={this.props.visibleTimeEnd || defaultTimeEnd}
+                        visibleTimeStart={this.props.visibleTimeStart || this.defaultTimeStart}
+                        visibleTimeEnd={this.props.visibleTimeEnd || this.defaultTimeEnd}
                         onTimeChange={this._handleTimeChange}
                         canChangeGroup={false}
                         stackItems={true}
@@ -170,18 +175,25 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
         this.props.onShiftItem(itemId, moment(time));
     };
 
-    // TODO: We only need this on first render
     private _getDefaultTimes(items: ITimelineItem[]): [moment.Moment, moment.Moment] {
-        let startTime = moment().add(-1, "months");
-        let endTime = moment().add(1, "months");
+        let startTime: moment.Moment;
+        let endTime: moment.Moment;
 
-        for (const item of items) {
-            if (item.start_time < startTime) {
-                startTime = moment(item.start_time).add(-1, "months");
+        if (!items || items.length == 0) {
+            startTime = moment().add(-1, "months");
+            endTime = moment().add(1, "months");
+        } else {
+            for (const item of items) {
+                if (item.start_time < startTime || !startTime) {
+                    startTime = moment(item.start_time);
+                }
+                if (item.end_time > endTime || !endTime) {
+                    endTime = moment(item.end_time);
+                }
             }
-            if (item.end_time > endTime) {
-                endTime = moment(item.end_time).add(1, "months");
-            }
+
+            startTime.add(-1, "months");
+            endTime.add(1, "months");
         }
 
         return [startTime, endTime];
