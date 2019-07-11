@@ -1,4 +1,5 @@
 import { put, call } from "redux-saga/effects";
+import { effects } from "redux-saga";
 import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPlanningDataService";
 import {
     PortfolioPlanningQueryInput,
@@ -7,8 +8,7 @@ import {
     MergeType
 } from "../../Models/PortfolioPlanningQueryModels";
 import { EpicTimelineActions } from "../Actions/EpicTimelineActions";
-import { effects } from "redux-saga";
-import { SetEpicDefaultDates } from "./DefaultDateUtil";
+import { SetDefaultDatesForEpics } from "./DefaultDateUtil";
 
 export function* LoadPortfolio(planId: string) {
     const portfolioService = PortfolioPlanningDataService.getInstance();
@@ -58,7 +58,7 @@ export function* LoadPortfolio(planId: string) {
         portfolioQueryInput
     );
 
-    yield effects.call(SetEpicDefaultDates, queryResult);
+    yield effects.call(SetDefaultDatesForEpics, queryResult);
 
     //  Replace all values when merging. We are loading the full state of the portfolio here.
     queryResult.mergeStrategy = MergeType.Replace;

@@ -8,7 +8,7 @@ import * as VSS_Service from "VSS/Service";
 import { effects, SagaIterator } from "redux-saga";
 import { getEpicById } from "../Selectors/EpicTimelineSelectors";
 
-export function* SetEpicDefaultDates(queryResult: PortfolioPlanningFullContentQueryResult) {
+export function* SetDefaultDatesForEpics(queryResult: PortfolioPlanningFullContentQueryResult) {
 
     let epicsWithoutDates: number[] = [];
     let now, oneMonthFromNow;
@@ -26,6 +26,7 @@ export function* SetEpicDefaultDates(queryResult: PortfolioPlanningFullContentQu
         }
     });
 
+    // Add error handling.
     yield effects.all(epicsWithoutDates.map(epic => effects.call(saveDatesToServer, epic, now, oneMonthFromNow)));
 }
 
