@@ -79,6 +79,7 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                     imagePath=""
                     imageAltText=""
                     primaryText="This plan is empty"
+                    secondaryText="Use the &quot;+&quot; button to add items to this plan"
                     actionText="Add items"
                     actionType={ZeroDataActionType.ctaButton}
                     onActionClick={this.props.onZeroDataCtaClicked}

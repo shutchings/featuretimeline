@@ -13,6 +13,7 @@ import { EpicTimelineActions } from "../../Redux/Actions/EpicTimelineActions";
 import { LoadingStatus } from "../../Contracts";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
+import { ZeroDataActionType, ZeroData } from "azure-devops-ui/ZeroData";
 
 export interface IPlanDirectoryProps {}
 
@@ -64,22 +65,36 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
                 </MessageCard>
             );
 
-            const plans = this.props.plans.map(plan => (
-                <PlanCard
-                    planId={plan.id}
-                    name={plan.name}
-                    description={plan.description}
-                    teams={plan.teamNames}
-                    projects={plan.projectNames}
-                    owner={plan.owner}
-                    onClick={id => this.props.toggleSelectedPlanId(id)}
-                />
-            ));
+            let content =
+                this.props.plans.length > 0 ? (
+                    this.props.plans.map(plan => (
+                        <PlanCard
+                            planId={plan.id}
+                            name={plan.name}
+                            description={plan.description}
+                            teams={plan.teamNames}
+                            projects={plan.projectNames}
+                            owner={plan.owner}
+                            onClick={id => this.props.toggleSelectedPlanId(id)}
+                        />
+                    ))
+                ) : (
+                    // TODO: Add zero data images
+                    <ZeroData
+                        imagePath=""
+                        imageAltText=""
+                        primaryText="Get started with portfolio plans"
+                        secondaryText="Use the &quot;New Plan&quot; button to create a plan and add items to it"
+                        actionText="New plan"
+                        actionType={ZeroDataActionType.ctaButton}
+                        onActionClick={() => this.props.toggleNewPlanDialogVisible(true)}
+                    />
+                );
 
             return (
                 <div className="page-content plan-directory-page-content">
                     {this.props.exceptionMessage && exceptionMessageCard}
-                    <div className="plan-cards-container">{plans}</div>
+                    <div className="plan-cards-container">{content}</div>
                 </div>
             );
         }
