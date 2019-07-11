@@ -10,7 +10,7 @@ import { IListBoxItem } from "azure-devops-ui/ListBox";
 import { ListSelection, ScrollableList, ListItem, IListItemDetails, IListRow } from "azure-devops-ui/List";
 import { ArrayItemProvider } from "azure-devops-ui/Utilities/Provider";
 import { ProjectBacklogConfiguration } from "../../Models/ProjectBacklogModels";
-import { BacklogConfigurationDataService } from "../../../Services/BacklogConfigurationDataService";
+import { BacklogConfigurationDataService } from "../../Common/Services/BacklogConfigurationDataService";
 import { FormItem } from "azure-devops-ui/FormItem";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 
