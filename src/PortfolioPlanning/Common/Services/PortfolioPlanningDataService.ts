@@ -29,6 +29,7 @@ import { GUIDUtil } from "../Utilities/GUIDUtil";
 import { ProjectConfiguration } from "../../../PortfolioPlanning/Models/ProjectBacklogModels";
 import { IdentityRef } from "VSS/WebApi/Contracts";
 import { defaultProjectComparer } from "../Utilities/Comparers";
+import { getTelemetryClient } from "../Utilities/Telemetry";
 
 export class PortfolioPlanningDataService {
     private static _instance: PortfolioPlanningDataService;
@@ -479,6 +480,17 @@ export class PortfolioPlanningDataService {
 
         //  Sort results by project name.
         rawResult.sort(defaultProjectComparer);
+
+        try {
+            const payload: {
+                [name: string]: string;
+            } = {};
+            payload["count"] = rawResult.length.toString();
+
+            getTelemetryClient().trackEvent("ProjectsQueryExecuted", payload);
+        } catch (error) {
+            console.log(error);
+        }
 
         return {
             exceptionMessage: null,
