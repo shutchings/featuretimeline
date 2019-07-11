@@ -16,6 +16,7 @@ import { PortfolioPlanningDataService } from "../../Common/Services/PortfolioPla
 import { PlanDirectoryActionTypes, PlanDirectoryActions } from "../Actions/PlanDirectoryActions";
 import { LoadPortfolio } from "./LoadPortfolio";
 import { ActionsOfType } from "../Helpers";
+import { AssignDefaultDates } from "./DefaultDateUtil";
 
 export function* epicTimelineSaga(): SagaIterator {
     yield takeEvery(EpicTimelineActionTypes.UpdateStartDate, onUpdateStartDate);
@@ -163,23 +164,7 @@ function* onAddEpics(action: ActionsOfType<EpicTimelineActions, EpicTimelineActi
         portfolioQueryInput
     );
 
-    let epicsWithoutDates: number[] = [];
-    let now, oneMonthFromNow;
-
-    queryResult.items.items.map(item => {
-        if (!item.StartDate || !item.TargetDate) {
-            now = new Date();
-            oneMonthFromNow = new Date();
-            oneMonthFromNow.setDate(now.getDate() + 30);
-            epicsWithoutDates.push(item.WorkItemId);
-            item.StartDate = now;
-            item.TargetDate = oneMonthFromNow;
-        }
-    });
-
-    for (let index = 0; index < epicsWithoutDates.length; index++) {
-        yield effects.call(saveDatesToServer, epicsWithoutDates[index], now, oneMonthFromNow);
-    }
+    yield effects.call(AssignDefaultDates, queryResult);
 
     //  Add new epics selected by customer to existing ones in the plan.
     queryResult.mergeStrategy = MergeType.Add;
