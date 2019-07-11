@@ -35,6 +35,7 @@ interface IPlanPageMappedProps {
     planSettingsPanelOpen: boolean;
     exceptionMessage: string;
     planLoadingStatus: LoadingStatus;
+    isNewPlanExperience: boolean;
 }
 
 export type IPlanPageProps = IPlanPageMappedProps & typeof Actions;
@@ -119,7 +120,7 @@ export default class PlanPage extends React.Component<IPlanPageProps, IPortfolio
     };
 
     private _renderAddItemPanel = (): JSX.Element => {
-        if (this.props.addItemPanelOpen) {
+        if (this.props.addItemPanelOpen || this.props.isNewPlanExperience) {
             return (
                 <AddItemPanel
                     planId={this.props.plan.id}
@@ -199,11 +200,12 @@ function mapStateToProps(state: IPortfolioPlanningState): IPlanPageMappedProps {
         epicIds: getEpicIds(state.epicTimelineState),
         selectedItem: getSelectedItem(state.epicTimelineState),
         progressTrackingCriteria: state.epicTimelineState.progressTrackingCriteria,
-        addItemPanelOpen: state.epicTimelineState.addEpicDialogOpen,
+        addItemPanelOpen: state.epicTimelineState.addItemsPanelOpen,
         setDatesDialogHidden: state.epicTimelineState.setDatesDialogHidden,
         planSettingsPanelOpen: state.epicTimelineState.planSettingsPanelOpen,
         exceptionMessage: state.epicTimelineState.exceptionMessage,
-        planLoadingStatus: state.epicTimelineState.planLoadingStatus
+        planLoadingStatus: state.epicTimelineState.planLoadingStatus,
+        isNewPlanExperience: state.epicTimelineState.isNewPlanExperience
     };
 }
 

@@ -71,11 +71,12 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 return handlePortfolioItemsReceived(draft, action as PortfolioItemsReceivedAction);
 
             case EpicTimelineActionTypes.OpenAddItemPanel: {
-                draft.addEpicDialogOpen = true;
+                draft.addItemsPanelOpen = true;
                 break;
             }
             case EpicTimelineActionTypes.CloseAddItemPanel: {
-                draft.addEpicDialogOpen = false;
+                draft.addItemsPanelOpen = false;
+                draft.isNewPlanExperience = false;
                 break;
             }
             case EpicTimelineActionTypes.PortfolioItemDeleted: {
@@ -96,13 +97,14 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 draft.planLoadingStatus = LoadingStatus.NotLoaded;
                 draft.selectedItemId = undefined;
                 draft.setDatesDialogHidden = true;
-                draft.addEpicDialogOpen = false;
+                draft.addItemsPanelOpen = false;
                 draft.planSettingsPanelOpen = false;
                 draft.visibleTimeStart = undefined;
                 draft.visibleTimeEnd = undefined;
                 draft.epics = [];
                 draft.projects = [];
                 draft.teams = {};
+                draft.isNewPlanExperience = false;
 
                 break;
             }
@@ -121,6 +123,10 @@ export function epicTimelineReducer(state: IEpicTimelineState, action: EpicTimel
                 draft.visibleTimeEnd = action.payload.visibleTimeEnd;
                 break;
             }
+            case EpicTimelineActionTypes.ToggleIsNewPlanExperience: {
+                draft.isNewPlanExperience = action.payload.isNewPlanExperience;
+                break;
+            }
         }
     });
 }
@@ -134,13 +140,14 @@ export function getDefaultState(): IEpicTimelineState {
         teams: {},
         epics: [],
         message: "Initial message",
-        addEpicDialogOpen: false,
+        addItemsPanelOpen: false,
         setDatesDialogHidden: true,
         planSettingsPanelOpen: false,
         selectedItemId: null,
         progressTrackingCriteria: ProgressTrackingCriteria.CompletedCount,
         visibleTimeStart: null,
-        visibleTimeEnd: null
+        visibleTimeEnd: null,
+        isNewPlanExperience: false
     };
 }
 

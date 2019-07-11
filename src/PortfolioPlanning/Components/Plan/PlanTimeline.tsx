@@ -11,6 +11,7 @@ import { ProgressDetails } from "../../Common/Components/ProgressDetails";
 import { InfoIcon } from "../../Common/Components/InfoIcon";
 import { getSelectedPlanOwner } from "../../Redux/Selectors/PlanDirectorySelectors";
 import { IdentityRef } from "VSS/WebApi/Contracts";
+import { ZeroData, ZeroDataActionType } from "azure-devops-ui/ZeroData";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
@@ -72,8 +73,18 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                 </div>
             );
         } else {
-            // TODO: Zero data
-            return <div className="plan-timeline-container" />;
+            return (
+                // TODO: Add zero data images
+                <ZeroData
+                    imagePath=""
+                    imageAltText=""
+                    primaryText="This plan is empty"
+                    secondaryText="Use the &quot;+&quot; button to add items to this plan"
+                    actionText="Add items"
+                    actionType={ZeroDataActionType.ctaButton}
+                    onActionClick={this.props.onZeroDataCtaClicked}
+                />
+            );
         }
     }
 
@@ -237,7 +248,8 @@ const Actions = {
     onToggleSetDatesDialogHidden: EpicTimelineActions.toggleItemDetailsDialogHidden,
     onSetSelectedItemId: EpicTimelineActions.setSelectedItemId,
     onUpdateVisibleTimeStart: EpicTimelineActions.updateVisibleTimeStart,
-    onUpdateVisibleTimeEnd: EpicTimelineActions.updateVisibleTimeEnd
+    onUpdateVisibleTimeEnd: EpicTimelineActions.updateVisibleTimeEnd,
+    onZeroDataCtaClicked: EpicTimelineActions.openAddItemPanel
 };
 
 export const ConnectedPlanTimeline = connect(

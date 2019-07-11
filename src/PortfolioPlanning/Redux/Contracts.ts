@@ -14,13 +14,14 @@ export interface IEpicTimelineState {
     teams: { [teamId: string]: ITeam };
     epics: IEpic[];
     message: string;
-    addEpicDialogOpen: boolean;
+    addItemsPanelOpen: boolean;
     setDatesDialogHidden: boolean;
     planSettingsPanelOpen: boolean;
     selectedItemId: number;
     progressTrackingCriteria: ProgressTrackingCriteria;
     visibleTimeStart: number;
     visibleTimeEnd: number;
+    isNewPlanExperience: boolean;
 }
 
 export interface IPlanDirectoryState {

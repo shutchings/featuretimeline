@@ -108,7 +108,7 @@ export function getSetDatesDialogHidden(state: IEpicTimelineState): boolean {
 }
 
 export function getAddEpicPanelOpen(state: IEpicTimelineState): boolean {
-    return state.addEpicDialogOpen;
+    return state.addItemsPanelOpen;
 }
 
 export function getProgressTrackingCriteria(state: IEpicTimelineState): ProgressTrackingCriteria {
