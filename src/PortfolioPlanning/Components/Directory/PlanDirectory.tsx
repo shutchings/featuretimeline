@@ -14,6 +14,7 @@ import { LoadingStatus } from "../../Contracts";
 import { Spinner, SpinnerSize } from "azure-devops-ui/Spinner";
 import { MessageCard, MessageCardSeverity } from "azure-devops-ui/MessageCard";
 import { ZeroDataActionType, ZeroData } from "azure-devops-ui/ZeroData";
+import { PortfolioDirectoryTelemetry } from "../../Common/Utilities/Telemetry";
 
 export interface IPlanDirectoryProps {}
 
@@ -46,6 +47,12 @@ export class PlanDirectory extends React.Component<IPlanDirectoryProps & IPlanDi
                     {this._renderNewPlanDialog()}
                 </Page>
             );
+        }
+    }
+
+    public componentDidUpdate() {
+        if (this.props.directoryLoadingStatus === LoadingStatus.Loaded) {
+            PortfolioDirectoryTelemetry.TrackPageView(this.props.plans);
         }
     }
 
