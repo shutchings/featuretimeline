@@ -6,7 +6,7 @@
 }
 
 .progress-indicator-tooltip {
-    flex: 1;
+    flex: 1 1 auto;
 }
 
 .progress-details-parts {
@@ -21,8 +21,8 @@
 }
 
 .progress-text {
-    text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     margin-left: 5px;
+    flex-shrink: 10;
 }

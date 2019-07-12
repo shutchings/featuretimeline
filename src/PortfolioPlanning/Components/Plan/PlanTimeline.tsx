@@ -231,17 +231,16 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
             >
                 <div className="details">
                     <div className="title">{itemContext.title}</div>
-                    <div
-                        style={{
-                            display: "flex",
-                            justifyContent: "flex-end"
-                        }}
-                    >
+                    <div className="progress-indicator">
                         <ProgressDetails
-                            completed={item.itemProps.completed}
-                            total={item.itemProps.total}
+                            // completed={item.itemProps.completed}
+                            // total={item.itemProps.total}
+                            completed={5}
+                            total={10}
                             onClick={() => {}}
                         />
+                    </div>
+                    <div className="action-icons">
                         <InfoIcon
                             className="show-on-hover"
                             id={item.id}

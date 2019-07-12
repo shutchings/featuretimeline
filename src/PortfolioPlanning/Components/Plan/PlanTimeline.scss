@@ -38,14 +38,30 @@
 
         .title {
             margin-left: $spacing-8;
-        }
-
-        .info-icon {
-            color: $communication-foreground;
+            margin-right: $spacing-8;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1 1 auto;
+            min-width: 15px;
         }
 
         .progress-indicator {
-            padding-right: $spacing-4;
+            flex: 1 5 auto;
+            overflow: hidden;
+        }
+
+        .action-icons {
+            display: flex;
+
+            .info-icon {
+                color: $communication-foreground;
+            }
+        }
+
+        .progress-indicator-container {
+            display: flex;
+            justify-content: flex-end;
+            flex-shrink: 1;
         }
     }
 
@@ -61,6 +77,7 @@
 
     .show-on-hover {
         display: none;
+        min-width: 0;
     }
 }
 
