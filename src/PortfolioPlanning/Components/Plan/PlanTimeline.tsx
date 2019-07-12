@@ -123,45 +123,6 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
         labelWidth: number,
         formatOptions: LabelFormat
     ): string {
-        // const format = {
-        //     year: {
-        //         long: "YYYY",
-        //         mediumLong: "YYYY",
-        //         medium: "YYYY",
-        //         short: "YY"
-        //     },
-        //     month: {
-        //         long: "MMMM YYYY",
-        //         mediumLong: "MMMM",
-        //         medium: "MMM",
-        //         short: "MM"
-        //     },
-        //     week: {
-        //         long: "w",
-        //         mediumLong: "w",
-        //         medium: "w",
-        //         short: "w"
-        //     },
-        //     day: {
-        //         long: "dddd, LL",
-        //         mediumLong: "dddd, LL",
-        //         medium: "dd D",
-        //         short: "D"
-        //     },
-        //     hour: {
-        //         long: "dddd, LL, HH:00",
-        //         mediumLong: "L, HH:00",
-        //         medium: "HH:00",
-        //         short: "HH"
-        //     },
-        //     minute: {
-        //         long: "HH:mm",
-        //         mediumLong: "HH:mm",
-        //         medium: "HH:mm",
-        //         short: "mm"
-        //     }
-        // };
-
         const small = 35;
         const medium = 100;
         const large = 150;
