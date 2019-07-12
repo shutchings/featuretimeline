@@ -18,7 +18,7 @@ export const PlanCard = (props: IPlanCardProps) => {
     return (
         <div className="plan-card-container" onClick={() => props.onClick(props.planId)}>
             <Card className="plan-card">
-                <div className="flex-column">
+                <div className="plan-card-details">
                     <div className="flex-column summary">
                         <div className="name">{props.name}</div>
                         <div className="description">{props.description}</div>
