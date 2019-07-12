@@ -11,7 +11,7 @@ Getting started is easy. First, create a new plan. Then, select a project and ad
 
 ## Track the progress of work in flight
 
-Once all the portfolio items are pulled in, visualize the work in a gantt chart calendar view. You can drag and drop to adjust the dates. Additionally, you can view the rollup of progress for each item. In settings, select whether you want to track progress using completed count or effort.
+Once all the portfolio items are pulled in, visualize the work in a scrollable gantt chart calendar view. You can drag and drop to adjust the dates. Additionally, you can view the rollup of progress for each item. In settings, select whether you want to track progress using completed count or effort. Drill down into the epic to view the feature timeline. 
 
 ![image](https://user-images.githubusercontent.com/8809849/61147962-909e8880-a492-11e9-8688-80b52e9d86bd.png)
 
