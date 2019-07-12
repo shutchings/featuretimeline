@@ -233,10 +233,8 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                     <div className="title">{itemContext.title}</div>
                     <div className="progress-indicator">
                         <ProgressDetails
-                            // completed={item.itemProps.completed}
-                            // total={item.itemProps.total}
-                            completed={5}
-                            total={10}
+                            completed={item.itemProps.completed}
+                            total={item.itemProps.total}
                             onClick={() => {}}
                         />
                     </div>
