@@ -3,6 +3,7 @@ import "./PlanCard.scss";
 import { Card } from "azure-devops-ui/Card";
 import { IdentityView } from "../../Common/Components/IdentityView";
 import { IdentityRef } from "VSS/WebApi/Contracts";
+import { Tooltip } from "azure-devops-ui/TooltipEx";
 
 export interface IPlanCardProps {
     planId: string;
@@ -26,14 +27,18 @@ export const PlanCard = (props: IPlanCardProps) => {
                             props.projects.length > 0 && (
                                 <div className="projects-container">
                                     <div className="projects-label">Projects</div>
-                                    <div className="projects-list">{props.projects.join(", ")}</div>
+                                    <Tooltip overflowOnly={true}>
+                                        <div className="projects-list">{props.projects.join(", ")}</div>
+                                    </Tooltip>
                                 </div>
                             )}
                         {props.teams &&
                             props.teams.length > 0 && (
                                 <div className="teams-container">
                                     <div className="teams-label">Teams</div>
-                                    <div className="teams-list">{props.teams.join(", ")}</div>
+                                    <Tooltip overflowOnly={true}>
+                                        <div className="teams-list">{props.teams.join(", ")}</div>
+                                    </Tooltip>
                                 </div>
                             )}
                     </div>
