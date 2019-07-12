@@ -11,48 +11,57 @@
     background-color: $white;
     @extend .font-weight-semibold;
 
-    .summary {
-        height: 200px;
-    }
-
-    .name {
-        @extend .title-s;
-        height: 40px;
-    }
-
-    .description {
-        @extend .body-m;
-        height: 40px;
-    }
-
-    .projects-container,
-    .teams-container {
+    .plan-card-details {
+        height: 100%;
+        width: 100%;
         display: flex;
         flex-direction: column;
-        margin-top: $spacing-8;
+        justify-content: space-between;
 
-        .projects-label,
-        .teams-label {
-            @extend .body-s;
-        }
-
-        .projects-list,
-        .teams-list {
-            @extend .body-m;
-            height: 40px;
+        .summary {
             overflow: hidden;
-            text-overflow: ellipsis;
         }
-    }
 
-    .owner-container {
-        height: 60px;
-        display: flex;
-        align-items: center;
-        margin-top: $spacing-8;
+        .name {
+            @extend .title-s;
+            height: 100%;
+        }
 
-        .display-name {
-            margin-left: $spacing-8;
+        .description {
+            @extend .body-m;
+            color: $secondary-text;
+            height: 100%;
+        }
+
+        .projects-container,
+        .teams-container {
+            display: flex;
+            flex-direction: column;
+            margin-top: $spacing-8;
+
+            .projects-label,
+            .teams-label {
+                @extend .body-s;
+            }
+
+            .projects-list,
+            .teams-list {
+                @extend .body-m;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+
+        .owner-container {
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            margin-top: $spacing-8;
+
+            .display-name {
+                margin-left: $spacing-8;
+            }
         }
     }
 }
