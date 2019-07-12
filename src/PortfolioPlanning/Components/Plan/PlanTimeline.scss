@@ -4,6 +4,14 @@
 .plan-timeline-container {
     height: 100%;
     background-color: $neutral-2;
+
+    .secondary-date-header {
+        @extend .font-weight-semibold;
+        color: $secondary-text;
+        text-align: center;
+        height: 100%;
+        border-right: 1px solid $neutral-10;
+    }
 }
 
 .plan-timeline-group {

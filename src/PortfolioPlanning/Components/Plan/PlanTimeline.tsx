@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as moment from "moment";
 import { ITimelineGroup, ITimelineItem, ITeam } from "../../Contracts";
-import Timeline from "react-calendar-timeline";
+import Timeline, { TimelineHeaders, SidebarHeader, DateHeader } from "react-calendar-timeline";
 import "./PlanTimeline.scss";
 import { IPortfolioPlanningState } from "../../Redux/Contracts";
 import { getTimelineGroups, getTimelineItems } from "../../Redux/Selectors/EpicTimelineSelectors";
@@ -15,6 +15,15 @@ import { ZeroData, ZeroDataActionType } from "azure-devops-ui/ZeroData";
 
 const day = 60 * 60 * 24 * 1000;
 const week = day * 7;
+
+type Unit = `second` | `minute` | `hour` | `day` | `month` | `year`;
+
+interface LabelFormat {
+    long: string;
+    mediumLong: string;
+    medium: string;
+    short: string;
+}
 
 interface IPlanTimelineMappedProps {
     planId: string;
@@ -69,7 +78,27 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                             this._renderItem(item, itemContext, getItemProps)
                         }
                         groupRenderer={group => this._renderGroup(group.group)}
-                    />
+                    >
+                        <TimelineHeaders>
+                            <SidebarHeader>
+                                {({ getRootProps }) => {
+                                    return <div {...getRootProps()} />;
+                                }}
+                            </SidebarHeader>
+                            <DateHeader unit="primaryHeader" />
+                            <DateHeader
+                                labelFormat={this._renderDateHeader}
+                                style={{ height: 50 }}
+                                intervalRenderer={({ getIntervalProps, intervalContext, data }) => {
+                                    return (
+                                        <div className="secondary-date-header" {...getIntervalProps()}>
+                                            {intervalContext.intervalText}
+                                        </div>
+                                    );
+                                }}
+                            />
+                        </TimelineHeaders>
+                    </Timeline>
                 </div>
             );
         } else {
@@ -86,6 +115,89 @@ export class PlanTimeline extends React.Component<IPlanTimelineProps> {
                 />
             );
         }
+    }
+
+    private _renderDateHeader(
+        [startTime, endTime]: [moment.Moment, moment.Moment],
+        unit: Unit,
+        labelWidth: number,
+        formatOptions: LabelFormat
+    ): string {
+        // const format = {
+        //     year: {
+        //         long: "YYYY",
+        //         mediumLong: "YYYY",
+        //         medium: "YYYY",
+        //         short: "YY"
+        //     },
+        //     month: {
+        //         long: "MMMM YYYY",
+        //         mediumLong: "MMMM",
+        //         medium: "MMM",
+        //         short: "MM"
+        //     },
+        //     week: {
+        //         long: "w",
+        //         mediumLong: "w",
+        //         medium: "w",
+        //         short: "w"
+        //     },
+        //     day: {
+        //         long: "dddd, LL",
+        //         mediumLong: "dddd, LL",
+        //         medium: "dd D",
+        //         short: "D"
+        //     },
+        //     hour: {
+        //         long: "dddd, LL, HH:00",
+        //         mediumLong: "L, HH:00",
+        //         medium: "HH:00",
+        //         short: "HH"
+        //     },
+        //     minute: {
+        //         long: "HH:mm",
+        //         mediumLong: "HH:mm",
+        //         medium: "HH:mm",
+        //         short: "mm"
+        //     }
+        // };
+
+        const small = 35;
+        const medium = 100;
+        const large = 150;
+
+        let formatString: string;
+
+        switch (unit) {
+            case "year": {
+                formatString = "YYYY";
+                break;
+            }
+            case "month": {
+                if (labelWidth < small) {
+                    formatString = "M";
+                } else if (labelWidth < medium) {
+                    formatString = "MMM";
+                } else if (labelWidth < large) {
+                    formatString = "MMMM";
+                } else {
+                    formatString = "MMMM YYYY";
+                }
+                break;
+            }
+            case "day": {
+                if (labelWidth < medium) {
+                    formatString = "D";
+                } else if (labelWidth < large) {
+                    formatString = "dd D";
+                } else {
+                    formatString = "dddd D";
+                }
+                break;
+            }
+        }
+
+        return startTime.format(formatString);
     }
 
     private _renderGroup(group: ITimelineGroup) {
