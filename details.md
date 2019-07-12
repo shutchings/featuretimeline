@@ -1,12 +1,12 @@
-# Portfolio Plans
+# Portfolio Plans (Preview)
 
 ## Portfolio Plans
 
-**View portfolio level work items across projects.** Portfolio Plans is an organizational tool that helps teams drive cross-project visibility and alignment by tracking portfolio level work in a calendar view.
+**View portfolio level work items across projects.** Portfolio Plans is an organizational tool that allows you to pull Epics from any project and team within organization and plots on them on an easy to read timeline view. This helps teams drive cross-project visibility and alignment by tracking portfolio level work.
 
 ## Hand-pick portfolio items to track
 
-To get started in a new plan, select the items that you wish to track. First, select a project. Then, select the item(s) you wish to track on the plan. You may add items from multiple projects.
+Getting started is easy. First, create a new plan. Then, select a project and add the item(s) you wish to track on the plan. You may add as many work items as you want and from multiple projects.
 
 ![image](https://user-images.githubusercontent.com/8809849/61147683-cb53f100-a491-11e9-9505-4c2e4d28ceaa.png)
 
